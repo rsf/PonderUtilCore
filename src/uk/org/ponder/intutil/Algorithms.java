@@ -29,6 +29,20 @@ public class Algorithms {
     }
   }
   
+  public static int[] random_sample(int choose, int from, Random random) {
+    int[] bits = new int[from];
+    for (int i = 0; i < choose; ++ i) {
+      bits[i] = 1;
+    }
+    random_shuffle(bits, random);
+    int[] togo = new int[choose];
+    int index = 0;
+    for (int i = 0; i < from; ++ i) {
+      if (bits[i] == 1) togo[index++] = i;
+    }
+    return togo;
+  }
+  
   public static boolean equals(int[] array1, int[] array2) {
     if (array1.length != array2.length) return false;
     for (int i = 0; i < array1.length; ++ i) {
