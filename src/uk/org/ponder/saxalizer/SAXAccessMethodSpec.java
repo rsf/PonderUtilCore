@@ -91,10 +91,10 @@ public class SAXAccessMethodSpec implements SAXalizable, SAXalizableAttrs {
   public static void convertToSetSpec(SAXAccessMethodSpec[] toconvert) {
     for (int i = 0; i < toconvert.length; ++i) {
       // Bail out if the swapping has already been performed!!
-      if (toconvert[i].getmethodname == null)
-        return;
-      toconvert[i].setmethodname = toconvert[i].getmethodname;
-      toconvert[i].getmethodname = null;
+      if (toconvert[i].getmethodname != null) {
+        toconvert[i].setmethodname = toconvert[i].getmethodname;
+        toconvert[i].getmethodname = null;
+      }
     }
   }
 

@@ -29,4 +29,10 @@ public class StringList extends ArrayList {
       }
     }
   }
+
+  public StringList copy() {
+    StringList togo = new StringList();
+    togo.addAll(this);
+    return togo;
+  }
 }
