@@ -16,18 +16,22 @@ import uk.org.ponder.saxalizer.SAXalizableAttrs;
 public class SAXalizerMapperEntry implements SAXalizable, DeSAXalizable, 
 SAXalizableAttrs {
   public Class targetclass;
+  public boolean defaultible = false;
   private SAMSList subtagentries = new SAMSList();
 
   public SAXAccessMethodSpec[] getSAXSetMethods() {
     return new SAXAccessMethodSpec[] {
         new SAXAccessMethodSpec("taghandler", "addTagHandler",
-            SAXAccessMethodSpec.class) };
+            SAXAccessMethodSpec.class),
+        new SAXAccessMethodSpec("defaultible", "defaultible", 
+            Boolean.TYPE)};
   }
 
   public SAXAccessMethodSpec[] getSAXSetAttrMethods() {
     return new SAXAccessMethodSpec[] {
         new SAXAccessMethodSpec("targetclass", "targetclass", Class.class,
-            SAXAccessMethodSpec.ACCESS_FIELD)};
+            SAXAccessMethodSpec.ACCESS_FIELD)
+        };
   }
   
   public SAXAccessMethodSpec[] getSAXGetMethods() {
