@@ -6,9 +6,8 @@ import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
 
-import org.xml.sax.SAXException;
-
 import uk.org.ponder.stringutil.CharWrap;
+import uk.org.ponder.util.UniversalRuntimeException;
 
 class DateParser implements SAXLeafTypeParser {
   private SimpleDateFormat format;
@@ -19,12 +18,12 @@ class DateParser implements SAXLeafTypeParser {
     format.setTimeZone(TimeZone.getTimeZone("UTC"));
     format.setLenient(false);
     }
-  public Object parse(String bulk) throws SAXException {
+  public Object parse(String bulk) {
     try {
       return format.parse(bulk); 
       }
     catch (ParseException pe) {
-      throw new SAXException(pe.getMessage());
+      throw UniversalRuntimeException.accumulate(pe, "Error parsing date");
       }
     }
   public CharWrap render(Object torendero, CharWrap renderinto) {

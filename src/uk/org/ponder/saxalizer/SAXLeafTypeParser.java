@@ -17,7 +17,7 @@ public interface SAXLeafTypeParser {
    * required type.
    * @return The successfully parsed object.
    */
-  Object parse(String toparse) throws SAXException;
+  Object parse(String toparse);
   /** The DeSAXalizer calls this method when it wishes to render a leaf node
    * object into textual form.
    * @param torender The object to be rendered.

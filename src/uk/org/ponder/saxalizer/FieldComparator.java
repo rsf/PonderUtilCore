@@ -19,10 +19,7 @@ public class FieldComparator implements Comparator {
   public static SAXAccessMethod findSingleGetter(Class objclass,
       SAXalizerMappingContext context, String tagname) {
     MethodAnalyser ma = MethodAnalyser.getMethodAnalyser(objclass, context);
-    SAXAccessMethod method = ma.tagmethods.get(tagname);
-    if (method == null) {
-      method = ma.attrmethods.get(tagname);
-    }
+    SAXAccessMethod method = ma.getAccessMethod(tagname);
     if (!method.canGet() || method.ismultiple) {
       throw new UniversalRuntimeException(
           "Located access method of unsuitable type for name " + tagname

@@ -42,8 +42,8 @@ public class SAXAccessMethod {
   }
 
   // returns any (one-argument) method with the required name in the specified
-  // class,
-  // regardless of type.
+  // class, regardless of type. This is called by the constructor when it
+  // is trying to automatically infer set types.
   private static Method findSetMethod(Class tosearch, String methodname) {
     Method[] methods = tosearch.getMethods();
     for (int i = 0; i < methods.length; ++i) {
@@ -206,5 +206,34 @@ public class SAXAccessMethod {
    */
   public boolean canGet() {
     return (field != null || getmethod != null);
+  }
+
+  /**
+   * Determines whether this method can be used for setting.
+   * 
+   * @return
+   */
+  public boolean canSet() {
+    return (field != null || setmethod != null);
+  }
+  
+  /** Determines whether the return type of this method is assignable
+   * to Enumeration, which is interpreted as indicating a non-settable
+   * multiple value, in the case that there is no individual set method.
+   */
+  public boolean isEnumeration() {
+    return isenumeration;
+  }
+  
+  /** Determines whether this set method may be used for the delivery
+   * of multiple subobjects. If it is, the object delivered by Get
+   * may be converted into a receiver by EnumerationConverter.getDenumeration(oldinstance).
+   */
+  public boolean isDenumerable() {
+    return ismultiple && !isenumeration;
+    }
+  
+  public Class getAccessedType() {
+    return clazz;
   }
 }

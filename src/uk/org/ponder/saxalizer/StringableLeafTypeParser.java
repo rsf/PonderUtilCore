@@ -6,8 +6,6 @@ package uk.org.ponder.saxalizer;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
-import org.xml.sax.SAXException;
-
 import uk.org.ponder.stringutil.CharWrap;
 import uk.org.ponder.util.UniversalRuntimeException;
 
@@ -50,9 +48,9 @@ public class StringableLeafTypeParser implements SAXLeafTypeParser {
     return togo;
   }
   
-  public Object parse(String toparse) throws SAXException {
+  public Object parse(String toparse) {
     try {
-    return stringcons.newInstance(new Object[] {toparse});
+      return stringcons.newInstance(new Object[] {toparse});
     }
     catch (Throwable t) {
       throw UniversalRuntimeException.accumulate(t, "Error invoking default constructor for object of type "+

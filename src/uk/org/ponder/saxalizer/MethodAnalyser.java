@@ -21,10 +21,18 @@ import uk.org.ponder.util.UniversalRuntimeException;
  * argument. MethodAnalysers are cached in a static hashtable indexed by the
  * SAXalizable class.
  */
-class MethodAnalyser {
+public class MethodAnalyser {
   public SAXAccessMethodHash tagmethods;
   public SAXAccessMethodHash attrmethods;
 
+  public SAXAccessMethod getAccessMethod(String tagname) {
+    SAXAccessMethod method = tagmethods.get(tagname);
+    if (method == null) {
+      method = attrmethods.get(tagname);
+    }
+    return method;
+  }
+  
   /**
    * Given an object to be serialised/deserialised, return a MethodAnalyser
    * object containing a hash of Method and Field accessors. The <code>context</code>

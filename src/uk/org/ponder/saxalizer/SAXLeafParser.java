@@ -227,7 +227,7 @@ public class SAXLeafParser {
    * @return the data parsed into an object of the required type.
    */
 
-  public Object parse(Class returntype, String bulk) throws SAXException {
+  public Object parse(Class returntype, String bulk) {
     if (bulk.equals(NULL_STRING))
       return null;
     SAXLeafTypeParser parser = (SAXLeafTypeParser) parseabletypes

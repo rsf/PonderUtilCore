@@ -171,8 +171,9 @@ public class SAXalizer extends HandlerBase {
     }
     boolean isgeneric = GenericSAX.class.isAssignableFrom(topush);
     boolean isleaf = leafparser.isLeafType(topush);
+    // parentsetter is null for the root object only.
     boolean isdenumerable = parentsetter == null? false : 
-      parentsetter.ismultiple && !parentsetter.isenumeration;
+      parentsetter.isDenumerable();
     // The creation of leaf objects is deferred until all their data has
     // arrived.
     Object newinstance = null;

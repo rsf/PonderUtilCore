@@ -12,5 +12,5 @@ import java.io.OutputStream;
  */
 public interface XMLProvider {
   public void writeXML(Object towrite, OutputStream os);
-  public Object readXML(Class rootclass, InputStream is);
+  public Object readXML(Object classorobject, InputStream is);
 }
