@@ -3,7 +3,10 @@
  */
 package uk.org.ponder.intutil;
 
+import java.util.Arrays;
 import java.util.Random;
+
+import uk.org.ponder.arrayutil.ArrayUtil;
 
 /**
  * @author Bosmon
@@ -11,6 +14,16 @@ import java.util.Random;
  * The class Algorithms incorporates several useful algorithms culled from the STL.
  */
 public class Algorithms {
+  // QQQQQ crappy n^2 implementation until can think of some way to run
+  // an intpair sort in Java.
+  public static int[] invert_permutation(int[] indices, int maximum) {
+    int[] togo = new int[maximum];
+    for (int i = 0; i < maximum; ++ i) {
+      togo[i] = ArrayUtil.indexOf(indices, i);
+    }
+    return togo;
+  }
+  
   public static void random_shuffle(intVector toshuf, int first, int last, Random random) {
     for (int i = first + 1; i < last; ++ i) {
       int swapind = first + random.nextInt(1 + i - first);
