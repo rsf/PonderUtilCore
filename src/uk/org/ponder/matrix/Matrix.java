@@ -396,6 +396,16 @@ public class Matrix implements Cloneable {
     return ret;
   }
 
+
+  /**
+   * @return
+   */
+  public Matrix copyUnshared() {
+    Matrix ret = (Matrix) this.clone();
+    ret.aboutToModify();
+    return ret;
+  }
+  
   /*
    * Basic Matrix Calculations
    */
@@ -1652,4 +1662,5 @@ public class Matrix implements Cloneable {
      * sig); Matrix D = n.evaluate(C); D.debug();
      */
   }
+
 }
