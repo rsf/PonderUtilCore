@@ -84,7 +84,7 @@ public class DeSAXalizer {
 
 
   private void blastState() {
-    mappingcontext = null;
+    //mappingcontext = null;
     xmlw = null;
     desaxingobjects.clear();
     forbidder = null;

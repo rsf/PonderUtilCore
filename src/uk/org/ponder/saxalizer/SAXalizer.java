@@ -188,6 +188,8 @@ public class SAXalizer extends HandlerBase {
     MethodAnalyser ma = isleaf ? null : MethodAnalyser.getMethodAnalyser(
         newinstance, mappingcontext);
     // "reach into the past" and note that we are now within a denumeration.
+    // For denumerable types, oldinstance will be the previously obtained
+    // container class, and newinstance will be of the containee type.
     if (isdenumerable) {
       ParseContext beingparsed = getSaxingObject();
       if (!beingparsed.hasDenumeration(parentsetter.tagname)) {

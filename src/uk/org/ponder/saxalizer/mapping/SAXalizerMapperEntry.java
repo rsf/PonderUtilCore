@@ -43,7 +43,15 @@ SAXalizableAttrs {
   public SAXAccessMethodSpec specAt(int i) {
     return (SAXAccessMethodSpec) subtagentries.get(i);
   }
-  
+  public void addNonDuplicate(SAXAccessMethodSpec newspec) {
+    for (int i = 0; i < size(); ++i) {
+      SAXAccessMethodSpec thisspec = specAt(i);
+      if (thisspec.isDuplicate(newspec)) {
+        return;
+      }
+    }
+    addTagHandler(newspec);
+  }
   public SAMSList getSAMSList() {
     return subtagentries;
   }

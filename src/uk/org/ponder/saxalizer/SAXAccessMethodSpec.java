@@ -72,6 +72,15 @@ public class SAXAccessMethodSpec implements SAXalizable, SAXalizableAttrs {
 
   }
 
+  public boolean isDuplicate(SAXAccessMethodSpec newentry) {
+    if (newentry.setmethodname != null && newentry.setmethodname.equals(setmethodname))
+      return true;
+    if (newentry.getmethodname != null && newentry.getmethodname.equals(getmethodname))
+      return true;
+    if (newentry.fieldname != null && newentry.fieldname.equals(fieldname))
+      return true;
+    return false;
+  }
   /**
    * This is a utility method, currently called by MethodAnalyser, for SAMS
    * returned from getSAXSetQqqMethod() in order to swap the name supplied for

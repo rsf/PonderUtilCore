@@ -3,6 +3,7 @@
  */
 package uk.org.ponder.saxalizer.mapping;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -82,15 +83,20 @@ public class DefaultMapperInferrer implements SAXalizerMapperInferrer {
     return spec;
   }
   
-  public SAXalizerMapperEntry inferEntry(Class clazz) {
-    SAXalizerMapperEntry togo = new SAXalizerMapperEntry();
+  private static boolean isPublicNonStatic(int modifiers) {
+    return Modifier.isPublic(modifiers) && !Modifier.isStatic(modifiers);
+  }
+  
+  public SAXalizerMapperEntry inferEntry(Class clazz, 
+      SAXalizerMapperEntry preventry) {
+    SAXalizerMapperEntry togo = preventry == null? new SAXalizerMapperEntry() : preventry;
     togo.targetclass = clazz;
     SAMSList sams = togo.getSAMSList();
     Method[] methods = clazz.getMethods();
 
     for (int i = 0; i < methods.length; ++i) {
       int modifiers = methods[i].getModifiers(); 
-      if (Modifier.isStatic(modifiers) || !Modifier.isPublic(modifiers)) continue;
+      if (!isPublicNonStatic(modifiers)) continue;
       String methodname = methods[i].getName();
       if (methodname.equals("getClass")) continue;
       int methodtype = accessorType(methods[i]);
@@ -103,18 +109,20 @@ public class DefaultMapperInferrer implements SAXalizerMapperInferrer {
         else {
           spec.setmethodname = methodname;
         }
-        togo.addTagHandler(spec);
+        togo.addNonDuplicate(spec);
       }
     }
 
     Field[] fields = clazz.getFields();
     for (int i = 0; i < fields.length; ++i) {
       String fieldname = fields[i].getName();
+      int modifiers = fields[i].getModifiers();
+      if (!isPublicNonStatic(modifiers)) continue;
       SAXAccessMethodSpec spec = byXMLNameSafe(sams, fieldname, fields[i].getType());
       spec.fieldname = fieldname;
-      togo.addTagHandler(spec);
+      togo.addNonDuplicate(spec);
     }
-
+    
     return togo;
   }
 

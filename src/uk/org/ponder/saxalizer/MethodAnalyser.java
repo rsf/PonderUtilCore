@@ -1,5 +1,7 @@
 package uk.org.ponder.saxalizer;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Enumeration;
 
@@ -103,10 +105,13 @@ class MethodAnalyser {
   MethodAnalyser(Class objclass, Object obj, SAXalizerMapperEntry entry, SAXalizerMappingContext context) {
     SAMSList tagMethods = new SAMSList();
     SAMSList attrMethods = new SAMSList();
+    boolean defaultinferrible = context.inferrer != null && context.inferrer.isDefaultInferrible(objclass);
     // source 1: dynamic info from mapper file takes precendence
     if (entry != null) {
-      // dynamic info takes priority over static info
-      absorbSAMSList(entry, tagMethods, attrMethods);
+      // do not absorb entry if defaultinferrible, since it will be done again later.
+      if (!defaultinferrible) {
+        absorbSAMSList(entry, tagMethods, attrMethods);
+      }
     }
     else {
       Object o = obj instanceof Class? ClassGetter.construct((Class)obj) : obj;
@@ -149,13 +154,13 @@ class MethodAnalyser {
     // Source 3: if no accessors have so far been discovered, try to infer some
     // using an inferrer if one is set.
     if (context.inferrer != null && (tagMethods.size() == 0 && attrMethods.size() == 0)
-         || context.inferrer.isDefaultInferrible(objclass)) {
-      entry = context.inferrer.inferEntry(objclass);
+         || defaultinferrible) {
+      entry = context.inferrer.inferEntry(objclass, entry);
       absorbSAMSList(entry, tagMethods, attrMethods);
     }
   
     tagmethods = new SAXAccessMethodHash(tagMethods, objclass);
     attrmethods = new SAXAccessMethodHash(attrMethods, objclass);
   }
-
+  
 }
