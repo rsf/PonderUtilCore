@@ -162,11 +162,17 @@ public class XMLWriter {
    * <p>Closing this does not close the underlying input stream!
    * @exception IOException If an I/O error occurs while closing the stream.
    */
-  public void close() throws IOException {
+  public void close() {
     if (internalwriter != null) {
+      try {
       flush();
+    }
+    catch (Throwable t) {
+      Logger.println("Unhandled exception closing XML Writer: " + t, Logger.DEBUG_SEVERE);
       //      internalwriter.close();
       internalwriter = null;
       }
     }
   }
+}
+  
