@@ -3,9 +3,8 @@
  */
 package uk.org.ponder.transaction;
 
-import java.util.logging.Level;
+import java.util.ArrayList;
 
-import uk.org.ponder.util.Logger;
 import uk.org.ponder.util.UniversalRuntimeException;
 
 
@@ -14,26 +13,43 @@ import uk.org.ponder.util.UniversalRuntimeException;
  * 
  */
 public class TransactionThreadMap {
-  private static ThreadLocal transmap = new ThreadLocal() {};
+  // largely for debugging purposes, this keeps a registry of all 
+  // TransactionThreadMaps in the system for assertAllConcluded(). 
+  private static ArrayList allmaps = new ArrayList();
+  
+  public TransactionThreadMap() {
+    allmaps.add(this);
+  }
+  
+  private ThreadLocal transmap = new ThreadLocal() {};
   // this is currently only called by NestedTransactionWrapper constructor
-  public static void enterTransaction(Transaction tran) {
-    Logger.log.log(Level.INFO, "*|*|*|*|*|  Thread " + Thread.currentThread() + " entered transaction");
+  public void enterTransaction(Transaction tran) {
+    //Logger.log.log(Level.INFO, "*|*|*|*|*|  Thread " + Thread.currentThread() + " entered transaction");
     transmap.set(tran);
   }
-  public static Transaction getTransaction() {
+  public Transaction getTransaction() {
     return (Transaction) transmap.get();
   }
 
-  public static void endTransaction() {
-    Logger.log.log(Level.INFO, "*|*|*|*|*|   Thread " + Thread.currentThread() + " left transaction");
+  public void endTransaction() {
+    //Logger.log.log(Level.INFO, "*|*|*|*|*|   Thread " + Thread.currentThread() + " left transaction");
     transmap.set(null);
   }
 
-  public static void assertTransactionsConcluded() {
+  public void assertTransactionsConcluded() {
     Transaction trans = getTransaction();
     if (trans != null) {
       throw new UniversalRuntimeException("Outstanding transaction " + trans
           + " discovered on thread " + Thread.currentThread());
     }
   }
+  /** Throws an exception if this thread has an outstanding transaction on
+   * any transaction map in the system.
+   */
+  public static void assertAllTransactionsConcluded() {
+    for (int i = 0; i < allmaps.size(); ++ i) {
+      ((TransactionThreadMap)allmaps.get(i)).assertTransactionsConcluded();
+    }
+  }
+  
 }

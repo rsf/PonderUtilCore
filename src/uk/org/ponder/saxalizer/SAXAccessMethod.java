@@ -26,7 +26,7 @@ public class SAXAccessMethod {
   Class clazz; // The type of subobject (or superclass thereof) handled by this method
   Class accessclazz; // The actual (declared) return or field type in code (may be container)
   Class parentclazz; // The class that this is a method of, for convenience.
-  String tagname;
+  public String tagname;
   boolean ispolymorphic; // Uses the new "tag*" polymorphic nickname scheme
   boolean ismultiple; // A collection rather than a single object is being addressed
   boolean isenumeration; // if "ismultiple" is this delivered via an enumeration?

@@ -1,5 +1,8 @@
 package uk.org.ponder.streamutil;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.io.OutputStream;
@@ -34,8 +37,8 @@ public class StreamCopyUtil {
    * @exception IOException
    *              if an I/O error occurs.
    */
-  public static final void inputToOutput(InputStream source, OutputStream dest, byte[] buffer)
-      {
+  public static final void inputToOutput(InputStream source, OutputStream dest,
+      byte[] buffer) {
     inputToOutput(source, dest, true, true, buffer);
   }
 
@@ -59,7 +62,8 @@ public class StreamCopyUtil {
 
   public static final void inputToOutput(InputStream source, OutputStream dest,
       boolean closeinput, boolean closeoutput, byte[] buffer) {
-    if (buffer == null) buffer = new byte[BUF_SIZ];
+    if (buffer == null)
+      buffer = new byte[BUF_SIZ];
     long totalbytes = 0;
     try {
       while (true) {
@@ -73,7 +77,8 @@ public class StreamCopyUtil {
       System.out.println("inputToOutput copied " + totalbytes + " bytes");
     }
     catch (Throwable t) {
-      throw UniversalRuntimeException.accumulate(t, "Error copying stream after " + totalbytes + " bytes");
+      throw UniversalRuntimeException.accumulate(t,
+          "Error copying stream after " + totalbytes + " bytes");
     }
     finally {
       if (closeinput)
@@ -193,6 +198,24 @@ public class StreamCopyUtil {
     }
     finally {
       StreamUtil.closeReader(disr);
+    }
+  }
+
+  // A debug method which will save a stream to disk and return a copy of
+  // it.
+  public static InputStream bottleToDisk(InputStream is, String filename) {
+    try {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    inputToOutput(is, baos, new byte[1024]);
+    byte[] buffer = baos.toByteArray();
+    ByteArrayInputStream bais = new ByteArrayInputStream(buffer);
+    FileOutputStream fos = new FileOutputStream(filename);
+    inputToOutput(bais, fos, new byte[1024]);
+    bais = new ByteArrayInputStream(buffer);
+    return bais;
+    }
+    catch (Throwable t) {
+      throw UniversalRuntimeException.accumulate(t, "Error bottling input stream");
     }
   }
 }

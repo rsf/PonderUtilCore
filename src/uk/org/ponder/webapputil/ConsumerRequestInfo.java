@@ -22,6 +22,16 @@ public class ConsumerRequestInfo {
     consumerrequestinfo.set(null);
   }
   
+  public static String getInstallationName(String defaultname) {
+    String useinstallationname = defaultname;
+    
+    ConsumerRequestInfo cri = getConsumerRequestInfo();
+    if (cri != null && cri.ci.consumername != null) {
+      useinstallationname = cri.ci.consumername;
+    }
+    return useinstallationname;
+  }
+  
   public ConsumerInfo ci;
   /** A view template provided by the remote consumer with which this
    * response is to be framed.

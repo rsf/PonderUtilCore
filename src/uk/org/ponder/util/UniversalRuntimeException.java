@@ -19,24 +19,36 @@ import java.lang.reflect.InvocationTargetException;
  * the next boundary.
  * * http://c2.com/cgi/wiki?CheckedExceptionsConsideredHarmful
  * <p>This class has a useful (and growing) body of schemes for absorbing
- * the information from other types of exception and adding them to an
- * internal chain of exception causes. Eventually it should be extended
- * to encompass SQLExceptions, SAXExceptions, InvocationTargetExceptions 
- * and the like. 
+ * the target exceptions from other types of wrapping exceptions and rewrapping
+ * them. 
  * <p> What we wish to preserve is
  * a) the ultimate stack trace from the cause of the problem and 
  * b) a set of increasingly detailed messages that can be accreted onto
  * the exception as it winds up the stack.
+ * <p>A UniversalRuntimeException also contains a Class representing its "category",
+ * a point in the inheritance hierarchy that may be used to classify the nature
+ * of exceptions, as being distinct from the wrapped target exception intended
+ * to record its cause. An object of the category need not every be created, 
+ * the inheritance hierachy may be queried via Class.isAssignableFrom().
+ * <p> The exception category defaults to the concrete class of the exception
+ * being wrapped.
  * @author Bosmon
  */
 public class UniversalRuntimeException extends RuntimeException implements WrappingException {
   private Throwable targetexception;
   private String message;
+  private Class category;
   public UniversalRuntimeException(String s) {
     message = s;
   }
   public String getMessage() {
     return message;
+  }
+  public Class getCategory() {
+    return category;
+  }
+  public void setCategory(Class category) {
+    this.category = category;
   }
   public UniversalRuntimeException(Throwable t) {
     message = t.getMessage();
@@ -46,7 +58,12 @@ public class UniversalRuntimeException extends RuntimeException implements Wrapp
     return targetexception;
   }
   
-  public static UniversalRuntimeException accumulateMsg(Throwable t, String fullmsg) {
+  public static UniversalRuntimeException accumulate(Throwable t, Class category, String extradetail) {
+    UniversalRuntimeException togo = accumulateMsg(t, category, extradetail + "\n" + t.getMessage()+ "\n");
+    return togo;
+  }
+  
+  public static UniversalRuntimeException accumulateMsg(Throwable t, Class category, String fullmsg) {
     // QQQQQ Should we unwrap any other types?
      UniversalRuntimeException togo;
      if (t instanceof UniversalRuntimeException) {
@@ -54,12 +71,13 @@ public class UniversalRuntimeException extends RuntimeException implements Wrapp
      }
      if (t instanceof InvocationTargetException) {
        InvocationTargetException ite = (InvocationTargetException)t;
-       return accumulateMsg(ite.getTargetException(), fullmsg);
+       return accumulateMsg(ite.getTargetException(), category, fullmsg);
        }
      else {
        togo = new UniversalRuntimeException(t);
      }
      togo.message = fullmsg;
+     togo.category = category;
      return togo;
    }
   /** Accumulates the message supplied message onto the beginning of 
@@ -74,12 +92,12 @@ public class UniversalRuntimeException extends RuntimeException implements Wrapp
    * @return 
    */
   public static UniversalRuntimeException accumulate(Throwable t, String extradetail) {
-    UniversalRuntimeException togo = accumulateMsg(t, extradetail + "\n" + t.getMessage()+ "\n");
+    UniversalRuntimeException togo = accumulateMsg(t, t.getClass(), extradetail + "\n" + t.getMessage()+ "\n");
     return togo;
   }
   /** Used to "pass-through" an exception leaving its message unchanged */
   public static UniversalRuntimeException accumulate(Throwable t) {
-    UniversalRuntimeException togo = accumulateMsg(t, t.getMessage());
+    UniversalRuntimeException togo = accumulateMsg(t, t.getClass(), t.getMessage());
     return togo;
   }
   // QQQQQ move these three methods to static utility for all WrappingExceptions
@@ -107,4 +125,9 @@ public class UniversalRuntimeException extends RuntimeException implements Wrapp
      else
        super.printStackTrace(ps);
    }
+  
+  public StackTraceElement[] getStackTrace() {
+    return targetexception != null? targetexception.getStackTrace() 
+        : super.getStackTrace();
+  }
 }

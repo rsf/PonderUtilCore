@@ -13,7 +13,7 @@ public class ExampleQuerier {
   public static boolean match(Object query, Object totest, SAXAccessMethod[] fields) {
     for (int i = 0; i < fields.length; ++ i) {
       Object querychild = fields[i].getChildObject(query);
-      if (query != null) {
+      if (querychild != null) {
         Object testchild = fields[i].getChildObject(totest);
         if (!querychild.equals(testchild)) return false;
       }

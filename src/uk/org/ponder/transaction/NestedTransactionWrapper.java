@@ -13,6 +13,7 @@ import uk.org.ponder.util.UniversalRuntimeException;
  *  
  */
 public class NestedTransactionWrapper implements Transaction {
+  private TransactionThreadMap transmap;
   private Transaction target;
   private Transaction listener;
 
@@ -29,13 +30,13 @@ public class NestedTransactionWrapper implements Transaction {
    * of transation events. This parameter may be <code>null</code>
    */
   public static NestedTransactionWrapper beginNestedTransaction(
-      TransactionFactory mainfactory, TransactionFactory listenerfactory) {
-    NestedTransactionWrapper togo = (NestedTransactionWrapper) TransactionThreadMap
-        .getTransaction();
+      TransactionFactory mainfactory, TransactionFactory listenerfactory,
+      TransactionThreadMap transmap) {
+    NestedTransactionWrapper togo = (NestedTransactionWrapper)transmap.getTransaction();
     if (togo == null) {
       Transaction nested = mainfactory.beginTransaction();
       togo = new NestedTransactionWrapper(nested, listenerfactory == null? null : listenerfactory
-          .beginTransaction());
+          .beginTransaction(), transmap);
     }
     else {
       togo.increment();
@@ -53,10 +54,12 @@ public class NestedTransactionWrapper implements Transaction {
    * @param target
    * @param listener
    */
-  public NestedTransactionWrapper(Transaction target, Transaction listener) {
+  public NestedTransactionWrapper(Transaction target, Transaction listener,
+      TransactionThreadMap transmap) {
     this.target = target;
     this.listener = listener;
-    TransactionThreadMap.enterTransaction(this);
+    this.transmap = transmap;
+    transmap.enterTransaction(this);
   }
 
   static final int ROLLED_BACK = -1;
@@ -82,7 +85,7 @@ public class NestedTransactionWrapper implements Transaction {
     if (nestingdepth == 0) {
       try {
         target.commit();
-        TransactionThreadMap.endTransaction();
+        transmap.endTransaction();
         if (listener != null) {
           listener.commit();
         }
@@ -112,7 +115,7 @@ public class NestedTransactionWrapper implements Transaction {
       }
       finally {
         nestingdepth = ROLLED_BACK;
-        TransactionThreadMap.endTransaction();
+        transmap.endTransaction();
         if (listener != null) {
           listener.rollback();
         }

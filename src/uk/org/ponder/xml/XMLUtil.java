@@ -23,6 +23,12 @@ public class XMLUtil {
       if (c == '&') {
         togo.append("&amp;");
       }
+      else if (c == '<') {
+        togo.append("&lt");
+      }
+      else if (c == '>') {
+        togo.append("&gt;");
+      }
       else togo.append(c);
     }
     return togo.toString();

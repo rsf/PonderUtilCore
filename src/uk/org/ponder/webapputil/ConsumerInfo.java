@@ -11,6 +11,7 @@ package uk.org.ponder.webapputil;
 public class ConsumerInfo {
   public String consumerid; // also "consumerprefix"
   public String consumername;
+  /** The FULL URL for requests made to the consumer's Information Servlet */
   public String informationbase;
   public String consumertype;
   /** The URL base required
@@ -18,6 +19,11 @@ public class ConsumerInfo {
    * this request cycle. This URL includes a trailing slash.
    */
   public String urlbase;
+  /** Any other parameters required, together with urlbase, to render a 
+   * correct consumer-side URL. This begins with an ampersand and 
+   * consists of fully-encoded parameter pairs ready to be postpended
+   * to a parameter string.*/
+  public String extraparameters;
   /** The URL base required
    * for statically served resource URLs written to a remote consumer 
    * during this request cycle. Note that this may not refer to the same
