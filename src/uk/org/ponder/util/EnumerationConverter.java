@@ -30,7 +30,7 @@ public class EnumerationConverter {
   // Maps are not currently denumerable! Pending some scheme for
   // getting at their keys.
   public static boolean isDenumerable(Class c) {
-    return c != Collection.class && Collection.class.isAssignableFrom(c) && 
+    return /*c != Collection.class && */Collection.class.isAssignableFrom(c) && 
     !isMappable(c) || c.isArray();
   }
   

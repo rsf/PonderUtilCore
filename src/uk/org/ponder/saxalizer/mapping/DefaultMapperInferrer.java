@@ -3,7 +3,6 @@
  */
 package uk.org.ponder.saxalizer.mapping;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -14,6 +13,7 @@ import uk.org.ponder.saxalizer.DefaultInferrible;
 import uk.org.ponder.saxalizer.SAMSList;
 import uk.org.ponder.saxalizer.SAXAccessMethodSpec;
 import uk.org.ponder.stringutil.StringList;
+import uk.org.ponder.stringutil.StringSet;
 
 /**
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
@@ -26,6 +26,7 @@ public class DefaultMapperInferrer implements SAXalizerMapperInferrer {
   
   public DefaultMapperInferrer() {
     addCollectionType(StringList.class, String.class);
+    addCollectionType(StringSet.class, String.class);
   }
 
   public Class getContaineeType(Class collectiontype) {

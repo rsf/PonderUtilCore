@@ -176,7 +176,7 @@ public class MethodAnalyser {
     SAMSList attrMethods = new SAMSList();
     boolean defaultinferrible = context.inferrer != null
         && (context.inferrer.isDefaultInferrible(objclass)
-            || entry.defaultible);
+            || entry != null && entry.defaultible);
     // source 1: dynamic info from mapper file takes precendence
     if (entry != null) {
       // do not absorb entry if defaultinferrible, since it will be done again

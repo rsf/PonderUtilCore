@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import uk.org.ponder.util.UniversalRuntimeException;
+
 /**
  * A convenience wrapper for a type-safe list of String objects.
  * 
@@ -25,6 +27,14 @@ public class StringList extends ArrayList {
     return (String) get(i);
   }
 
+  public boolean add(Object o) {
+    if (! (o instanceof String)) {
+      throw new UniversalRuntimeException("Object " + o + " of " + o.getClass() + 
+          " added to StringList");
+    }
+    return super.add(o);
+  }
+  
   /**
    * Appends the members of the supplied list to this list.
    * 

@@ -11,6 +11,7 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+import uk.org.ponder.saxalizer.mapping.ClassNameManager;
 import uk.org.ponder.stringutil.CharWrap;
 import uk.org.ponder.util.AssertionException;
 import uk.org.ponder.util.Denumeration;
@@ -207,7 +208,8 @@ public class SAXalizer extends HandlerBase {
   // if it does not support the SAXalizableAttrs interface,
   // the attributes will be simply thrown away.
   private static void tryBlastAttrs(AttributeList attrlist,
-      SAXAccessMethodHash attrmethods, Object obj, SAXLeafParser leafparser)
+      SAXAccessMethodHash attrmethods, Object obj, SAXLeafParser leafparser,
+      boolean waspolymorphic)
       throws SAXException {
     SAXalizableExtraAttrs extraattrs = obj instanceof SAXalizableExtraAttrs?
         (SAXalizableExtraAttrs)obj : null;
@@ -219,34 +221,36 @@ public class SAXalizer extends HandlerBase {
     boolean[] expended = takesextras ? new boolean[attrlist.getLength()] : null;
 
     for (int i = 0; i < attrlist.getLength(); ++i) {
-      SAXAccessMethod setattrmethod = attrmethods.get(attrlist.getName(i));
+      String attrname = attrlist.getName(i);
+      String attrvalue = attrlist.getValue(i);
+      if (attrname.equals(ClassNameManager.TYPE_ATTRIBUTE_NAME) &&
+          waspolymorphic) continue;
+      SAXAccessMethod setattrmethod = attrmethods.get(attrname);
       if (setattrmethod != null) { // if the attribute name is mapped to an
         // access method
         // parse the attribute
         //	  System.out.println("Discovered a method capable of accepting
         // attribute" + attrlist.getName(i));
         //	  attributebuffer.clear().append(attrlist.getValue(i));
-        Object newchild = leafparser.parse(setattrmethod.clazz, attrlist
-            .getValue(i));
+        Object newchild = leafparser.parse(setattrmethod.clazz, attrvalue);
 
         setattrmethod.setChildObject(obj, newchild); // invoke iiiiiit!
         if (takesextras)
           expended[i] = true;
       }
       else if (takesextras) { // if not mapped, and it takes extras,
-        extras.put(attrlist.getName(i), attrlist.getValue(i));
+        extras.put(attrname, attrvalue);
       }
       else { // if all else fails, look for a default map member 
         // QQQQQ implement maps for main tags too.
         SAXAccessMethod defaultattrmethod = attrmethods.get("");
         if (defaultattrmethod == null) {
           throw new UniversalRuntimeException("Couldn't locate handler for attribute "
-               + attrlist.getName(i) + " in object " + obj.getClass());
+               + attrname + " in object " + obj.getClass());
         }
-        Object newchild = leafparser.parse(defaultattrmethod.clazz, attrlist
-            .getValue(i));
+        Object newchild = leafparser.parse(defaultattrmethod.clazz, attrvalue);
         Map defaultmap = EnumerationConverter.getMap(defaultattrmethod.getChildObject(obj));
-        defaultmap.put(attrlist.getName(i), newchild);
+        defaultmap.put(attrname, newchild);
       }
     } // end for each attribute presented by SAX
    
@@ -285,7 +289,7 @@ public class SAXalizer extends HandlerBase {
     pushObject(rootobj.getClass(), rootobj, null);
     // DARN, which is the correct methodanalyser?
     tryBlastAttrs(attrlist, getSaxingObject().ma.attrmethods, rootobj,
-        leafparser);
+        leafparser, false);
   }
 
   /** ******* Begin methods for the DocumentHandler interface ******* */
@@ -368,7 +372,7 @@ public class SAXalizer extends HandlerBase {
       }
     } // end if no registered method
     else {
-      String typeattrname = "type"; // QQQQQ genericise this somehow.
+      String typeattrname = ClassNameManager.TYPE_ATTRIBUTE_NAME; // QQQQQ genericise this somehow.
       if (am.ispolymorphic) {
         String attrvalue = attrlist.getValue(typeattrname);
         newobjclass = mappingcontext.classnamemanager.findClazz(attrvalue);
@@ -408,7 +412,7 @@ public class SAXalizer extends HandlerBase {
     beingparsed = getSaxingObject();
     if (!beingparsed.isleaf) {
       tryBlastAttrs(attrlist, beingparsed.ma.attrmethods, beingparsed.object,
-          leafparser);
+          leafparser, am.ispolymorphic);
     }
   }
 

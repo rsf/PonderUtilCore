@@ -13,6 +13,7 @@ import uk.org.ponder.util.EnumerationConverter;
 import uk.org.ponder.util.Logger;
 import uk.org.ponder.util.UniversalRuntimeException;
 
+import uk.org.ponder.saxalizer.mapping.ClassNameManager;
 import uk.org.ponder.stringutil.CharWrap;
 
 import uk.org.ponder.xml.XMLWriter;
@@ -181,7 +182,7 @@ public class DeSAXalizer {
     }
   }
 
-  private SerialContext writeOpeningTag(Object child, String childtagname) {
+  private SerialContext writeOpeningTag(Object child, String childtagname, SAXAccessMethod topgetmethod) {
     SerialContext top = null;
     try {
       SerialContext oldtop = getDeSAXingObject();
@@ -232,8 +233,8 @@ public class DeSAXalizer {
       else { // it is not a leaf object. writing it will require another pass
         Logger.println("Pushed", Logger.DEBUG_EXTRA_INFO);
         String polynick = mappingcontext.classnamemanager.getClassName(child.getClass());
-        if (polynick != null) {
-          appendAttr("type", polynick);
+        if (polynick != null && topgetmethod != null && topgetmethod.ispolymorphic) {
+          appendAttr(ClassNameManager.TYPE_ATTRIBUTE_NAME, polynick);
         }
         SAMIterator getattrenum = top.ma.attrmethods
             .getGetEnumeration();
@@ -305,7 +306,7 @@ public class DeSAXalizer {
       if (indentlevel == 0) {
         xmlw.writeDeclaration();
       }
-      SerialContext top = writeOpeningTag(root, roottagname);
+      SerialContext top = writeOpeningTag(root, roottagname, null);
       SAXAccessMethod topgetmethod = null;
 
       // ONE ITERATION ROUND THE FOLLOWING LOOP CORRESPONDS TO ONE COMPLETE XML
@@ -414,7 +415,7 @@ public class DeSAXalizer {
           ) {
             // Once we have got the child object, we can write the opening tag
             // name. If it is a leaf, write closing tag as well.
-            SerialContext returnedtop = writeOpeningTag(child, childtagname);
+            SerialContext returnedtop = writeOpeningTag(child, childtagname, topgetmethod);
             if (returnedtop != null)
               top = returnedtop;
             //	    prettySpaces(desaxingobjects.size(), w);

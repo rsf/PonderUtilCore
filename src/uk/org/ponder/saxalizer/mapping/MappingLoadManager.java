@@ -41,6 +41,9 @@ public class MappingLoadManager {
   public static void loadClasspathMapping(MappableXMLProvider xmlprovider, String path) {
     try {
     InputStream is = xmlprovider.getClass().getClassLoader().getResourceAsStream(path);
+    if (is == null) {
+      throw new UniversalRuntimeException("Classpath resource for path "+ path + " not found");
+    }
     xmlprovider.loadMapping(is);
     }
     catch (Throwable t) {

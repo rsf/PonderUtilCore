@@ -60,7 +60,7 @@ public class SAXalizerHelper extends HandlerBase {
 
   public Object produceSubtree(Object rootobj, Reader reader) throws SAXException {
     InputSource i = new InputSource(reader);
-    i.setSystemId("SAXalizing page");
+    //i.setSystemId("SAXalizing page");
     try {
     return produceSubtreeInternal(rootobj, i);
     }
@@ -81,7 +81,7 @@ public class SAXalizerHelper extends HandlerBase {
   // Currently closes the stream
   public Object produceSubtree(Object rootobj, InputStream stream) throws SAXException {
     InputSource i = new InputSource(stream);
-    i.setSystemId("SAXalizing page");
+    //i.setSystemId("SAXalizing page");
     try {
       return produceSubtreeInternal(rootobj, i);
     }

@@ -75,7 +75,7 @@ public class NestedTransactionWrapper implements Transaction {
     // any extra code here to deal with it.
     if (nestingdepth <= 0) {
       throw new UniversalRuntimeException(
-          "Error: attempting to inactive transaction with count "
+          "Error: attempting to commit inactive transaction with count "
               + nestingdepth);
     }
     --nestingdepth;
@@ -95,6 +95,9 @@ public class NestedTransactionWrapper implements Transaction {
   }
 
   public void rollback() {
+    if (nestingdepth == 0) {
+      throw new UniversalRuntimeException("Attempting to roll back transaction which has already been committed");
+    }
     // Having rolled back the transaction once, it is removed from the map
     // so that a fresh transaction may be started. However, further people
     // up the stack may attempt independently to roll the transaction back

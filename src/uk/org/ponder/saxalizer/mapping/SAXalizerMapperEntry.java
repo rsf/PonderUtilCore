@@ -24,7 +24,7 @@ SAXalizableAttrs {
         new SAXAccessMethodSpec("taghandler", "addTagHandler",
             SAXAccessMethodSpec.class),
         new SAXAccessMethodSpec("defaultible", "defaultible", 
-            Boolean.TYPE)};
+            Boolean.TYPE, SAXAccessMethodSpec.ACCESS_FIELD)};
   }
 
   public SAXAccessMethodSpec[] getSAXSetAttrMethods() {

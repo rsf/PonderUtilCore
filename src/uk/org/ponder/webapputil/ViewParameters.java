@@ -44,9 +44,15 @@ public abstract class ViewParameters implements Cloneable {
   public abstract void clearActionState();
   public abstract void clearParams();
 
+  /** Fill in the fields of the supplied view parameter object with data
+   * from the supplied URL (which may be null), the supplied parameter map
+   * and any other statically accessible sources of information.
+   */
   public void fromRequest(Map parameters) {
-    viewstatehandler.populateParameters(this, null, parameters);
+    viewID = viewstatehandler.extractViewID(null);
+    getFieldHash().fromMap(parameters, this);
   }
+  
   
 // Note that copying does not copy the error token! All command links
 // take the original request, and all non-command links should not share
