@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
+import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
@@ -20,6 +21,13 @@ import java.util.logging.Logger;
 public class FineFormatter extends Formatter {
 
   public static void configureLogger(Logger logger) {
+    Handler[] existing = logger.getHandlers();
+    if (existing.length > 0) {
+      System.out.println("**** removing " + existing.length + " existing handlesr");
+    }
+    for (int i = 0; i < existing.length; ++ i) {
+      logger.removeHandler(existing[i]);
+    }
     logger.setUseParentHandlers(false);
     FineFormatter finef = new FineFormatter();
     ConsoleHandler console = new ConsoleHandler();
@@ -29,7 +37,7 @@ public class FineFormatter extends Formatter {
     try {
       file = new FileHandler();
       file.setFormatter(finef);
-      logger.addHandler(file);
+      //logger.addHandler(file);
     }
     catch (Exception e) {
       e.printStackTrace();

@@ -1,26 +1,21 @@
 package uk.org.ponder.saxalizer;
 
-import java.util.TimeZone;
 import java.util.Date;
 
-import java.text.SimpleDateFormat;
 import java.text.ParseException;
 
 import uk.org.ponder.stringutil.CharWrap;
+import uk.org.ponder.stringutil.LocalSDF;
 import uk.org.ponder.util.UniversalRuntimeException;
 
 class DateParser implements SAXLeafTypeParser {
-  private SimpleDateFormat format;
+  private LocalSDF format;
   public DateParser() {
-    // this represents w3c standard dates as defined in 
-    // http://www.w3.org/TR/NOTE-datetime
-    format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-    format.setTimeZone(TimeZone.getTimeZone("UTC"));
-    format.setLenient(false);
+    format = LocalSDF.w3cformat;
     }
   public Object parse(String bulk) {
     try {
-      return format.parse(bulk); 
+      return format.get().parse(bulk); 
       }
     catch (ParseException pe) {
       throw UniversalRuntimeException.accumulate(pe, "Error parsing date");

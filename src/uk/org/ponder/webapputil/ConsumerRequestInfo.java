@@ -37,9 +37,14 @@ public class ConsumerRequestInfo {
    * response is to be framed.
    */
   public String viewtemplate;
+  /** A staleness record supplied by the consumer which is relevant for
+   * the currently processing request. Full generality would make this a list.
+   */
+  public AgentStaleness requeststaleness; 
   /** A URL returned by the system to be the target of a redirect issued
    * to the client. In fact, this will be delivered as the body of the
    * POST response, which otherwise is traditionally blank.
    */
+  
   //public String returnredirect;
 }

@@ -69,7 +69,7 @@ public class UniversalRuntimeException extends RuntimeException implements Wrapp
      if (t instanceof UniversalRuntimeException) {
        togo = (UniversalRuntimeException) t;
      }
-     if (t instanceof InvocationTargetException) {
+     else if (t instanceof InvocationTargetException) {
        InvocationTargetException ite = (InvocationTargetException)t;
        return accumulateMsg(ite.getTargetException(), category, fullmsg);
        }

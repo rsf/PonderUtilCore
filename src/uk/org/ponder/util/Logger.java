@@ -27,7 +27,7 @@ public class Logger {
   // via this commons standard logger.
   public static java.util.logging.Logger log = java.util.logging.Logger.getLogger("PonderUtilCore");
   static {
-    FineFormatter.configureLogger(log);
+    //FineFormatter.configureLogger(log);
   }
   public static final boolean debugmode = true;
   public static PrintStream logger = System.out;
