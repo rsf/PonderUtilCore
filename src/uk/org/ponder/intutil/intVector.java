@@ -57,6 +57,10 @@ public class intVector implements Comparable {
     }
   }
 
+  public int[] getBackingStore() {
+    return ints;
+  }
+  
   /** Returns the integer at the specified index.
    * @param i The index of the required integer.
    * @return The integer at index <code>i</code>

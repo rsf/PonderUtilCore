@@ -42,6 +42,13 @@ public class Algorithms {
     }
   }
   
+  public static int[] ensure_size(int[] array, int newsize) {
+    if (array != null && array.length >= newsize) {
+      return array;
+    }
+    else return new int[newsize*3 / 2];
+  }
+  
   public static int[] random_sample(int choose, int from, Random random) {
     int[] bits = new int[from];
     for (int i = 0; i < choose; ++ i) {
