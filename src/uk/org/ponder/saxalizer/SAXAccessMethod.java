@@ -113,7 +113,7 @@ public class SAXAccessMethod {
                   + " in class " + parentclazz);
         }
         Class actualreturntype = getmethod.getReturnType();
-        if (!checkEnumerable(actualreturntype)
+        if (m.clazz != null && !checkEnumerable(actualreturntype)
          && !m.clazz.isAssignableFrom(actualreturntype)) {
           throw new AssertionException("Actual return type of get method \""
               + getmethod + "\" is not assignable to advertised type of "
