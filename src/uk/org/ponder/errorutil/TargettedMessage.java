@@ -11,6 +11,7 @@ public class TargettedMessage {
   public static final String TARGET_NONE = "No specific target";
   public String message;
   public String targetid = TARGET_NONE;
+  public Class exceptionclass;
   
   public TargettedMessage(String message, String targetid) {
     this.message = message;
@@ -18,5 +19,8 @@ public class TargettedMessage {
   }
   public TargettedMessage(String message) {
     this.message = message;
+  }
+  public TargettedMessage(String message, Class exceptionclass) {
+    this.exceptionclass = exceptionclass;
   }
 }

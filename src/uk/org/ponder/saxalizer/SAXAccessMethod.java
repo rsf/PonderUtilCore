@@ -177,7 +177,7 @@ public class SAXAccessMethod {
   private boolean checkEnumerable(Class clazz) {
     ismultiple = EnumerationConverter.isEnumerable(clazz);
     if (ismultiple) {
-      isenumeration = Enumeration.class.isAssignableFrom(clazz);
+      isenumeration = !EnumerationConverter.isDenumerable(clazz);
     } 
     return ismultiple;
   }
