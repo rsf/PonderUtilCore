@@ -136,6 +136,16 @@ public class CharWrap {
     return this;
     }
 
+  /**
+   * @param i Appends the specified integer rendered as a string onto this 
+   * CharWrap.
+   * @return A reference to this CharWrap
+   */
+  public CharWrap append(int i) {
+    append(Integer.toString(i));
+    return this;
+  }
+  
   /** Clears this CharWrap by setting its size to zero.
    */
 
