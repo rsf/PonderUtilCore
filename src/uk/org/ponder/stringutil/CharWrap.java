@@ -100,11 +100,15 @@ public class CharWrap {
     return this;
     }
   
-  public CharWrap appendPad(String s, int width) {
-    append(s);
+  public static final int PAD_LEFT = 0;
+  public static final int PAD_RIGHT = 1;
+  
+  public CharWrap appendPad(String s, int width, int dir) {
+    if (dir == PAD_RIGHT) append(s);
     for (int i = width - s.length(); i > 0; --i) {
       append(' ');
     }
+    if (dir == PAD_LEFT) append(s);
     return this;
   }
   

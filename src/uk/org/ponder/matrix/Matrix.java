@@ -238,7 +238,7 @@ public class Matrix implements Cloneable {
    * default is to emulate the behaviour of Matlab to a degree by allowing 4
    * digits after the decimal point.
    */
-  public static DecimalFormat decFormat = new DecimalFormat("-0.0000");
+  public static DecimalFormat decFormat = new DecimalFormat(" 0.####;-0.####");
 
   /**
    * Construct a square matrix object, with initial values set to zero.
@@ -1456,12 +1456,12 @@ public class Matrix implements Cloneable {
 
     for (int i = 0; i < rows; i++) {
       if (rows > 10) {
-        res.append(Integer.toString(i + 1)).append(": ");
+        res.appendPad(Integer.toString(i + 1), 3, CharWrap.PAD_LEFT).append(": ");
       }
       for (int j = 0; j < cols; j++) {
         if (j != 0) {
          
-        res.append(fieldSeparator).append(decFormat.format(getMval(i, j)));
+        res.append(fieldSeparator).appendPad(decFormat.format(getMval(i, j)), 7, CharWrap.PAD_RIGHT);
         }
         else {
           res.append(decFormat.format(getMval(i, j)));
