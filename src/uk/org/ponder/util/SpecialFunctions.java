@@ -9,6 +9,9 @@ package uk.org.ponder.util;
  * The class 
  */
 public class SpecialFunctions {
+  public static int sgn(double arg) {
+    return arg > 0 ? 1 : arg < 0? -1 : 0;
+  }
   private static double[] gammalncof =
     new double[] {
       76.18009172947146,

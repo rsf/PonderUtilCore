@@ -110,6 +110,12 @@ public class Algorithms {
     return togo;
   }
   
+  public static int[] copy(int[] tocopy) {
+    int[] togo = new int[tocopy.length];
+    System.arraycopy(tocopy, 0, togo, 0, tocopy.length);
+    return togo;
+  }
+  
   /*
   public static void reverse(intIterator first, intIterator last) {
     while (true)
