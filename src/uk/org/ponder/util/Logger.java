@@ -5,10 +5,6 @@ import java.io.FileOutputStream;
 
 import java.io.StringWriter;
 import java.io.PrintWriter;
-import java.util.logging.LogManager;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import uk.org.ponder.byteutil.ByteWrap;
 
@@ -30,6 +26,9 @@ public class Logger {
   // The ponder Logger is now deprecated. All new logging should be done
   // via this commons standard logger.
   public static java.util.logging.Logger log = java.util.logging.Logger.getLogger("PonderUtilCore");
+  static {
+    FineFormatter.configureLogger(log);
+  }
   public static final boolean debugmode = true;
   public static PrintStream logger = System.out;
 
