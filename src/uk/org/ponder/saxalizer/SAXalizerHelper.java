@@ -8,8 +8,10 @@ import org.xml.sax.AttributeList;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.Parser;
 
+import uk.org.ponder.saxalizer.mapping.ClassNameManager;
 import uk.org.ponder.streamutil.StreamUtil;
 import uk.org.ponder.util.Logger;
+import uk.org.ponder.util.UniversalRuntimeException;
 
 // QQQQQ interface to be supplied in the CORRECT direction!
 
@@ -31,6 +33,7 @@ public class SAXalizerHelper extends HandlerBase {
   private Parser parserstash;
   private EntityResolverStash entityresolverstash;
   private SAXalizer saxer;
+  private ClassNameManager classnamemanager;
 
   public SAXalizerHelper() {
     this(SAXalizerMappingContext.instance());
@@ -39,6 +42,7 @@ public class SAXalizerHelper extends HandlerBase {
   public SAXalizerHelper(SAXalizerMappingContext mappingcontext) {
     saxer = new SAXalizer(mappingcontext);
     parserstash = SAXParserFactory.newParser();
+    classnamemanager = mappingcontext.classnamemanager;
   }
   
   private ParseCompleteCallback callback;
@@ -151,6 +155,16 @@ public class SAXalizerHelper extends HandlerBase {
 
   public void startElement(String tagname, AttributeList attrlist) throws SAXException {
     //    System.out.println("ELEMENT received: "+tagname);
+    if (rootobjstash == null) {
+      try {
+        Class objclass = classnamemanager.findClazz(tagname);
+        rootobjstash = objclass.newInstance();
+      }
+      catch (Throwable t) {
+        throw UniversalRuntimeException.accumulate(t, "Tag name " + tagname + 
+            " has not been mapped onto a default constructible object");
+      }
+    }
     // remember that the following production occurs asynchronously, driven
     // by events from the SAX stream.
     saxer.produceSubtree(rootobjstash, attrlist, null);

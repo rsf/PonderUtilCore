@@ -27,6 +27,7 @@ public class SAXAccessMethodSpec implements SAXalizable, SAXalizableAttrs {
   public static final String ACCESS_FIELD = "field";
   public static final String XML_TAG = "tag";
   public static final String XML_ATTRIBUTE = "attribute";
+  public static final String XML_BODY = "body";
 
   public static final String DEFAULT_ACCESS = ACCESS_METHOD;
   public static final String DEFAULT_XML_FORM = XML_TAG;

@@ -12,7 +12,7 @@ import uk.org.ponder.stringutil.CharWrap;
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
  * 
  */
-public class EighteenIDGenerator  {
+public class EighteenIDGenerator implements IDGenerator {
   SecureRandom random = new SecureRandom();
 
   public String generateID() {

@@ -33,6 +33,20 @@ public class EnumerationConverter {
     return Collection.class.isAssignableFrom(c) || c.isArray();
   }
   
+  public static boolean isMappable(Class c) {
+    // other things may be mappable too. In practice we will make
+    // reduced map interface.
+    return Map.class.isAssignableFrom(c);
+  }
+  
+  public static Map getMap(Object o) {
+    if (o instanceof Map) {
+      return (Map)o;
+    }
+    throw new AssertionException("getMap called for unmappable type " +
+        o.getClass());
+  }
+  
   public static Enumeration getEnumeration(Object o) {
     if (o instanceof Enumeration) {
       return (Enumeration)o;

@@ -1,7 +1,6 @@
 package uk.org.ponder.saxalizer;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 
@@ -24,7 +23,27 @@ import uk.org.ponder.util.UniversalRuntimeException;
 public class MethodAnalyser {
   public SAXAccessMethodHash tagmethods;
   public SAXAccessMethodHash attrmethods;
-
+  public SAXAccessMethod bodymethod;
+ 
+  public SAXAccessMethod[] allgetters;
+  
+  public void assembleGetters() {
+    ArrayList accumulate = new ArrayList();
+    for (SAMIterator tagget = tagmethods.getGetEnumeration(); tagget.valid(); tagget.next()) {
+      accumulate.add(tagget.get());
+    }
+    for (SAMIterator tagget = attrmethods.getGetEnumeration(); tagget.valid(); tagget.next()) {
+      accumulate.add(tagget.get());
+    }
+    if (bodymethod != null) {
+      accumulate.add(allgetters);
+    }
+    allgetters = new SAXAccessMethod[accumulate.size()];
+    for (int i = 0; i < accumulate.size(); ++ i) {
+      allgetters[i] = (SAXAccessMethod)accumulate.get(i);
+    }
+  }
+  
   public SAXAccessMethod getAccessMethod(String tagname) {
     SAXAccessMethod method = tagmethods.get(tagname);
     if (method == null) {
@@ -32,23 +51,26 @@ public class MethodAnalyser {
     }
     return method;
   }
-  
+
   /**
    * Given an object to be serialised/deserialised, return a MethodAnalyser
-   * object containing a hash of Method and Field accessors. The <code>context</code>
-   * stores a hash of these analysers so they are only ever computed once
-   * per context per object class analysed.
-   * @param o Either an object instance to be investigated, or an object
-   * class. If a class is specified and no analyser is registered, a new
-   * object will be created using newInstance() to be queried.
+   * object containing a hash of Method and Field accessors. The
+   * <code>context</code> stores a hash of these analysers so they are only
+   * ever computed once per context per object class analysed.
+   * 
+   * @param o
+   *          Either an object instance to be investigated, or an object class.
+   *          If a class is specified and no analyser is registered, a new
+   *          object will be created using newInstance() to be queried.
    */
 
-  public static MethodAnalyser getMethodAnalyser(Object o, SAXalizerMappingContext context
-      ) {
+  public static MethodAnalyser getMethodAnalyser(Object o,
+      SAXalizerMappingContext context) {
     if (o == null)
       return null;
-    Class objclass = o instanceof Class? (Class) o: o.getClass();
-    
+    Class objclass = o instanceof Class ? (Class) o
+        : o.getClass();
+
     MethodAnalyser stored = context.getAnalyser(objclass);
     if (stored != null)
       return stored;
@@ -60,18 +82,23 @@ public class MethodAnalyser {
     return stored;
   }
 
-  private void condenseMethods(SAMSList existingmethods, Enumeration newmethods, String xmlform) {
-    while(newmethods.hasMoreElements()) {
-      SAXAccessMethodSpec nextentry = (SAXAccessMethodSpec)newmethods.nextElement();
+  private void condenseMethods(SAMSList existingmethods,
+      Enumeration newmethods, String xmlform) {
+    while (newmethods.hasMoreElements()) {
+      SAXAccessMethodSpec nextentry = (SAXAccessMethodSpec) newmethods
+          .nextElement();
       if (nextentry.xmlform.equals(xmlform)) {
-        SAXAccessMethodSpec previous = existingmethods.byXMLName(nextentry.xmlname);
+        SAXAccessMethodSpec previous = existingmethods
+            .byXMLName(nextentry.xmlname);
         if (previous != null) {
           SAXAccessMethodSpec setmethod = null;
-          if (previous.setmethodname != null) setmethod = previous;            
+          if (previous.setmethodname != null)
+            setmethod = previous;
           if (nextentry.setmethodname != null) {
             if (setmethod != null) {
-              throw new UniversalRuntimeException("Duplicate set method specification for tag "+
-                  previous.xmlname + " with java type "+ previous.clazz);
+              throw new UniversalRuntimeException(
+                  "Duplicate set method specification for tag "
+                      + previous.xmlname + " with java type " + previous.clazz);
             }
             setmethod = nextentry;
           }
@@ -87,42 +114,79 @@ public class MethodAnalyser {
       }
     }
   }
-  
-  private void absorbSAMSArray(SAXAccessMethodSpec[] setmethods, SAMSList tagMethods, SAMSList attrMethods) {
-    condenseMethods(tagMethods, new ArrayEnumeration(setmethods), SAXAccessMethodSpec.XML_TAG);
-    condenseMethods(attrMethods, new ArrayEnumeration(setmethods), SAXAccessMethodSpec.XML_ATTRIBUTE);
+
+  SAXAccessMethodSpec bodymethodspec = null;
+  public void checkBodyMethodSpec(SAXAccessMethodSpec bodymethodspec) {
+    if (bodymethodspec.xmlform.equals(SAXAccessMethodSpec.XML_BODY)) {
+    if (this.bodymethodspec != null) {
+      throw new UniversalRuntimeException("Duplicate body method spec " + bodymethodspec);
+    }
+    this.bodymethodspec = bodymethodspec;
+    }
   }
-  
-  private void absorbSAMSList(SAXalizerMapperEntry entry, SAMSList tagMethods, SAMSList attrMethods) {
-    condenseMethods(tagMethods, Collections.enumeration(entry.getSAMSList()), SAXAccessMethodSpec.XML_TAG);
-    condenseMethods(attrMethods, Collections.enumeration(entry.getSAMSList()), SAXAccessMethodSpec.XML_ATTRIBUTE);
+
+  // Note that these two methods have side-effect on bodymethodspec
+  private void absorbSAMSArray(SAXAccessMethodSpec[] setmethods,
+      SAMSList tagMethods, SAMSList attrMethods) {
+    condenseMethods(tagMethods, new ArrayEnumeration(setmethods),
+        SAXAccessMethodSpec.XML_TAG);
+    condenseMethods(attrMethods, new ArrayEnumeration(setmethods),
+        SAXAccessMethodSpec.XML_ATTRIBUTE);
+    if (setmethods != null) {
+    for (int i = 0; i < setmethods.length; ++ i) {
+      checkBodyMethodSpec(setmethods[i]);
+    }
+    }
   }
-  /** This constructor locates SAXAccessMethodSpec objects for objects of the 
+
+  private void absorbSAMSList(SAXalizerMapperEntry entry, SAMSList tagMethods,
+      SAMSList attrMethods) {
+    condenseMethods(tagMethods, Collections.enumeration(entry.getSAMSList()),
+        SAXAccessMethodSpec.XML_TAG);
+    condenseMethods(attrMethods, Collections.enumeration(entry.getSAMSList()),
+        SAXAccessMethodSpec.XML_ATTRIBUTE);
+    for (int i = 0; i < entry.size(); ++ i) {
+      checkBodyMethodSpec(entry.specAt(i));
+    }
+  }
+
+  /**
+   * This constructor locates SAXAccessMethodSpec objects for objects of the
    * supplied class from all available static and dynamic sources, sorts them
-   * into tag and attribute methods while condensing together set and get 
+   * into tag and attribute methods while condensing together set and get
    * specifications into single entries, and returns a MethodAnalyser object
    * with the specs resolved into Method and Field accessors ready for use.
-   * @param objclass The class of the object to be inspected.
-   * @param o Either the object to be inspected for accessors, or 
-   * its class in the case construction is to be deferred until the last
-   * possible moment (it implements SAXalizable &c) 
-   * @param entry A SAXalizerMapperEntry object already determined from dynamic
-   * sources.
-   * @param context The global mapping context.
+   * 
+   * @param objclass
+   *          The class of the object to be inspected.
+   * @param o
+   *          Either the object to be inspected for accessors, or its class in
+   *          the case construction is to be deferred until the last possible
+   *          moment (it implements SAXalizable &c)
+   * @param entry
+   *          A SAXalizerMapperEntry object already determined from dynamic
+   *          sources.
+   * @param context
+   *          The global mapping context.
    */
-  MethodAnalyser(Class objclass, Object obj, SAXalizerMapperEntry entry, SAXalizerMappingContext context) {
+  MethodAnalyser(Class objclass, Object obj, SAXalizerMapperEntry entry,
+      SAXalizerMappingContext context) {
+    bodymethodspec = null;
     SAMSList tagMethods = new SAMSList();
     SAMSList attrMethods = new SAMSList();
-    boolean defaultinferrible = context.inferrer != null && context.inferrer.isDefaultInferrible(objclass);
+    boolean defaultinferrible = context.inferrer != null
+        && context.inferrer.isDefaultInferrible(objclass);
     // source 1: dynamic info from mapper file takes precendence
     if (entry != null) {
-      // do not absorb entry if defaultinferrible, since it will be done again later.
+      // do not absorb entry if defaultinferrible, since it will be done again
+      // later.
       if (!defaultinferrible) {
         absorbSAMSList(entry, tagMethods, attrMethods);
       }
     }
     else {
-      Object o = obj instanceof Class? ClassGetter.construct((Class)obj) : obj;
+      Object o = obj instanceof Class ? ClassGetter.construct((Class) obj)
+          : obj;
       // source 2: static info from interfaces is second choice
       //    System.out.println("MethodAnalyser called for object "+o);
       if (o instanceof SAXalizable) {
@@ -136,7 +200,8 @@ public class MethodAnalyser {
         SAXAccessMethodSpec[] setAttrMethods = sao.getSAXSetAttrMethods();
         if (setAttrMethods != null) {
           Logger.println("MethodAnalyser found " + setAttrMethods.length
-              + " setattr methods for " + o.getClass(), Logger.DEBUG_INFORMATIONAL);
+              + " setattr methods for " + o.getClass(),
+              Logger.DEBUG_INFORMATIONAL);
         }
         SAXAccessMethodSpec.convertToAttrSpec(setAttrMethods);
         SAXAccessMethodSpec.convertToSetSpec(setAttrMethods);
@@ -146,7 +211,7 @@ public class MethodAnalyser {
         // construct array of SAXAccessMethods for DeSAXalizable objects
         DeSAXalizable doz = (DeSAXalizable) o;
         SAXAccessMethodSpec[] getMethods = doz.getSAXGetMethods();
-        absorbSAMSArray(getMethods, tagMethods, attrMethods); 
+        absorbSAMSArray(getMethods, tagMethods, attrMethods);
       }
       if (o instanceof DeSAXalizableAttrs) { // now do the same for attributes
         DeSAXalizableAttrs sao = (DeSAXalizableAttrs) o;
@@ -156,19 +221,27 @@ public class MethodAnalyser {
           Logger.println("MethodAnalyser found " + getAttrMethods.length
               + " getattr methods for " + o, Logger.DEBUG_INFORMATIONAL);
         }
-        absorbSAMSArray(getAttrMethods, tagMethods, attrMethods); 
+        absorbSAMSArray(getAttrMethods, tagMethods, attrMethods);
       }
     }
     // Source 3: if no accessors have so far been discovered, try to infer some
     // using an inferrer if one is set.
-    if (context.inferrer != null && (tagMethods.size() == 0 && attrMethods.size() == 0)
-         || defaultinferrible) {
+    if (context.inferrer != null
+        && (tagMethods.size() == 0 && attrMethods.size() == 0)
+        || defaultinferrible) {
       entry = context.inferrer.inferEntry(objclass, entry);
       absorbSAMSList(entry, tagMethods, attrMethods);
     }
-  
+
     tagmethods = new SAXAccessMethodHash(tagMethods, objclass);
     attrmethods = new SAXAccessMethodHash(attrMethods, objclass);
+    if (bodymethodspec != null) {
+      bodymethod = new SAXAccessMethod(bodymethodspec, objclass);
+    }
+    bodymethodspec = null;
+    assembleGetters();
   }
+
   
+
 }

@@ -14,6 +14,7 @@ import uk.org.ponder.arrayutil.ArrayUtil;
  * The class Algorithms incorporates several useful algorithms culled from the STL.
  */
 public class Algorithms {
+ 
   // QQQQQ crappy n^2 implementation until can think of some way to run
   // an intpair sort in Java.
   public static int[] invert_permutation(int[] indices, int maximum) {
@@ -47,6 +48,13 @@ public class Algorithms {
       return array;
     }
     else return new int[newsize*3 / 2];
+  }
+ 
+  public static boolean[] ensure_size(boolean[] array, int newsize) {
+    if (array != null && array.length >= newsize) {
+      return array;
+    }
+    else return new boolean[newsize*3 / 2];
   }
   
   public static int[] random_sample(int choose, int from, Random random) {

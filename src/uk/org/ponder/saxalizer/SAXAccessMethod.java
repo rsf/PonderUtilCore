@@ -23,7 +23,8 @@ public class SAXAccessMethod {
   // one.
   Method getmethod; // The actual Method object to be invoked
   Method setmethod;
-  Class clazz; // The return type (or argument type) of the method
+  Class clazz; // The type of subobject (or superclass thereof) handled by this method
+  Class accessclazz; // The actual (declared) return or field type in code (may be container)
   Class parentclazz; // The class that this is a method of, for convenience.
   String tagname;
   boolean ispolymorphic; // Uses the new "tag*" polymorphic nickname scheme
@@ -34,7 +35,7 @@ public class SAXAccessMethod {
 
   private SAXAccessMethod(Class parentclazz, String tagname) {
     this.parentclazz = parentclazz;
-    if (tagname.endsWith("*")) {
+    if (tagname != null && tagname.endsWith("*")) {
       tagname = tagname.substring(0, tagname.length() - 1);
       ispolymorphic = true;
     }
@@ -98,9 +99,9 @@ public class SAXAccessMethod {
                 + parentclazz);
       }
       // record the specified class name if there was one.
-      Class fieldclazz = field.getType();
-      clazz = m.clazz == null? fieldclazz : m.clazz;
-      checkEnumerable(fieldclazz);
+      accessclazz = field.getType();
+      clazz = m.clazz == null? accessclazz : m.clazz;
+      checkEnumerable(accessclazz);
     }
     else {
       if (m.getmethodname != null) {
@@ -112,9 +113,9 @@ public class SAXAccessMethod {
               "Unable to find GET method with name " + m.getmethodname
                   + " in class " + parentclazz);
         }
-        Class actualreturntype = getmethod.getReturnType();
-        if (!checkEnumerable(actualreturntype) && m.clazz != null 
-         && !m.clazz.isAssignableFrom(actualreturntype)) {
+        accessclazz = getmethod.getReturnType();
+        if (!checkEnumerable(accessclazz) && m.clazz != null 
+         && !m.clazz.isAssignableFrom(accessclazz)) {
           throw new AssertionException("Actual return type of get method \""
               + getmethod + "\" is not assignable to advertised type of "
               + m.clazz);
@@ -133,8 +134,7 @@ public class SAXAccessMethod {
           }
           m.clazz = setmethod.getParameterTypes()[0];
         }
-
-        else {
+        else { // the spec specifies the actual object type
           try {
             setmethod = parentclazz.getMethod(m.setmethodname,
                 new Class[] { m.clazz });
@@ -147,7 +147,24 @@ public class SAXAccessMethod {
           }
         }
         clazz = m.clazz;
+        if (accessclazz == null) {
+          // avoid overwriting any container type discovered from field or get
+          accessclazz = clazz;
+        }
+      } // end if there is a set method
+      // if there is only a get method (as for maps) the actual type will not
+      // be determined yet
+    } // end if not a fieldname
+    if (tagname != null && tagname.equals("")) {
+      if (!canGet()) {
+        throw new UniversalRuntimeException("No GET scheme supplied for mapped default tag");
       }
+      if (!EnumerationConverter.isMappable(accessclazz)) {
+        throw new UniversalRuntimeException("Default mapped type does not map onto a mappable type");
+      }
+      // unless specified by now, remain mapped values as strings.
+      // QQQQQ make sure defaultinferring happens before now.
+      clazz = m.clazz == null? String.class : m.clazz;
     }
   }
 

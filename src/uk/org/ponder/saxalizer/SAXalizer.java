@@ -16,6 +16,7 @@ import uk.org.ponder.util.AssertionException;
 import uk.org.ponder.util.Denumeration;
 import uk.org.ponder.util.EnumerationConverter;
 import uk.org.ponder.util.Logger;
+import uk.org.ponder.util.UniversalRuntimeException;
 
 /**
  * The SAXalizer class is used to deserialize a tree of XML tags into a tree of
@@ -235,6 +236,18 @@ public class SAXalizer extends HandlerBase {
       else if (takesextras) { // if not mapped, and it takes extras,
         extras.put(attrlist.getName(i), attrlist.getValue(i));
       }
+      else { // if all else fails, look for a default map member 
+        // QQQQQ implement maps for main tags too.
+        SAXAccessMethod defaultattrmethod = attrmethods.get("");
+        if (defaultattrmethod == null) {
+          throw new UniversalRuntimeException("Couldn't locate handler for attribute "
+               + attrlist.getName(i) + " in object " + obj.getClass());
+        }
+        Object newchild = leafparser.parse(defaultattrmethod.clazz, attrlist
+            .getValue(i));
+        Map defaultmap = EnumerationConverter.getMap(defaultattrmethod.getChildObject(obj));
+        defaultmap.put(attrlist.getName(i), newchild);
+      }
     } // end for each attribute presented by SAX
    
   } // end tryBlast Attrs
@@ -355,8 +368,10 @@ public class SAXalizer extends HandlerBase {
       }
     } // end if no registered method
     else {
+      String typeattrname = "type"; // QQQQQ genericise this somehow.
       if (am.ispolymorphic) {
-        newobjclass = mappingcontext.polymanager.findClazz(attrlist);
+        String attrvalue = attrlist.getValue(typeattrname);
+        newobjclass = mappingcontext.classnamemanager.findClazz(attrvalue);
         if (newobjclass == null) {
           throw new SAXParseException("Polymorphic tag " + tagname
               + " does not have type specified using \"type\" attribute",
@@ -434,8 +449,11 @@ public class SAXalizer extends HandlerBase {
       throw new SAXParseException("Unexpected closing tag for " + tagname
           + " seen when there was no active object being parsed", locator);
     }
-    // Our task is now to deliver the object to its parent
+    // Our task is now to deliver the object to its parent. Firstly take
+    // care of three special cases before finishing up.
     ParseContext beingparsed = getSaxingObject();
+    SAXAccessMethod bodymethod = beingparsed.ma == null? null : beingparsed.ma.bodymethod;
+    
     SAXAccessMethod parentsetter = beingparsed.parentsetter;
     // Test the special cases first, i) leaf node
     if (beingparsed.isleaf) {
@@ -454,6 +472,12 @@ public class SAXalizer extends HandlerBase {
       GenericSAX object = (GenericSAX) beingparsed.object;
       object.setData(beingparsed.textsofar.toString());
       object.setTag(tagname);
+    }
+    else if (bodymethod != null) {
+      // special case iii) A body method is registered to receive text 
+      String body = beingparsed.textsofar.toString();
+      Object newchild = leafparser.parse(bodymethod.clazz, body);
+      bodymethod.setChildObject(beingparsed.object, newchild);
     }
     saxingobjects.pop(); // remove the completed object from the stack.
 

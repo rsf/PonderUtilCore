@@ -34,7 +34,7 @@ public class DeSAXalizer {
     Object object; // The object being serialised
     MethodAnalyser ma;
     // the current index through the get methods
-    SAXAccessMethodHash.SAMIterator getenum;
+    SAMIterator getenum;
     // enumeration for a vector tag, while enum is active, currentgetindex
     // progress
     // is suspended. enum will be set to null when it expires.
@@ -157,7 +157,7 @@ public class DeSAXalizer {
   }
 
   private void renderAttrs(Object torender,
-      SAXAccessMethodHash.SAMIterator getattrenum) throws IOException {
+      SAMIterator getattrenum) throws IOException {
     for (; getattrenum.valid(); getattrenum.next()) {
       SAXAccessMethod getattr = getattrenum.get();
       Object attrvalue = getattr.getChildObject(torender);
@@ -231,11 +231,11 @@ public class DeSAXalizer {
       }
       else { // it is not a leaf object. writing it will require another pass
         Logger.println("Pushed", Logger.DEBUG_EXTRA_INFO);
-        String polynick = mappingcontext.polymanager.getNick(child.getClass());
+        String polynick = mappingcontext.classnamemanager.getClassName(child.getClass());
         if (polynick != null) {
           appendAttr("type", polynick);
         }
-        SAXAccessMethodHash.SAMIterator getattrenum = top.ma.attrmethods
+        SAMIterator getattrenum = top.ma.attrmethods
             .getGetEnumeration();
         if (getattrenum.valid() || child instanceof SAXalizableExtraAttrs) {
           Logger.println("Child has attributes", Logger.DEBUG_SUBATOMIC);
