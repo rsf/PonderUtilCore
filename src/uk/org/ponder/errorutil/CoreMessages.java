@@ -27,4 +27,5 @@ public class CoreMessages {
   public static final String UNAUTHED_POST = "UnauthedPost";
   public static final String INCORRECT_MAIL_TARGET = "IncorrectMailTarget";
   public static final String BAD_INCOMING_MAIL = "BadIncomingMail";
+  public static final String MAIL_MESSAGE_NOTIFICATION = "MailMessageNotification";
 }

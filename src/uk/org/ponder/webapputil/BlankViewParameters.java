@@ -4,6 +4,7 @@
 package uk.org.ponder.jsfutil;
 
 import uk.org.ponder.util.FieldHash;
+import uk.org.ponder.webapputil.ViewParameters;
 
 /**
  * A blank ViewParameters object for those who want to use only 
