@@ -11,13 +11,13 @@ public class ArrayEnumeration implements Enumeration {
   private int limit;
 
   /** Constructs an Enumeration from the specified array.
-   * @param array The array to be converted into an enumeration.
+   * @param array The array to be converted into an enumeration, which may be <code>null</code>
    */
 
   public ArrayEnumeration(Object[] array) {
     this.array = array;
     this.index = 0;
-    this.limit = array.length;
+    this.limit = array == null? 0 : array.length;
     }
 
   /** Constructs an Enumeration from a portion of the supplied array.

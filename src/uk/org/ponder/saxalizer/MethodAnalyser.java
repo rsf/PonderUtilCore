@@ -25,13 +25,14 @@ class MethodAnalyser {
   public SAXAccessMethodHash attrmethods;
 
   /**
-   * This class analyses a supplied object by calling its getSAXxxxxMethods() to
-   * return the names of methods suitable for setting and getting subobjects via
-   * the SAXalizable and SAXalizableAttrs methods.
+   * Given an object to be serialised/deserialised, return a MethodAnalyser
+   * object containing a hash of Method and Field accessors. The <code>context</code>
+   * stores a hash of these analysers so they are only ever computed once
+   * per context per object class analysed.
    */
 
-  public static MethodAnalyser getMethodAnalyser(Object o,
-      SAXalizerMappingContext context) {
+  public static MethodAnalyser getMethodAnalyser(Object o, SAXalizerMappingContext context
+      ) {
     if (o == null)
       return null;
     Class objclass = o.getClass();
@@ -40,13 +41,13 @@ class MethodAnalyser {
       return stored;
     else {
       SAXalizerMapperEntry entry = context.mapper.byClass(objclass);
-      stored = new MethodAnalyser(o, entry);
+      stored = new MethodAnalyser(o, entry, context);
       context.putAnalyser(objclass, stored);
     }
     return stored;
   }
 
-  void condenseMethods(SAMSList existingmethods, Enumeration newmethods, String xmlform) {
+  private void condenseMethods(SAMSList existingmethods, Enumeration newmethods, String xmlform) {
     while(newmethods.hasMoreElements()) {
       SAXAccessMethodSpec nextentry = (SAXAccessMethodSpec)newmethods.nextElement();
       if (nextentry.xmlform.equals(xmlform)) {
@@ -74,43 +75,58 @@ class MethodAnalyser {
     }
   }
   
-  private void absorb(SAXAccessMethodSpec[] setmethods, SAMSList tagMethods, SAMSList attrMethods) {
+  private void absorbSAMSArray(SAXAccessMethodSpec[] setmethods, SAMSList tagMethods, SAMSList attrMethods) {
     condenseMethods(tagMethods, new ArrayEnumeration(setmethods), SAXAccessMethodSpec.XML_TAG);
     condenseMethods(attrMethods, new ArrayEnumeration(setmethods), SAXAccessMethodSpec.XML_ATTRIBUTE);
   }
   
-  MethodAnalyser(Object o, SAXalizerMapperEntry entry) {
+  private void absorbSAMSList(SAXalizerMapperEntry entry, SAMSList tagMethods, SAMSList attrMethods) {
+    condenseMethods(tagMethods, Collections.enumeration(entry.getSAMSList()), SAXAccessMethodSpec.XML_TAG);
+    condenseMethods(attrMethods, Collections.enumeration(entry.getSAMSList()), SAXAccessMethodSpec.XML_ATTRIBUTE);
+  }
+  /** This constructor locates SAXAccessMethodSpec objects for objects of the 
+   * supplied class from all available static and dynamic sources, sorts them
+   * into tag and attribute methods while condensing together set and get 
+   * specifications into single entries, and returns a MethodAnalyser object
+   * with the specs resolved into Method and Field accessors ready for use.
+   * @param o The object to be inspected for accessors. 
+   * @param entry A SAXalizerMapperEntry object already determined from dynamic
+   * sources.
+   * @param context The global mapping context.
+   */
+  MethodAnalyser(Object o, SAXalizerMapperEntry entry, SAXalizerMappingContext context) {
     SAMSList tagMethods = new SAMSList();
     SAMSList attrMethods = new SAMSList();
+    // source 1: dynamic info from mapper file takes precendence
     if (entry != null) {
       // dynamic info takes priority over static info
-      condenseMethods(tagMethods, Collections.enumeration(entry.getSAMSList()), SAXAccessMethodSpec.XML_TAG);
-      condenseMethods(attrMethods, Collections.enumeration(entry.getSAMSList()), SAXAccessMethodSpec.XML_ATTRIBUTE);
+      absorbSAMSList(entry, tagMethods, attrMethods);
     }
     else {
+      // source 2: static info from interfaces is second choice
       //    System.out.println("MethodAnalyser called for object "+o);
       if (o instanceof SAXalizable) {
         SAXalizable so = (SAXalizable) o;
         SAXAccessMethodSpec[] setMethods = so.getSAXSetMethods();
         SAXAccessMethodSpec.convertToSetSpec(setMethods);
-        absorb(setMethods, tagMethods, attrMethods);
+        absorbSAMSArray(setMethods, tagMethods, attrMethods);
       }
       if (o instanceof SAXalizableAttrs) { // now do the same for attributes
         SAXalizableAttrs sao = (SAXalizableAttrs) o;
         SAXAccessMethodSpec[] setAttrMethods = sao.getSAXSetAttrMethods();
         if (setAttrMethods != null) {
           Logger.println("MethodAnalyser found " + setAttrMethods.length
-              + " setattr methods for " + o, Logger.DEBUG_INFORMATIONAL);
+              + " setattr methods for " + o.getClass(), Logger.DEBUG_INFORMATIONAL);
         }
         SAXAccessMethodSpec.convertToAttrSpec(setAttrMethods);
         SAXAccessMethodSpec.convertToSetSpec(setAttrMethods);
-        absorb(setAttrMethods, tagMethods, attrMethods);
+        absorbSAMSArray(setAttrMethods, tagMethods, attrMethods);
       }
       if (o instanceof DeSAXalizable) {
         // construct array of SAXAccessMethods for DeSAXalizable objects
         DeSAXalizable doz = (DeSAXalizable) o;
         SAXAccessMethodSpec[] getMethods = doz.getSAXGetMethods();
-        absorb(getMethods, tagMethods, attrMethods); 
+        absorbSAMSArray(getMethods, tagMethods, attrMethods); 
       }
       if (o instanceof DeSAXalizableAttrs) { // now do the same for attributes
         DeSAXalizableAttrs sao = (DeSAXalizableAttrs) o;
@@ -120,11 +136,17 @@ class MethodAnalyser {
           Logger.println("MethodAnalyser found " + getAttrMethods.length
               + " getattr methods for " + o, Logger.DEBUG_INFORMATIONAL);
         }
-        absorb(getAttrMethods, tagMethods, attrMethods); 
+        absorbSAMSArray(getAttrMethods, tagMethods, attrMethods); 
       }
     }
-   
     Class objclass = o.getClass();
+    // Source 3: if no accessors have so far been discovered, try to infer some
+    // using an inferrer if one is set.
+    if (tagMethods.size() == 0 && attrMethods.size() == 0 && context.inferrer != null) {
+      entry = context.inferrer.inferEntry(objclass);
+      absorbSAMSList(entry, tagMethods, attrMethods);
+    }
+  
     tagmethods = new SAXAccessMethodHash(tagMethods, objclass);
     attrmethods = new SAXAccessMethodHash(attrMethods, objclass);
   }

@@ -323,14 +323,16 @@ public class XMLAccessFile {
       }
     }
 
+  DeSAXalizer desaxalizer = new DeSAXalizer();
+  
   private void writeManifest() throws IOException {
     // can only begin writing at current pos
     RandomAccessOutputStream out = new RandomAccessOutputStream(rafwriter);
     long manifestoffset = rafwriter.getFilePointer();
     // perhaps need a more efficient way of setting up DeSAXalizing than this
-    DeSAXalizer.serializeSubtree(manifest, MANIFEST_TAG, out, 1); // indent param!
+    desaxalizer.serializeSubtree(manifest, MANIFEST_TAG, out, 1); // indent param!
     manifestpointer.setManifestOffsetLong(manifestoffset);
-    DeSAXalizer.serializeSubtree(manifestpointer, XMLAccessManifestPointer.MANIFEST_POINTER_TAG,
+    desaxalizer.serializeSubtree(manifestpointer, XMLAccessManifestPointer.MANIFEST_POINTER_TAG,
 				 out, 1);
     out.write('<'); out.write ('/');
     out.write(roottagbytes);

@@ -177,7 +177,7 @@ public class SAXalizer extends HandlerBase {
           : "not") + " a generic");
     }
     MethodAnalyser ma = isleaf ? null
-        : MethodAnalyser.getMethodAnalyser(topush, mappingcontext);
+        : MethodAnalyser.getMethodAnalyser(instance, mappingcontext);
     saxingobjects.push(new ParseContext(instance, ma, isgeneric, isleaf,
         parentsetter));
   }
@@ -190,7 +190,6 @@ public class SAXalizer extends HandlerBase {
   // the attributes will be simply thrown away.
   private static void tryBlastAttrs(AttributeList attrlist, SAXAccessMethodHash attrmethods,
       Object obj, SAXLeafParser leafparser) throws SAXException {
-    if (obj instanceof SAXalizableAttrs) {
       //      System.out.println("tryBlastAttrs determined that target can accept
       // attributes");
       boolean takesextras = obj instanceof SAXalizableExtraAttrs;
@@ -229,7 +228,6 @@ public class SAXalizer extends HandlerBase {
         SAXalizableExtraAttrs sa = (SAXalizableExtraAttrs) obj;
         sa.setExtraAttributes(xmlah);
       } // end if the parent object takes extra attributes
-    } // end if the parent object takes attributes at all
   } // end tryBlast Attrs
 
   SAXalizerCallback callback;
@@ -385,8 +383,9 @@ public class SAXalizer extends HandlerBase {
       }
 
     pushObject(newobjclass, oldobj, am);
-    if (oldobj != null) {
-      tryBlastAttrs(attrlist, beingparsed.ma.attrmethods, oldobj, leafparser);
+    beingparsed = getSaxingObject();
+    if (!beingparsed.isleaf) {
+      tryBlastAttrs(attrlist, beingparsed.ma.attrmethods, beingparsed.object, leafparser);
     }
   }
 

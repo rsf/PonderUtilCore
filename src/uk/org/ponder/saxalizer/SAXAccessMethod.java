@@ -12,20 +12,23 @@ import uk.org.ponder.util.UniversalRuntimeException;
  * SAXAccessMethodSpec that the SAXalizer has resolved to an actual method by
  * means of reflection. For a set method, when the correct XML closing tag is
  * seen, the method will be invoked with the just-constructed tag as argument.
+ * All reflection is done during the construction of this class.
  */
 public class SAXAccessMethod {
   public static final Class[] emptyclazz = {};
   public static final Object[] emptyobj = {};
 
   Field field; // The Field object corresponding to the child field, if there is
-               // one.
+  // one.
   Method getmethod; // The actual Method object to be invoked
   Method setmethod;
   Class clazz; // The return type (or argument type) of the method
   Class parentclazz; // The class that this is a method of, for convenience.
   String tagname;
   boolean ispolymorphic; // Uses the new "tag*" polymorphic nickname scheme
-  boolean ismultiple; // A collection rather than a single object is being addressed.
+  boolean ismultiple; // A collection rather than a single object is being
+
+  // addressed.
 
   private SAXAccessMethod(Class parentclazz, String tagname) {
     this.parentclazz = parentclazz;
@@ -36,22 +39,40 @@ public class SAXAccessMethod {
     this.tagname = tagname;
   }
 
+  // returns any (one-argument) method with the required name in the specified
+  // class,
+  // regardless of type.
+  private static Method findSetMethod(Class tosearch, String methodname) {
+    Method[] methods = tosearch.getMethods();
+    for (int i = 0; i < methods.length; ++i) {
+      Method thismethod = methods[i];
+      if (thismethod.getName().equals(methodname)
+          && thismethod.getParameterTypes().length == 1
+          && thismethod.getReturnType().equals(Void.TYPE)) {
+        return thismethod;
+      }
+    }
+    return null;
+  }
+
   // TODO: This is where we are now.
-  // The problem is that for enumerable types, get and set methods have different
+  // The problem is that for enumerable types, get and set methods have
+  // different
   // types, and they are provided separately in SAXalizable and DeSAXalizable.
-  // Secondly, specs provided from MAPPING file MAY have the class specification missing,
+  // Secondly, specs provided from MAPPING file MAY have the class specification
+  // missing,
   // in the hopes that it could be determined HERE now we actually have the
-  // relevant method in our hands. 
+  // relevant method in our hands.
   // If a thing is an enumeration, we still insisted it had a typesafe
   // SET method which would tell us what type would be provided to ADD.
   // NOW, of course, there may be NO information in the class from
-  // reflection, and the type of the object would have to be 
+  // reflection, and the type of the object would have to be
   // specified in the MAPPING file.
   // First we provided a global "*" which insisted that subtags
   // were named after the relevant java class.
   // Then we provided "tag*" which indicated that a nickname
   // was supplied in a "type=nickname" attribute.
-  
+
   // A) the parent method may fuse these two into a single get/set
   // spec before delivery, if their tag matches.
   // B) What the hell to do about Enumeration tags!
@@ -61,17 +82,31 @@ public class SAXAccessMethod {
   // safely put in there.
   // the relevant call to SET is in SAXalizer.endElement.
   // it tries to look up the tag by name
-  
-  public SAXAccessMethod(SAXAccessMethodSpec m, Class parentclazz)  {
+
+  public SAXAccessMethod(SAXAccessMethodSpec m, Class parentclazz) {
     this(parentclazz, m.xmlname);
-    try {
+
     if (m.fieldname != null) {
-      field = parentclazz.getField(m.fieldname);
-      clazz = field.getClass();
+      try {
+        field = parentclazz.getField(m.fieldname);
+      }
+      catch (Throwable t) {
+        throw UniversalRuntimeException.accumulate(t,
+            "Unable to find field with name " + m.fieldname + " in class "
+                + parentclazz);
+      }
+      clazz = field.getType();
     }
     else {
       if (m.getmethodname != null) {
-        getmethod = parentclazz.getMethod(m.getmethodname, emptyclazz);
+        try {
+          getmethod = parentclazz.getMethod(m.getmethodname, emptyclazz);
+        }
+        catch (Throwable t) {
+          throw UniversalRuntimeException.accumulate(t,
+              "Unable to find GET method with name " + m.getmethodname
+                  + " in class " + parentclazz);
+        }
         Class actualreturntype = getmethod.getReturnType();
         if (EnumerationConverter.isEnumerable(actualreturntype)) {
           ismultiple = true;
@@ -83,15 +118,33 @@ public class SAXAccessMethod {
         }
       }
       if (m.setmethodname != null) {
-        setmethod = parentclazz.getMethod(m.setmethodname,
-            new Class[] { m.clazz });
+        if (m.clazz == null) {
+          // infer the type of a set method by looking for a method of the
+          // same name. If you have created two such, you should be destroyed
+          // anyway.
+          setmethod = findSetMethod(parentclazz, m.setmethodname);
+          if (setmethod == null) {
+            throw new UniversalRuntimeException(
+                "Unable to find a SET method with name " + m.setmethodname
+                    + " in class " + parentclazz);
+          }
+          m.clazz = setmethod.getParameterTypes()[0];
+        }
+
+        else {
+          try {
+            setmethod = parentclazz.getMethod(m.setmethodname,
+                new Class[] { m.clazz });
+          }
+          catch (Throwable t) {
+            throw (UniversalRuntimeException.accumulate(t,
+                "Unable to find SET method with name " + m.setmethodname
+                    + " accepting argument " + m.clazz + " in class "
+                    + parentclazz));
+          }
+        }
         clazz = m.clazz;
       }
-    }
-    }
-    catch (Throwable t) {
-      throw UniversalRuntimeException.accumulate(t, "Field or method specified by MethodSpec"
-           + m + " could not be found in object of type " + parentclazz);
     }
   }
 
@@ -129,7 +182,9 @@ public class SAXAccessMethod {
     }
   }
 
-  /** Determines whether this method can be used for getting.
+  /**
+   * Determines whether this method can be used for getting.
+   * 
    * @return
    */
   public boolean canGet() {

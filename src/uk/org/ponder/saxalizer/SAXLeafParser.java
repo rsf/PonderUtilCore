@@ -180,6 +180,7 @@ public class SAXLeafParser {
     registerParser(Double.class, new DoubleParser());
     registerParser(Long.class, new LongParser());
     registerParser(Date.class, new DateParser());
+    registerParser(Class.class, new ClassParser());
     registerParser(ArrayUtil.intArrayClass, new intArrayParser());
     registerParser(ArrayUtil.doubleArrayClass, new doubleArrayParser()); 
   }
@@ -236,7 +237,7 @@ public class SAXLeafParser {
    * rendering. 
    * @return a CharWrap object containing the rendered text.
    */
-
+// QQQQQ Is this ever called for null objects? It should not be.
   public CharWrap render(Object torender, CharWrap renderinto) {
     if (torender == null) return renderinto.append(NULL_STRING);
     Class objtype = torender.getClass();

@@ -27,4 +27,18 @@ public class SAMSList extends ArrayList {
     }
     return null;
   }
+  /** Returns an existing SAMS object that matches the given XML name,
+   * or else constructs a new one using the default constructor, adds it
+   * to this list, and returns it.
+   * @param tagname
+   * @return
+   */
+  public SAXAccessMethodSpec byXMLNameSafe(String tagname) {
+    SAXAccessMethodSpec spec = byXMLName(tagname);
+    if (spec == null) {
+      spec = new SAXAccessMethodSpec();
+      spec.xmlname = tagname;
+    } 
+    return spec;
+  }
 }
