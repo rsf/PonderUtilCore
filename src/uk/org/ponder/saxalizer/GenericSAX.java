@@ -14,7 +14,7 @@ import java.util.Enumeration;
  * not supported by the current SAXalizer infrastructure.  
  * */
 
-public interface GenericSAX extends SAXalizableExtraAttrs, DeSAXalizableExtraAttrs {
+public interface GenericSAX extends SAXalizableExtraAttrs, DeSAXalizable {
   /** Gets the (text) data, if any, associated with this XML node. Note that text is
    * currently not supported for nodes which in addition have children.
    * @return The required text data.

@@ -1,6 +1,8 @@
 package uk.org.ponder.saxalizer;
 
 import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Stack;
 
 import java.io.ByteArrayOutputStream;
@@ -158,14 +160,14 @@ public class DeSAXalizer {
       }
     }
     // now find and write any extra attributes
-    if (torender instanceof DeSAXalizableExtraAttrs) {
-      SAXAttributeHash extraattrs = ((DeSAXalizableExtraAttrs) torender)
-          .getExtraAttributes();
+    if (torender instanceof SAXalizableExtraAttrs) {
+      Map extraattrs = ((SAXalizableExtraAttrs) torender)
+          .getAttributes();
       if (extraattrs != null) {
-        Enumeration attrs = extraattrs.keys();
-        while (attrs.hasMoreElements()) {
-          String attributename = (String) attrs.nextElement();
-          String attributevalue = extraattrs.get(attributename).getValue();
+        Iterator attrs = extraattrs.keySet().iterator();
+        while (attrs.hasNext()) {
+          String attributename = (String) attrs.next();
+          String attributevalue = (String)extraattrs.get(attributename);
           appendAttr(attributename, attributevalue);
         }
       }
@@ -180,6 +182,8 @@ public class DeSAXalizer {
       if (child instanceof GenericSAX) {
         GenericSAX generic = (GenericSAX) child;
         SAXAccessMethodSpec[] getmethods = generic.getSAXGetMethods();
+        // QQQQQ There may be getmethods defined by other means. 
+        // Generic needs review!
         if (generic.size() == 0
             && (getmethods == null || getmethods.length == 0))
           genericdata = generic.getData();
@@ -218,7 +222,7 @@ public class DeSAXalizer {
         }
         SAXAccessMethodHash.SAMIterator getattrenum = top.ma.attrmethods
             .getGetEnumeration();
-        if (getattrenum.valid() || child instanceof DeSAXalizableExtraAttrs) {
+        if (getattrenum.valid() || child instanceof SAXalizableExtraAttrs) {
           Logger.println("Child has attributes", Logger.DEBUG_SUBATOMIC);
           //      renderinto.clear();
           renderAttrs(child, getattrenum);

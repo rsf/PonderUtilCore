@@ -1,24 +1,21 @@
 package uk.org.ponder.saxalizer;
 
-import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 
-//import org.xml.sax.DocumentHandler;
-import org.xml.sax.HandlerBase;
-import org.xml.sax.Locator;
 import org.xml.sax.AttributeList;
+import org.xml.sax.HandlerBase;
 import org.xml.sax.InputSource;
+import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import uk.org.ponder.stringutil.CharWrap;
-
 import uk.org.ponder.util.AssertionException;
 import uk.org.ponder.util.Denumeration;
 import uk.org.ponder.util.EnumerationConverter;
 import uk.org.ponder.util.Logger;
-import uk.org.ponder.util.UniversalRuntimeException;
 
 /**
  * The SAXalizer class is used to deserialize a tree of XML tags into a tree of
@@ -208,13 +205,13 @@ public class SAXalizer extends HandlerBase {
   private static void tryBlastAttrs(AttributeList attrlist,
       SAXAccessMethodHash attrmethods, Object obj, SAXLeafParser leafparser)
       throws SAXException {
-    //      System.out.println("tryBlastAttrs determined that target can accept
-    // attributes");
-    boolean takesextras = obj instanceof SAXalizableExtraAttrs;
+    SAXalizableExtraAttrs extraattrs = obj instanceof SAXalizableExtraAttrs?
+        (SAXalizableExtraAttrs)obj : null;
+    boolean takesextras = extraattrs != null;
     // use up each of the non-"extra" attributes one by one, and send any
     // remaining
     // ones into SAXalizableExtraAttrs
-    SAXAttributeHash xmlah = takesextras ? new SAXAttributeHash() : null;
+    Map extras = takesextras? null : extraattrs.getAttributes(); 
     boolean[] expended = takesextras ? new boolean[attrlist.getLength()] : null;
 
     for (int i = 0; i < attrlist.getLength(); ++i) {
@@ -233,17 +230,10 @@ public class SAXalizer extends HandlerBase {
           expended[i] = true;
       }
       else if (takesextras) { // if not mapped, and it takes extras,
-        // accumulate into the hash
-        //	  System.out.println("extra attributes accepted, storing attribute "+
-        // attrlist.getName(i));
-        xmlah.put(attrlist.getName(i), attrlist.getType(i), attrlist
-            .getValue(i));
+        extras.put(attrlist.getName(i), attrlist.getValue(i));
       }
     } // end for each attribute presented by SAX
-    if (takesextras) {
-      SAXalizableExtraAttrs sa = (SAXalizableExtraAttrs) obj;
-      sa.setExtraAttributes(xmlah);
-    } // end if the parent object takes extra attributes
+   
   } // end tryBlast Attrs
 
   SAXalizerCallback callback;

@@ -8,6 +8,7 @@ import java.io.IOException;
 
 import uk.org.ponder.stringutil.CharWrap;
 import uk.org.ponder.stringutil.CharWrapVector;
+import uk.org.ponder.util.UniversalRuntimeException;
 
 /** This class contains static utility methods for operating on streams.
  */
@@ -135,4 +136,24 @@ public class StreamCopier {
       dest.write(wrap.storage, wrap.offset, wrap.size);
       }
     }
+  /** Produces a String representation of the complete contents of the
+   * supplied string, assuming it to be encoded in UTF-8. The supplied
+   * stream WILL be closed.
+   * @param source
+   * @return
+   */
+  public static String streamToString(InputStream source) {
+    DirectInputStreamReader disr = null;
+    try { 
+  
+    disr = new DirectInputStreamReader(source);
+    return readerToString(disr);
+    }
+    catch (Throwable t) {
+      throw UniversalRuntimeException.accumulate(t, "Error converting stream to string");
+    }
+    finally {
+      StreamUtil.closeReader(disr);
+    }
   }
+}

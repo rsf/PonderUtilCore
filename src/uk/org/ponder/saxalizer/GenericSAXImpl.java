@@ -1,6 +1,8 @@
 package uk.org.ponder.saxalizer;
 
 import java.util.Enumeration;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.Vector;
 
 //import uk.org.ponder.stringutil.CharWrap;
@@ -31,7 +33,7 @@ public class GenericSAXImpl implements GenericSAX {
 
   String tagname;
   String data; // wtf is this data - only meaningful for leaf nodes.
-  SAXAttributeHash attrs;
+  TreeMap attrs;
   String comment;
   // A heterogeneous vector. 
   Vector children; // not a hash, since tags may be identical - also, order should be preserved.
@@ -95,29 +97,11 @@ public class GenericSAXImpl implements GenericSAX {
   public String getTag() {
     return tagname;
     }
-
-  /** Set the attributes stored for this node. This method implements the 
-   * <code>SAXalizableExtraAttrs</code> interface. 
-   * @param attrs The new attribute values.
-   */
-
-  public void setExtraAttributes(SAXAttributeHash attrs) {
-    this.attrs = attrs;
-    }
-  /** Returns the attributes stored for this node. This method implements the
-   * <code>DeSAXalizableExtraAttrs</code> interface.
-   * @return The required attributes.
-   */
-  public SAXAttributeHash getExtraAttributes() {
+  public Map getAttributes() {
     return attrs;
-    }
-  /** Return the attribute with specified name.
-   * @param attrname The name of the required attribute.
-   * @return The required attribute value.
-   */
-  public SAXAttribute getAttr(String attrname) {
-    return attrs == null? null : attrs.get(attrname);
-    }
+  }
+ 
+
   // The data attribute will only be used if this is a leaf node.
 
   /*  GenericSAXImpl(String tagname, String data, AttributeList attrs) {

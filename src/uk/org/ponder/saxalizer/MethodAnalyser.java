@@ -5,6 +5,7 @@ import java.util.Enumeration;
 
 import uk.org.ponder.arrayutil.ArrayEnumeration;
 import uk.org.ponder.saxalizer.mapping.SAXalizerMapperEntry;
+import uk.org.ponder.util.ClassGetter;
 import uk.org.ponder.util.Logger;
 import uk.org.ponder.util.UniversalRuntimeException;
 
@@ -27,19 +28,23 @@ class MethodAnalyser {
    * object containing a hash of Method and Field accessors. The <code>context</code>
    * stores a hash of these analysers so they are only ever computed once
    * per context per object class analysed.
+   * @param o Either an object instance to be investigated, or an object
+   * class. If a class is specified and no analyser is registered, a new
+   * object will be created using newInstance() to be queried.
    */
 
   public static MethodAnalyser getMethodAnalyser(Object o, SAXalizerMappingContext context
       ) {
     if (o == null)
       return null;
-    Class objclass = o.getClass();
+    Class objclass = o instanceof Class? (Class) o: o.getClass();
+    
     MethodAnalyser stored = context.getAnalyser(objclass);
     if (stored != null)
       return stored;
     else {
       SAXalizerMapperEntry entry = context.mapper.byClass(objclass);
-      stored = new MethodAnalyser(o, entry, context);
+      stored = new MethodAnalyser(objclass, o, entry, context);
       context.putAnalyser(objclass, stored);
     }
     return stored;
@@ -87,12 +92,15 @@ class MethodAnalyser {
    * into tag and attribute methods while condensing together set and get 
    * specifications into single entries, and returns a MethodAnalyser object
    * with the specs resolved into Method and Field accessors ready for use.
-   * @param o The object to be inspected for accessors. 
+   * @param objclass The class of the object to be inspected.
+   * @param o Either the object to be inspected for accessors, or 
+   * its class in the case construction is to be deferred until the last
+   * possible moment (it implements SAXalizable &c) 
    * @param entry A SAXalizerMapperEntry object already determined from dynamic
    * sources.
    * @param context The global mapping context.
    */
-  MethodAnalyser(Object o, SAXalizerMapperEntry entry, SAXalizerMappingContext context) {
+  MethodAnalyser(Class objclass, Object obj, SAXalizerMapperEntry entry, SAXalizerMappingContext context) {
     SAMSList tagMethods = new SAMSList();
     SAMSList attrMethods = new SAMSList();
     // source 1: dynamic info from mapper file takes precendence
@@ -101,6 +109,7 @@ class MethodAnalyser {
       absorbSAMSList(entry, tagMethods, attrMethods);
     }
     else {
+      Object o = obj instanceof Class? ClassGetter.construct((Class)obj) : obj;
       // source 2: static info from interfaces is second choice
       //    System.out.println("MethodAnalyser called for object "+o);
       if (o instanceof SAXalizable) {
@@ -137,10 +146,10 @@ class MethodAnalyser {
         absorbSAMSArray(getAttrMethods, tagMethods, attrMethods); 
       }
     }
-    Class objclass = o.getClass();
     // Source 3: if no accessors have so far been discovered, try to infer some
     // using an inferrer if one is set.
-    if (tagMethods.size() == 0 && attrMethods.size() == 0 && context.inferrer != null) {
+    if (context.inferrer != null && (tagMethods.size() == 0 && attrMethods.size() == 0)
+         || DefaultInferrible.class.isAssignableFrom(objclass)) {
       entry = context.inferrer.inferEntry(objclass);
       absorbSAMSList(entry, tagMethods, attrMethods);
     }
