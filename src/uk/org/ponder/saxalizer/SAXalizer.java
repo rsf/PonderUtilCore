@@ -209,9 +209,9 @@ public class SAXalizer extends HandlerBase {
         (SAXalizableExtraAttrs)obj : null;
     boolean takesextras = extraattrs != null;
     // use up each of the non-"extra" attributes one by one, and send any
-    // remaining
+    // remaining 
     // ones into SAXalizableExtraAttrs
-    Map extras = takesextras? null : extraattrs.getAttributes(); 
+    Map extras = takesextras? extraattrs.getAttributes() : null; 
     boolean[] expended = takesextras ? new boolean[attrlist.getLength()] : null;
 
     for (int i = 0; i < attrlist.getLength(); ++i) {

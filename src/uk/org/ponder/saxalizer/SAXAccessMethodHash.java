@@ -1,5 +1,8 @@
 package uk.org.ponder.saxalizer;
 
+import java.util.Collections;
+import java.util.Comparator;
+
 /* SAXAccessMethodHash provides a quick lookup of an XML tag name to a
  * SAXAccessMethod object corresponding to the tag, for a particular 
  * SAXalizable class.
@@ -28,7 +31,7 @@ class SAXAccessMethodHash {
     }
     return null;
   }
-  
+    
   public SAXAccessMethodHash(SAMSList samslist, Class parentclass) {
     methods = new SAXAccessMethod[samslist.size()];
     for (int i = 0; i < samslist.size(); ++i) {

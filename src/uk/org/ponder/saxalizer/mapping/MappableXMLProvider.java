@@ -13,4 +13,5 @@ import uk.org.ponder.saxalizer.XMLProvider;
  */
 public interface MappableXMLProvider extends XMLProvider {
   public void loadMapping(InputStream is);
+  public void registerClass(String classname, Class resourceclass);
 }
