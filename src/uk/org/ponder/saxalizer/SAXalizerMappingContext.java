@@ -25,6 +25,7 @@ import uk.org.ponder.saxalizer.mapping.SAXalizerMapperInferrer;
 public class SAXalizerMappingContext {
   public SAXalizerMapperInferrer inferrer = new DefaultMapperInferrer();
   public SAXLeafParser saxleafparser = SAXLeafParser.instance();
+  public PolymorphicManager polymanager = PolymorphicManager.instance();
   public SAXalizerMapper mapper = new SAXalizerMapper();
 // this is a Hashtable of Classes to MethodAnalysers
   private HashMap methodanalysers = new HashMap();
@@ -33,5 +34,23 @@ public class SAXalizerMappingContext {
   }
   public void putAnalyser(Class clazz, MethodAnalyser analyser) {
     methodanalysers.put(clazz, analyser);
+  }
+  private SAXalizerMappingContext(boolean systemwide) {
+    saxleafparser = SAXLeafParser.instance();
+    polymanager = PolymorphicManager.instance();
+  }
+  public SAXalizerMappingContext() {
+    saxleafparser = new SAXLeafParser();
+    polymanager = new PolymorphicManager();
+  }
+  private static SAXalizerMappingContext instance = new SAXalizerMappingContext(true);
+  /** Returns a JVM-wide context to be used where no specialised
+   * context is supplied to the SAXalizer or DeSAXalizer. This
+   * context may NOT be used in conjunction with any dynamic mapping 
+   * information, only static or default-inferred mappings are permitted.
+   * @return
+   */
+  public static SAXalizerMappingContext instance() {
+    return instance;
   }
 }

@@ -8,7 +8,11 @@ import java.util.Enumeration;
  * piled into them via the <code>addChild</code> method, and read
  * out by the <code>size</code> and <code>elementAt</code>
  * methods. This makes GenericSAX objects very much more like
- * DOM nodes than plain SAXalizable objects.  */
+ * DOM nodes than plain SAXalizable objects.
+ * <p>
+ * Note - the "Generic" infrastructure has not been recently used and is
+ * not supported by the current SAXalizer infrastructure.  
+ * */
 
 public interface GenericSAX extends SAXalizableExtraAttrs, DeSAXalizableExtraAttrs {
   /** Gets the (text) data, if any, associated with this XML node. Note that text is

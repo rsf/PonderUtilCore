@@ -231,7 +231,7 @@ public class DeSAXalizer {
       }
       else { // it is not a leaf object. writing it will require another pass
         Logger.println("Pushed", Logger.DEBUG_EXTRA_INFO);
-        String polynick = PolymorphicManager.instance().getNick(child.getClass());
+        String polynick = mappingcontext.polymanager.getNick(child.getClass());
         if (polynick != null) {
           appendAttr("type", polynick);
         }
@@ -289,7 +289,7 @@ public class DeSAXalizer {
     // desaxalizers. This is a stack of SerialContexts.
     desaxingobjects = new Stack();
     if (mappingcontext == null) {
-      mappingcontext = new SAXalizerMappingContext();
+      mappingcontext = SAXalizerMappingContext.instance();
       }
     this.mappingcontext = mappingcontext;
     this.indentlevel = indentlevel;

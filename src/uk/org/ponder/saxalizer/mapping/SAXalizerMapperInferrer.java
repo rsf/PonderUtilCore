@@ -8,5 +8,7 @@ package uk.org.ponder.saxalizer.mapping;
  * 
  */
 public interface SAXalizerMapperInferrer {
-  SAXalizerMapperEntry inferEntry(Class clazz);
+  public SAXalizerMapperEntry inferEntry(Class clazz);
+  public void addCollectionType(Class collectiontype, Class containeetype);
+  public Class getContaineeType(Class collectiontype);
 }

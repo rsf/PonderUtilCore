@@ -2,10 +2,8 @@ package uk.org.ponder.saxalizer;
 
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Hashtable;
 
 import uk.org.ponder.arrayutil.ArrayEnumeration;
-import uk.org.ponder.saxalizer.mapping.SAXalizerMapper;
 import uk.org.ponder.saxalizer.mapping.SAXalizerMapperEntry;
 import uk.org.ponder.util.Logger;
 import uk.org.ponder.util.UniversalRuntimeException;

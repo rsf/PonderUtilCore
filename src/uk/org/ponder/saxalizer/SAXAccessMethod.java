@@ -2,6 +2,7 @@ package uk.org.ponder.saxalizer;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Enumeration;
 
 import uk.org.ponder.util.AssertionException;
 import uk.org.ponder.util.EnumerationConverter;
@@ -26,9 +27,10 @@ public class SAXAccessMethod {
   Class parentclazz; // The class that this is a method of, for convenience.
   String tagname;
   boolean ispolymorphic; // Uses the new "tag*" polymorphic nickname scheme
-  boolean ismultiple; // A collection rather than a single object is being
-
-  // addressed.
+  boolean ismultiple; // A collection rather than a single object is being addressed
+  boolean isenumeration; // if "ismultiple" is this delivered via an enumeration?
+  // Note that enumerations are the only things which are enumerable but not
+  // denumerable.
 
   private SAXAccessMethod(Class parentclazz, String tagname) {
     this.parentclazz = parentclazz;
@@ -95,7 +97,10 @@ public class SAXAccessMethod {
             "Unable to find field with name " + m.fieldname + " in class "
                 + parentclazz);
       }
-      clazz = field.getType();
+      // record the specified class name if there was one.
+      Class fieldclazz = field.getType();
+      clazz = m.clazz == null? fieldclazz : m.clazz;
+      checkEnumerable(fieldclazz);
     }
     else {
       if (m.getmethodname != null) {
@@ -108,10 +113,8 @@ public class SAXAccessMethod {
                   + " in class " + parentclazz);
         }
         Class actualreturntype = getmethod.getReturnType();
-        if (EnumerationConverter.isEnumerable(actualreturntype)) {
-          ismultiple = true;
-        }
-        else if (!m.clazz.isAssignableFrom(actualreturntype)) {
+        if (!checkEnumerable(actualreturntype)
+         && !m.clazz.isAssignableFrom(actualreturntype)) {
           throw new AssertionException("Actual return type of get method \""
               + getmethod + "\" is not assignable to advertised type of "
               + m.clazz);
@@ -146,6 +149,20 @@ public class SAXAccessMethod {
         clazz = m.clazz;
       }
     }
+  }
+
+  /**
+   * Determines whether the supplied class, the actualtype of a field or a get
+   * method, is enumerable. If it is, the ismultiple field is set, and the
+   * isenumeration field is conditionally set.
+   * @param clazz2
+   */
+  private boolean checkEnumerable(Class clazz) {
+    ismultiple = EnumerationConverter.isEnumerable(clazz);
+    if (ismultiple) {
+      isenumeration = Enumeration.class.isAssignableFrom(clazz);
+    } 
+    return ismultiple;
   }
 
   public String toString() {

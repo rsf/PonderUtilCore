@@ -158,20 +158,13 @@ public class SAXLeafParser {
   // This is a hashtable of classes to SAXLeafTypeParsers
   Hashtable parseabletypes = new Hashtable();
 
-  private static SAXLeafParser instance;
+  private static SAXLeafParser instance = new SAXLeafParser();
   // cross-hatched square character in Unicode, should be entirely unused
   // in UTF-16, would appear as percent-sign copyright-symbol. 0010010111001001
   // in UTF-8, would appear as a-hat (unassigned) (unassigned) e29789. 11100010 10010111 10001001
   //  public static final char solidus = '\u25a9'; 
 
   private static String NULL_STRING = "\u25a9null\u25a9";
-
-  static {
-    instance = new SAXLeafParser();
-    // initialise these 3 here, since otherwise classes are unreferenced and hence
-    // unloaded.
-    instance.registerDefaultParsers();
-    }
 
   private void registerDefaultParsers() {
     registerParser(Boolean.class, new BooleanParser());
@@ -185,10 +178,13 @@ public class SAXLeafParser {
     registerParser(ArrayUtil.doubleArrayClass, new doubleArrayParser()); 
   }
   
+  public SAXLeafParser() {
+    registerDefaultParsers();
+  }
+  
   /** Returns the global (singleton) instance of the SAXLeafParser.
    * @return The required SAXLeafParser.
    */
-  
   public static SAXLeafParser instance() {
     return instance;
     }

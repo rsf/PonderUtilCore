@@ -31,7 +31,7 @@ public class SAXalizerHelper extends HandlerBase {
   private SAXalizer saxer;
 
   public SAXalizerHelper() {
-    this(new SAXalizerMappingContext());
+    this(SAXalizerMappingContext.instance());
   }
 
   public SAXalizerHelper(SAXalizerMappingContext mappingcontext) {
