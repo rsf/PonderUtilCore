@@ -10,4 +10,5 @@ package uk.org.ponder.util;
  */
 public interface Denumeration {
   public void add(Object o);
+  public boolean remove(Object o);
 }

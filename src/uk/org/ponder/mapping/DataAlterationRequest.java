@@ -18,4 +18,9 @@ public class DataAlterationRequest {
     this.path = path;
     this.data = data;
   }
+  public DataAlterationRequest(String path, Object data, String type) {
+    this.path = path;
+    this.data = data;
+    this.type = type;
+  }
 }

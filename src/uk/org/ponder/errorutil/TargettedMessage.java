@@ -16,4 +16,7 @@ public class TargettedMessage {
     this.message = message;
     this.targetid = targetid;
   }
+  public TargettedMessage(String message) {
+    this.message = message;
+  }
 }

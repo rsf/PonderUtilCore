@@ -35,4 +35,13 @@ public class StringList extends ArrayList {
     togo.addAll(this);
     return togo;
   }
+
+  public String pack() {
+    CharWrap togo = new CharWrap();
+    for (int i = 0; i < size(); ++ i) {
+      togo.append(stringAt(i));
+      togo.append('\n');
+    }
+    return togo.toString();
+  }
 }

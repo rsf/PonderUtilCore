@@ -8,12 +8,14 @@ import org.xml.sax.AttributeList;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.Parser;
 
+import uk.org.ponder.streamutil.StreamUtil;
 import uk.org.ponder.util.Logger;
 
 // QQQQQ interface to be supplied in the CORRECT direction!
 
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.Reader;
 
 /** This useful helper class can be used if the XML
  * root tag itself is required to be the root of the deserialised
@@ -52,6 +54,17 @@ public class SAXalizerHelper extends HandlerBase {
     saxer.setEntityResolverStash(entityresolverstash);
   }
 
+  public Object produceSubtree(Object rootobj, Reader reader) throws SAXException {
+    InputSource i = new InputSource(reader);
+    i.setSystemId("SAXalizing page");
+    try {
+    return produceSubtreeInternal(rootobj, i);
+    }
+    finally {
+      StreamUtil.closeReader(reader);
+    }
+  }
+  
   /** This method parses a stream attached to an XML document, and returns
    * a deserialised object tree corresponding to its root node.
    * @param rootobj The required root object to receive the SAXalized subtree. This
@@ -63,11 +76,20 @@ public class SAXalizerHelper extends HandlerBase {
    */
   // Currently closes the stream
   public Object produceSubtree(Object rootobj, InputStream stream) throws SAXException {
-    parserstash.setDocumentHandler(this);
-    parserstash.setEntityResolver(this);
-
     InputSource i = new InputSource(stream);
     i.setSystemId("SAXalizing page");
+    try {
+      return produceSubtreeInternal(rootobj, i);
+    }
+    finally {
+      StreamUtil.closeInputStream(stream);
+    }
+  }
+
+  
+  private Object produceSubtreeInternal(Object rootobj, InputSource i) throws SAXException {
+    parserstash.setDocumentHandler(this);
+    parserstash.setEntityResolver(this);
     try {
       rootobjstash = rootobj;
       parserstash.parse(i); // begin to parse at this point, asynchronous events arrive
@@ -106,12 +128,6 @@ public class SAXalizerHelper extends HandlerBase {
     }
     finally {
       saxer.blastState();
-      try {
-        stream.close();
-      }
-      catch (IOException ioe) {
-        Logger.printStackTrace(ioe, Logger.DEBUG_SEVERE);
-      }
       if (callback != null) {
         callback.parseComplete(callbackindex);
         callback = null;
@@ -119,7 +135,7 @@ public class SAXalizerHelper extends HandlerBase {
     }
     return rootobjstash;
   }
-
+  
   public void setDocumentLocator(Locator l) {
     saxer.setDocumentLocator(l);
   }

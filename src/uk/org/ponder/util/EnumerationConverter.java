@@ -7,6 +7,7 @@ import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.Map;
 
 import uk.org.ponder.arrayutil.ArrayEnumeration;
 
@@ -22,9 +23,12 @@ public class EnumerationConverter {
   public static boolean isEnumerable(Class c) {
     return Enumeration.class.isAssignableFrom(c) 
     || Collection.class.isAssignableFrom(c)
+    || Map.class.isAssignableFrom(c)
     || isObjectArray(c);
   }
-  
+
+  // Maps are not currently denumerable! Pending some scheme for
+  // getting at their keys.
   public static boolean isDenumerable(Class c) {
     return Collection.class.isAssignableFrom(c) || c.isArray();
   }
@@ -33,8 +37,11 @@ public class EnumerationConverter {
     if (o instanceof Enumeration) {
       return (Enumeration)o;
     }
-    if (o instanceof Collection) {
+    else if (o instanceof Collection) {
       return Collections.enumeration((Collection) o);
+    }
+    else if (o instanceof Map) {
+      return Collections.enumeration(((Map)o).values());
     }
     else if (o.getClass().isArray()) {
       return new ArrayEnumeration((Object[])o);
@@ -46,17 +53,24 @@ public class EnumerationConverter {
   public static Denumeration getDenumeration(final Object collo) {
     if (collo instanceof Collection) {
       return new Denumeration() {
-
         public void add(Object o) {
 	         ((Collection)collo).add(o);
+        }
+        public boolean remove(Object o) {
+           return ((Collection)collo).remove(o);
         }};
     }
+    // NB this array functionality will probably never be used - better to
+    // make leaf parsers for Arrays storing exactly length up front.
     else if (collo instanceof Array) {
       return new Denumeration() {
         int index = 0;
         public void add(Object o) {
           Object[] coll = (Object[]) collo;
           coll[index++] = o;
+        }
+        public boolean remove(Object o) {
+          throw new UniversalRuntimeException("Removal not supported from Array denumerable");
         }
         
       };
