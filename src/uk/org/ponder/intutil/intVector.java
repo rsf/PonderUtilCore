@@ -14,7 +14,7 @@ public class intVector implements Comparable {
   public class intVectorIterator implements intIterator {
     int index = 0;
     public boolean valid() {
-      return index != size;
+      return index < size;
     }
     public void next() {
       ++index;
