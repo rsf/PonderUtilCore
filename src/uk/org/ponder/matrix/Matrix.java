@@ -238,7 +238,7 @@ public class Matrix implements Cloneable {
    * default is to emulate the behaviour of Matlab to a degree by allowing 4
    * digits after the decimal point.
    */
-  public static DecimalFormat decFormat = new DecimalFormat("0.0###");
+  public static DecimalFormat decFormat = new DecimalFormat("-0.0000");
 
   /**
    * Construct a square matrix object, with initial values set to zero.
@@ -284,15 +284,26 @@ public class Matrix implements Cloneable {
    */
 
   public Matrix(double[][] data) {
-    this(data.length, data.length == 0 ? 0
-        : data[0].length, true);
-    double[] value = storage.value;
-
-    for (int i = 0; i < rows; i++) {
-      System.arraycopy(data[i], 0, value, i * cols, cols);
-    }
+    this(data, 0, 0);
   }
 
+  /** Constructs a matrix from a multidimensional double array, with 
+   * specified space for padding.
+   * @param data 
+   * @param padrow
+   * @param padcol
+   */
+  public Matrix(double[][] data, int padrow, int padcol) {
+    this(data.length + padrow, (data.length == 0 ? 0
+        : data[0].length) + padcol, true);
+    double[] value = storage.value;
+    int havecols = cols - padcol;
+
+    for (int i = 0; i < data.length; i++) {
+      System.arraycopy(data[i], 0, value, i * cols, havecols);
+    }    
+  }
+  
   /**
    * Construct a column vector from a 1D array of doubles. This converts a 1D
    * array into a true matrix object. NB. if you want a row vector remember to
@@ -689,6 +700,8 @@ public class Matrix implements Cloneable {
   }
 
   /**
+   * Stores the addition of this matrix into the first argument into the second
+   * argument. Either B or A may be equal to C.
    * Matrix addition: A+B = C
    */
 
@@ -1436,12 +1449,15 @@ public class Matrix implements Cloneable {
    * 
    * @returns String form of the matrix.
    */
-  public String toString() {
-    if (rows * cols > 250)
+  public String toString(int limit) {
+    if (limit > 0 && rows * cols > limit)
       return "<"+rows+"x"+cols+" matrix too big for string representation>";
     CharWrap res = new CharWrap();
 
     for (int i = 0; i < rows; i++) {
+      if (rows > 10) {
+        res.append(Integer.toString(i + 1)).append(": ");
+      }
       for (int j = 0; j < cols; j++) {
         if (j != 0) {
          
@@ -1456,6 +1472,10 @@ public class Matrix implements Cloneable {
       }
     }
     return res.toString();
+  }
+  
+  public String toString() {
+    return toString(250);
   }
 
   public void write(Writer w) throws IOException {

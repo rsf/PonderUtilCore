@@ -99,6 +99,18 @@ public class CharWrap {
     size += length;
     return this;
     }
+  
+  public CharWrap appendPad(String s, int width) {
+    append(s);
+    for (int i = width - s.length(); i > 0; --i) {
+      append(' ');
+    }
+    return this;
+  }
+  
+  public CharWrap append(Object o) {
+    return append(o.toString());
+  }
 
   /** Appends the characters in the supplied CharWrap onto this CharWrap.
    * @param toappend A CharWrap holding the character data to be appended.

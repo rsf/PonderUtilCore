@@ -218,13 +218,13 @@ public class intVector implements Comparable {
 
   public void sort() {
     Arrays.sort(ints, 0, size);
-    if (size == 0) return;
-    int last = ints[0];
-    for (int i = 1; i < size; ++ i) {
-      int next = ints[i];
-      Assertions.expect(next >= last, "Sort error!");
-      last = next;
-    }
+//    if (size == 0) return;
+//    int last = ints[0];
+//    for (int i = 1; i < size; ++ i) {
+//      int next = ints[i];
+//      Assertions.expect(next >= last, "Sort error!");
+//      last = next;
+//    }
   }
   
   
