@@ -23,7 +23,7 @@ public class FieldComparator implements Comparator {
     if (method == null) {
       method = ma.attrmethods.get(tagname);
     }
-    if (!method.canGet() || !method.ismultiple) {
+    if (!method.canGet() || method.ismultiple) {
       throw new UniversalRuntimeException(
           "Located access method of unsuitable type for name " + tagname
               + " in " + objclass);
