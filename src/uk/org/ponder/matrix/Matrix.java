@@ -183,6 +183,15 @@ public class Matrix implements Cloneable {
     }
   }
 
+  /** An extremely dangerous method to get the underlying array storing
+   * the data for this matrix, for clients who have good expectations it
+   * is in a reasonable arrangement.
+   * @return
+   */
+  public double[] getStorageDirty() {
+    return storage.value;
+  }
+  
   /**
    * The implementation of the matrix maps its elements into a 1d linear array.
    * This private interface routine computes the correct location in the 1d
@@ -1418,8 +1427,8 @@ public class Matrix implements Cloneable {
    * @returns String form of the matrix.
    */
   public String toString() {
-    if (rows * cols > 1000)
-      return "<matrix too big for string representation>";
+    if (rows * cols > 250)
+      return "<"+rows+"x"+cols+" matrix too big for string representation>";
     CharWrap res = new CharWrap();
 
     for (int i = 0; i < rows; i++) {

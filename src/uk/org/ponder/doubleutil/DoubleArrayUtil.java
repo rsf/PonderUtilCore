@@ -2,9 +2,6 @@ package uk.org.ponder.doubleutil;
 
 import uk.org.ponder.util.Constants;
 
-/** The class ArrayUtil provides utilities in dealing with arrays. MORE...
- */
-
 public class DoubleArrayUtil {
    
   public static double[] select(double[] from, int[] indices) {
@@ -44,13 +41,6 @@ public class DoubleArrayUtil {
     }
 
     public static void copy(double[] target, double[] source) {
-// 	System.out.println();
-// 	System.out.println("ArrayUtil:");
-// 	System.out.println("target: "+target.length);
-// 	System.out.println("source: "+source.length);
-// 	System.out.println();
-	
-
     for (int i = 0; i < source.length; ++ i) {
       target[i] = source[i];
       }
@@ -62,7 +52,6 @@ public class DoubleArrayUtil {
     return togo;
     }
 
-    /// Scans the supplied array to discover its maximum and minimum values. @param toscan The array to be scanned. @param bounds An array to receive the bounds of the scanned array. bounds[0] will receive the minimum value, bounds[1] the maximum. The initial values in this array are taken into account.
   public static void bounds(double[] toscan, double[] bounds) {
     double min = bounds[0];
     double max = bounds[1];
@@ -77,7 +66,22 @@ public class DoubleArrayUtil {
     bounds[1] = max;
     }
 
-
+  public static double dotprod(double[] vec1, double[] vec2) {
+    double total = 0;
+    for (int i = vec1.length-1; i >= 0; --i) {
+      total += vec1[i] * vec2[i];
+    }
+    return total;
+  }
+  
+  public static void multiplyhorr(double[] target, double[][]A, double[]x) {
+    //double[] togo = new double[A.length];
+    for (int i = 0; i < A.length; ++ i) {
+      target[i] = dotprod(A[i], x);
+    }
+    //return togo;
+  }
+  
   public static double[] addInto(double[] target, double[] operand) {
     for (int i = 0; i < target.length; ++ i) {
       target[i] += operand[i];

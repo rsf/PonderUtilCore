@@ -95,7 +95,7 @@ public class Algorithms {
    * @param val
    * @return
    */
-  public static int[] fill(int size, int val) {
+  public static int[] fill(int size, int val) { 
     int[] togo = new int[size];
     for (int i = 0; i < size; ++ i) {
       togo[i] = val;
