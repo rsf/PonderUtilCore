@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
-import org.xml.sax.AttributeList;
-import org.xml.sax.HandlerBase;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
@@ -324,10 +322,10 @@ public class SAXalizer extends HandlerBase {
    */
   public void startElement(String tagname, AttributeList attrlist)
       throws SAXException {
-    if (Logger.passDebugLevel(Logger.DEBUG_EXTRA_INFO)) {
-      Logger.println("ELEMENT received to SAXALIZER: " + tagname,
-          Logger.DEBUG_EXTRA_INFO);
-    }
+//    if (Logger.passDebugLevel(Logger.DEBUG_EXTRA_INFO)) {
+//      Logger.println("ELEMENT received to SAXALIZER: " + tagname,
+//          Logger.DEBUG_EXTRA_INFO);
+//    }
     // an element has started, and we must start to construct an object to put
     // it in.
     // The object on top of the ParseContex stack represents the parent object
@@ -407,9 +405,9 @@ public class SAXalizer extends HandlerBase {
     if (am.canGet() && !am.isenumeration && (am.ismultiple || !leafparser.isLeafType(am.clazz)) ) {
       oldobj = am.getChildObject(beingparsed.object);
       if (oldobj != null) {
-        Logger.println("Acquired old object " + oldobj + " from parent "
-            + beingparsed.object + " of class " + am.clazz,
-            Logger.DEBUG_EXTRA_INFO);
+//        Logger.println("Acquired old object " + oldobj + " from parent "
+//            + beingparsed.object + " of class " + am.clazz,
+//            Logger.DEBUG_EXTRA_INFO);
       }
     }
     // QQQQQ Note: the class of objects inside bare collections cannot be 
@@ -501,8 +499,8 @@ public class SAXalizer extends HandlerBase {
     }
 
     ParseContext parentcontext = getSaxingObject();
-    Logger.println("SAXing object is " + parentcontext.object,
-        Logger.DEBUG_SUBATOMIC);
+//    Logger.println("SAXing object is " + parentcontext.object,
+//        Logger.DEBUG_SUBATOMIC);
 
     Object parentobject = parentcontext.object;
     Denumeration den = null;
