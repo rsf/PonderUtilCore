@@ -1,9 +1,11 @@
 package uk.org.ponder.intutil;
 
+import java.util.Arrays;
+
 /** A simple container class representing a vector of native integers.
  */
 
-public class intVector {
+public class intVector implements Comparable {
   private int[] ints;
   private int size;
 
@@ -208,6 +210,11 @@ public class intVector {
     return togo;
   }
 
+  public void sort() {
+    Arrays.sort(ints, 0, size);
+  }
+  
+  
   /** Renders this intVector as a String for debugging purposes.
    * @return the contents of this intVector as a debug string.
    */
@@ -221,6 +228,11 @@ public class intVector {
       togo.append(ints[size - 1]);
     }
     return togo.toString();
+  }
+
+  public int compareTo(Object othero) {
+    intVector other = (intVector)othero;
+    return Algorithms.lexicalCompare(ints, size, other.ints, other.size);
   }
 
 }
