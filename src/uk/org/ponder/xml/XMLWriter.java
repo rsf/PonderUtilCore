@@ -72,6 +72,12 @@ public class XMLWriter {
   public void writeRaw(String tag) throws IOException {
     internalwriter.write(tag);
     }
+  
+  private void indent(int nestinglevel) throws IOException {
+    for (int i = 0; i < nestinglevel * INDENT_WIDTH; ++ i) {
+      internalwriter.write(' ');
+      }
+  }
   // write with specified indenting and without deentitising
   /** Writes the supplied string to the wrapped stream with the specified indent level.
    * @param tag The string to be written.
@@ -80,13 +86,26 @@ public class XMLWriter {
    * @exception IOException If an I/O error occurs while writing the string.
    */
   public void writeRaw(String tag, int nestinglevel) throws IOException {
-    for (int i = 0; i < nestinglevel * INDENT_WIDTH; ++ i) {
-      internalwriter.write(' ');
-      }
+    indent(nestinglevel);
     internalwriter.write(tag);
     //    Logger.println(tag, Logger.DEBUG_SUBATOMIC);
     }
 
+  public void closeTag(String tag, int nestinglevel, boolean writtenchildren) throws IOException {
+    if (writtenchildren) {
+      indent(nestinglevel);
+      internalwriter.write("</");
+      internalwriter.write(tag);
+      internalwriter.write('>');
+    }
+    else {
+      internalwriter.write("/>");
+    }
+    if (nestinglevel >= 0) {
+      internalwriter.write('\n');
+    }
+  }
+  
   /** Returns the default declaration that will be written by the <code>writeDeclaration</code>
    * method.
    * @return The required default declaration.
