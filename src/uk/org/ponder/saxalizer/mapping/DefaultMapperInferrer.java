@@ -53,18 +53,15 @@ public class DefaultMapperInferrer implements SAXalizerMapperInferrer {
         + methodname.substring(4);
   }
 
-  /** Returns an existing SAMS object that matches the given XML name,
-   * or else constructs a new one using the default constructor, adds it
-   * to thes list, and returns it.
+  /** Returns an new SAMS object with the given name.
    * @param tagname
    * @return
    */
   private SAXAccessMethodSpec byXMLNameSafe(SAMSList samslist, String tagname, Class clazz) {
-    SAXAccessMethodSpec spec = samslist.byXMLName(tagname);
-    if (spec == null) {
-      spec = new SAXAccessMethodSpec();
-      spec.xmlname = tagname;
-    }
+    // must not fuse get and set at this point! Otherwise there will be
+    // duplicate.
+    SAXAccessMethodSpec spec = new SAXAccessMethodSpec();
+    spec.xmlname = tagname;
     Class containeetype = getContaineeType(clazz);
     if (containeetype != null) {
       spec.clazz = containeetype;
