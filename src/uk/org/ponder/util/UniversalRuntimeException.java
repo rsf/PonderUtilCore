@@ -77,6 +77,11 @@ public class UniversalRuntimeException extends RuntimeException implements Wrapp
     UniversalRuntimeException togo = accumulateMsg(t, extradetail + "\n" + t.getMessage()+ "\n");
     return togo;
   }
+  /** Used to "pass-through" an exception leaving its message unchanged */
+  public static UniversalRuntimeException accumulate(Throwable t) {
+    UniversalRuntimeException togo = accumulateMsg(t, t.getMessage());
+    return togo;
+  }
   // QQQQQ move these three methods to static utility for all WrappingExceptions
   public void printStackTrace() {
     if (targetexception != null) {
