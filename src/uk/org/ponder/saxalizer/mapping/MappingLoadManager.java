@@ -12,7 +12,7 @@ import uk.org.ponder.util.UniversalRuntimeException;
 
 /**
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
- * 
+ *  
  */
 public class MappingLoadManager {
   private MappableXMLProvider xmlprovider;
@@ -21,33 +21,45 @@ public class MappingLoadManager {
   public void setMappableXMLProvider(MappableXMLProvider xmlprovider) {
     this.xmlprovider = xmlprovider;
   }
+
+  public MappableXMLProvider getMappableXMLProvider() {
+    return xmlprovider;
+  }
+
   public void setSAXalizerMappingContext(SAXalizerMappingContext mappingcontext) {
     this.mappingcontext = mappingcontext;
   }
   
-  
+  public SAXalizerMappingContext getSAXalizerMappingContext() {
+    return mappingcontext;
+  }
+
   public void setMappingLoaders(List mappingloaders) {
-    for (int i = 0; i < mappingloaders.size(); ++ i) {
+    for (int i = 0; i < mappingloaders.size(); ++i) {
       MappingLoader mappingloader = (MappingLoader) mappingloaders.get(i);
       mappingloader.loadExtendedMappings(mappingcontext);
       mappingloader.loadStandardMappings(xmlprovider);
     }
   }
-  
+
   public XMLProvider getXMLProvider() {
     return xmlprovider;
   }
-   
-  public static void loadClasspathMapping(MappableXMLProvider xmlprovider, String path) {
+
+  public static void loadClasspathMapping(MappableXMLProvider xmlprovider,
+      String path) {
     try {
-    InputStream is = xmlprovider.getClass().getClassLoader().getResourceAsStream(path);
-    if (is == null) {
-      throw new UniversalRuntimeException("Classpath resource for path "+ path + " not found");
-    }
-    xmlprovider.loadMapping(is);
+      InputStream is = xmlprovider.getClass().getClassLoader()
+          .getResourceAsStream(path);
+      if (is == null) {
+        throw new UniversalRuntimeException("Classpath resource for path "
+            + path + " not found");
+      }
+      xmlprovider.loadMapping(is);
     }
     catch (Throwable t) {
-      throw UniversalRuntimeException.accumulate(t, "Failed to load mapping for "+ path);
+      throw UniversalRuntimeException.accumulate(t,
+          "Failed to load mapping for " + path);
     }
   }
 }
