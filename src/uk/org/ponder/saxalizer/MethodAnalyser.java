@@ -149,7 +149,7 @@ class MethodAnalyser {
     // Source 3: if no accessors have so far been discovered, try to infer some
     // using an inferrer if one is set.
     if (context.inferrer != null && (tagMethods.size() == 0 && attrMethods.size() == 0)
-         || DefaultInferrible.class.isAssignableFrom(objclass)) {
+         || context.inferrer.isDefaultInferrible(objclass)) {
       entry = context.inferrer.inferEntry(objclass);
       absorbSAMSList(entry, tagMethods, attrMethods);
     }

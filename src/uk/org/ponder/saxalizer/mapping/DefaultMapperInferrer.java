@@ -7,7 +7,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
+import java.util.HashSet;
 
+import uk.org.ponder.saxalizer.DefaultInferrible;
 import uk.org.ponder.saxalizer.SAMSList;
 import uk.org.ponder.saxalizer.SAXAccessMethodSpec;
 import uk.org.ponder.stringutil.StringList;
@@ -19,6 +21,7 @@ import uk.org.ponder.stringutil.StringList;
 public class DefaultMapperInferrer implements SAXalizerMapperInferrer {
 
   private HashMap collectionmap = new HashMap();
+  private HashSet defaultiblemap = new HashSet();
   
   public DefaultMapperInferrer() {
     addCollectionType(StringList.class, String.class);
@@ -31,6 +34,16 @@ public class DefaultMapperInferrer implements SAXalizerMapperInferrer {
   
   public void addCollectionType(Class collectiontype, Class containeetype) {
     collectionmap.put(collectiontype, containeetype);
+  }
+  
+
+  public void setDefaultInferrible(Class clazz) {
+    defaultiblemap.add(clazz);
+  }
+
+  public boolean isDefaultInferrible(Class clazz) {
+    return DefaultInferrible.class.isAssignableFrom(clazz)
+    || defaultiblemap.contains(clazz);
   }
   
   public static int accessorType(Method method) {
