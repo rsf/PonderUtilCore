@@ -6,6 +6,9 @@ import java.io.FileOutputStream;
 import java.io.StringWriter;
 import java.io.PrintWriter;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import uk.org.ponder.byteutil.ByteWrap;
 
 import uk.org.ponder.intutil.intVector;
@@ -23,6 +26,9 @@ import uk.org.ponder.arrayutil.ArrayUtil;
  */
 
 public class Logger {
+  // The ponder Logger is now deprecated. All new logging should be done
+  // via this commons standard logger.
+  public static Log log = LogFactory.getLog("PonderUtilCore");
   public static final boolean debugmode = true;
   public static PrintStream logger = System.out;
 

@@ -6,8 +6,7 @@ import uk.org.ponder.stringutil.CharWrap;
 
 // Terrible, terrible temporary class to allow file paths relative
 // to applet codebase. SAXLeafParser must be reformed to allow the
-// public to add classes from the outside, and this class moved into
-// com.waxinfo.util
+// public to add classes from the outside
 
 /** Directory path is a SAX leaf type representing a local filesystem path.
  * The purpose of this class is to allow variable substitution within the path.

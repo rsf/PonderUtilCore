@@ -2,8 +2,7 @@ package uk.org.ponder.stringutil;
 
 /** An interface used by a parser to report "words" it discovers.
  */
-// ONLY KNOWN IMPLEMENTOR: com.waxinfo.search.WordStreamParser
-// used to be one in jdiff.RapidWordParser, but replaced by WordBreaker infrastructure.
+// used to be implementor in jdiff.RapidWordParser, but replaced by WordBreaker infrastructure.
 
 interface WordParseCallback {
   /** A callback reporting that a word has been seen in the input data.

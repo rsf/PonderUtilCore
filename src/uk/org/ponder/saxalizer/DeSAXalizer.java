@@ -63,7 +63,14 @@ public class DeSAXalizer {
   private XMLWriter xmlw;
   private SAXalizerMappingContext mappingcontext;
   private DeSAXalizerForbidder forbidder = null;
+  
+  public DeSAXalizer() {
+    this(SAXalizerMappingContext.instance());
+  }
 
+  public DeSAXalizer(SAXalizerMappingContext mappingcontext) {
+    this.mappingcontext = mappingcontext;
+  }
   // a convenience buffer for objects to render themselves into
   private CharWrap buffereddata = new CharWrap();
   int indentlevel;
@@ -125,36 +132,10 @@ public class DeSAXalizer {
 
   public void serializeSubtree(Object root, String roottag, OutputStream os)
       throws IOException {
-    serializeSubtree(root, roottag, os, 0, null);
+    serializeSubtree(root, roottag, os, 0);
   }
+ 
 
-  public void serializeSubtree(Object root, String roottag, OutputStream os,
-    SAXalizerMappingContext mappingcontext) throws IOException {
-    serializeSubtree(root, roottag, os, 0, mappingcontext);
-    }
-
-  /**
-   * Write a serialized representation of an object subtree as XML to an output
-   * stream. This method DOES NOT close the supplied output stream.
-   * 
-   * @param root The root object of the tree to be serialized. Must implement
-   *          the <code>DeSAXalizable</code> interface, as must all
-   *          descendents, or have types registered with the
-   *          <code>SAXLeafParser</code>.
-   * @param roottag The tag to be supplied to the root object (all subobjects
-   *          have their tags supplied through the <code>DeSAXalizable</code>
-   *          interface.
-   * @param os The output stream to receive the serialized data. The data will
-   *          be written in UTF-8 format.
-   * @param indentlevel The initial indent level in the XML output file to be
-   *          applied to the tag representing the root object. If this is not 0,
-   *          an XML declaration will not be written to the file.
-   */
-
-  public void serializeSubtree(Object root, String roottag, OutputStream os,
-      int indentlevel) throws IOException {
-    serializeSubtree(root, roottag, os, indentlevel, null);
-  }
   private void appendAttr(String attrname, Object attrvalue) throws IOException {
     xmlw.writeRaw(" ");
     xmlw.writeRaw(attrname); // attribute names may not contain escapes
@@ -282,16 +263,12 @@ public class DeSAXalizer {
    */
 
   public void serializeSubtree(Object root, String roottagname,
-      OutputStream os, int indentlevel, SAXalizerMappingContext mappingcontext)
+      OutputStream os, int indentlevel)
       throws IOException {
     // Store the stack of desaxing objects locally, to avoid having to allocate
     // thread-local
     // desaxalizers. This is a stack of SerialContexts.
     desaxingobjects = new Stack();
-    if (mappingcontext == null) {
-      mappingcontext = SAXalizerMappingContext.instance();
-      }
-    this.mappingcontext = mappingcontext;
     this.indentlevel = indentlevel;
 
     try {
