@@ -196,7 +196,13 @@ public class SAXalizer extends HandlerBase {
     if (isdenumerable) {
       ParseContext beingparsed = getSaxingObject();
       if (!beingparsed.hasDenumeration(parentsetter.tagname)) {
-        beingparsed.denumerationmap.put(parentsetter.tagname, EnumerationConverter.getDenumeration(oldinstance));
+        Denumeration den = EnumerationConverter.getDenumeration(oldinstance);
+        if (den == null) {
+          throw new UniversalRuntimeException("Child " + oldinstance + " in " + 
+              topush + " cannot be made denumerable via setter with tag name " 
+              + parentsetter.tagname);
+        }
+        beingparsed.denumerationmap.put(parentsetter.tagname, den);
       }
     }
     saxingobjects.push(new ParseContext(newinstance, ma, isgeneric, isleaf,

@@ -3,7 +3,7 @@ package uk.org.ponder.hashutil;
 import java.io.InputStream;
 import java.io.IOException;
 
-import uk.org.ponder.streamutil.StreamCopier;
+import uk.org.ponder.streamutil.StreamCopyUtil;
 
 public class StreamDigestor {
   /** Returns a byte array representing an SHA-1 digest of the supplied stream.
@@ -14,7 +14,7 @@ public class StreamDigestor {
    */
   public static byte[] digest(InputStream stream) throws IOException {
     SHA1 sha = new SHA1();
-    byte[] buffer = new byte[StreamCopier.PROCESS_BUFFER_SIZE];
+    byte[] buffer = new byte[StreamCopyUtil.PROCESS_BUFFER_SIZE];
     try {
       while (true) {
 	int bytesread = stream.read(buffer);

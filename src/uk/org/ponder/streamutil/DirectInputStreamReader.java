@@ -52,11 +52,11 @@ public class DirectInputStreamReader extends Reader {
     }
 
   public void setInputStream(InputStream inputstream) {
-    setInputStream(inputstream, "UTF-8", StreamCopier.PROCESS_BUFFER_SIZE);
+    setInputStream(inputstream, "UTF-8", StreamCopyUtil.PROCESS_BUFFER_SIZE);
     }
 
   public void setInputStream(InputStream inputstream, String encoding) {
-    setInputStream(inputstream, encoding, StreamCopier.PROCESS_BUFFER_SIZE);
+    setInputStream(inputstream, encoding, StreamCopyUtil.PROCESS_BUFFER_SIZE);
     }
 
   public void setInputStream(InputStream inputstream, String encoding, int buffersize) {

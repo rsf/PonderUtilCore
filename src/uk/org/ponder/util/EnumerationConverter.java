@@ -7,6 +7,7 @@ import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Map;
 
 import uk.org.ponder.arrayutil.ArrayEnumeration;
@@ -24,6 +25,7 @@ public class EnumerationConverter {
     return Enumeration.class.isAssignableFrom(c) 
     || Collection.class.isAssignableFrom(c)
     || Map.class.isAssignableFrom(c)
+    || Iterator.class.isAssignableFrom(c)
     || isObjectArray(c);
   }
 
@@ -48,9 +50,20 @@ public class EnumerationConverter {
         o.getClass());
   }
   
-  public static Enumeration getEnumeration(Object o) {
+  public static Enumeration getEnumeration(final Object o) {
     if (o instanceof Enumeration) {
       return (Enumeration)o;
+    }
+    else if (o instanceof Iterator) {
+      return new Enumeration() {
+        public boolean hasMoreElements() {
+          return ((Iterator)o).hasNext();
+        }
+
+        public Object nextElement() {
+          return ((Iterator)o).next();
+        }
+      };
     }
     else if (o instanceof Collection) {
       return Collections.enumeration((Collection) o);

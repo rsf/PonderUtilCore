@@ -10,12 +10,14 @@ import uk.org.ponder.stringutil.StringList;
  *  
  */
 public class ErrorObject {
-  public String request;
+  public String message;
   public String handlerID;
   public StringList stacktrace = new StringList();
 
-  public ErrorObject(String request, String handlerID, Throwable t) {
-    this.request = request;
+  public ErrorObject() {}
+  
+  public ErrorObject(String message, String handlerID, Throwable t) {
+    this.message = message;
     this.handlerID = handlerID;
     if (t != null) {
       StackTraceElement[] trace = t.getStackTrace();

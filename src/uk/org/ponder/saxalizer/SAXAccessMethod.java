@@ -99,6 +99,9 @@ public class SAXAccessMethod {
                 + parentclazz);
       }
       // record the specified class name if there was one.
+      // TODO: for containers like StringSet we should try to look up
+      // container/containee information from DefaultInferrer. Semantics
+      // of this are slightly unclear... this is not a "default" mapping, BUT
       accessclazz = field.getType();
       clazz = m.clazz == null? accessclazz : m.clazz;
       checkEnumerable(accessclazz);
@@ -197,7 +200,7 @@ public class SAXAccessMethod {
     }
     catch (Throwable t) {
       throw UniversalRuntimeException.accumulate(t,
-          "Error acquiring child object of object " + parent);
+          "Error acquiring child object of object " + parent + " " + parent.getClass());
     }
   }
 

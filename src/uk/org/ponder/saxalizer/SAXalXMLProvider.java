@@ -109,7 +109,8 @@ public class SAXalXMLProvider implements MappableXMLProvider {
     int roottagt = roottagi + 1;
     
     for (; roottagt < toread.length(); ++ roottagt) {
-      if (Character.isWhitespace(toread.charAt(roottagt))) break;
+      char c = toread.charAt(roottagt);
+      if (c == '>') break;
     }
     if (roottagt == toread.length()) {
       throw new UniversalRuntimeException("Couldn't find root tag in string "+ toread);

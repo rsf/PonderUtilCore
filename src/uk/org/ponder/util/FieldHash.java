@@ -60,7 +60,9 @@ public class FieldHash {
     }
 
   }
-
+  /** Returns a 2-element array of StringLists, the first holding key names,
+   * the second holding values.
+   */
   public StringList[] fromObj(Object targetobj) {
     StringList[] togo = new StringList[2];
     togo[0] = new StringList();

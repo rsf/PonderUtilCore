@@ -17,7 +17,7 @@ import uk.org.ponder.stringutil.CharParser;
 import uk.org.ponder.stringutil.EncodingErrorHandler;
 
 import uk.org.ponder.streamutil.DirectInputStreamReader;
-import uk.org.ponder.streamutil.StreamCopier;
+import uk.org.ponder.streamutil.StreamCopyUtil;
 
 /** <code>LightningParser</code> implements a fast parser of a very
  * minimal subset of the XML language. This subset supports only
@@ -269,7 +269,7 @@ public class LightningParser {
 
   private boolean eof;
 
-  private char[] inbuffer = new char[StreamCopier.PROCESS_BUFFER_SIZE];
+  private char[] inbuffer = new char[StreamCopyUtil.PROCESS_BUFFER_SIZE];
   private int inbufferpos;
   private int inbufferlimit;
   private CharWrap outbuffer = new CharWrap(256);

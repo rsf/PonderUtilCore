@@ -70,4 +70,13 @@ public class StringList extends ArrayList {
     }
     return togo.toString();
   }
+  
+  public String toString() {
+    CharWrap togo = new CharWrap();
+    for (int i = 0; i < size(); ++ i) {
+      togo.append(stringAt(i));
+      togo.append(", ");
+    }
+    return togo.toString();
+  }
 }

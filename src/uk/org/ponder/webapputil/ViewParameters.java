@@ -36,7 +36,7 @@ public abstract class ViewParameters implements Cloneable {
   public ViewStateHandler getViewStateHandler() {
     return viewstatehandler;
   }
-  //public String baseurl;
+  public String viewtoken;
   public String viewID;
   public String errortoken;
 
@@ -71,14 +71,11 @@ public abstract class ViewParameters implements Cloneable {
   public String toHTTPRequest() {
     StringList[] vals = getFieldHash().fromObj(this);
     CharWrap togo = new CharWrap();
-    togo.append("?");
     for (int i = 0; i < vals[0].size(); ++i) {
+      togo.append(i == 0? '?' : '&');
       togo.append(vals[0].stringAt(i));
       togo.append("=");
       togo.append(vals[1].stringAt(i));
-      if (i != vals[0].size() - 1) {
-        togo.append("&");
-      }
     }
     return togo.toString();
   }
