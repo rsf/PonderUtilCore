@@ -6,8 +6,15 @@ import uk.org.ponder.util.Constants;
  */
 
 public class DoubleArrayUtil {
-    /// Finds the first index that the supplied element appears at in a given array. Equality will be determined by the <code>.equals()</code> method. @param array The array to be searched for the supplied element. @param tofind The object to be searched for. @return The first index that the object appears at in the array, or <code>-1</code> if it is not found.
-
+   
+  public static double[] select(double[] from, int[] indices) {
+    double[] togo = new double[indices.length];
+    for (int i = 0; i < indices.length; ++ i) {
+      togo[i] = from[indices[i]];
+    }
+    return togo;
+  }
+  
   public static double[] getEmptyArray(int size) {
     double[] togo = new double[size];
     for (int i = 0; i < size; ++ i) {
