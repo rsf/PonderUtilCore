@@ -13,6 +13,7 @@ import java.text.DecimalFormat;
 
 import uk.org.ponder.stringutil.CharWrap;
 import uk.org.ponder.util.Logger;
+import uk.org.ponder.util.UniversalRuntimeException;
 
 class MatrixStorage {
   double value[];
@@ -737,7 +738,7 @@ public class Matrix implements Cloneable {
       double pp = L.getMval(k, k);
 
       if (Math.abs(pp) < small) {
-        return null;
+        throw new UniversalRuntimeException("Overflow in Matrix.dividedBy: " + pp);
       }
 
       double w = 1 / pp;
