@@ -67,16 +67,17 @@ public class Algorithms {
   public static int lexicalCompare(int[] array1, int length1, int[] array2, int length2) {
     int i = 0;
     while (true) {
-      if (i > length1) { 
+      if (i >= length1) { 
         // off the end of 1 means that 1 is possibly shorter
         if (length1 == length2) return 0;
         else return -1;
       }
-      if (i > length2) return 1;
+      if (i >= length2) return 1;
       int a1 = array1[i];
       int a2 = array2[i];
       if (a1 < a2) return -1;
       else if (a1 > a2) return 1;
+      ++i;
     }
   }
   

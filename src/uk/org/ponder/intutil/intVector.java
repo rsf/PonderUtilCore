@@ -2,6 +2,8 @@ package uk.org.ponder.intutil;
 
 import java.util.Arrays;
 
+import uk.org.ponder.util.Assertions;
+
 /** A simple container class representing a vector of native integers.
  */
 
@@ -212,6 +214,13 @@ public class intVector implements Comparable {
 
   public void sort() {
     Arrays.sort(ints, 0, size);
+    if (size == 0) return;
+    int last = ints[0];
+    for (int i = 1; i < size; ++ i) {
+      int next = ints[i];
+      Assertions.expect(next >= last, "Sort error!");
+      last = next;
+    }
   }
   
   
@@ -233,6 +242,15 @@ public class intVector implements Comparable {
   public int compareTo(Object othero) {
     intVector other = (intVector)othero;
     return Algorithms.lexicalCompare(ints, size, other.ints, other.size);
+  }
+  
+  public boolean equals(Object othero) {
+    intVector other = (intVector) othero;
+    if (size != other.size) return false;
+    for (int i = 0; i < size; ++ i) {
+      if (ints[i] != other.ints[i]) return false;
+    }
+    return true;
   }
 
 }
