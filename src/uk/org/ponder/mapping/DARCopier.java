@@ -41,7 +41,7 @@ public class DARCopier {
     for (int i = 0; i < ma.allgetters.length; ++i) {
       SAXAccessMethod accessmethod = ma.allgetters[i];
       if (!accessmethod.canSet()) {
-        Logger.log.log(Level.WARNING, "Access method " + accessmethod.tagname
+        Logger.log.warn("Access method " + accessmethod.tagname
             + " could not be used for setting");
       }
       Object got = accessmethod.getChildObject(tocopy);

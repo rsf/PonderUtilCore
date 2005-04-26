@@ -111,7 +111,7 @@ public class NestedTransactionWrapper implements Transaction {
       }
       catch (Throwable t) {
         // THIS METHOD SHOULD NEVER THROW!!!
-        Logger.log.log(Level.SEVERE, "Error rolling back transaction");
+        Logger.log.fatal("Error rolling back transaction");
       }
       finally {
         nestingdepth = ROLLED_BACK;

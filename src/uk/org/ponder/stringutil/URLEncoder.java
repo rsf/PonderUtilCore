@@ -37,7 +37,7 @@ public abstract class URLEncoder {
     for (i = '0'; i <= '9'; i++) {
       dontNeedEncoding.set(i);
       }
-    dontNeedEncoding.set(' '); // encoding a space to a + is done in the encode() method
+    //dontNeedEncoding.set(' '); // encoding a space to a + is done in the encode() method
     dontNeedEncoding.set('-');
     dontNeedEncoding.set('_');
     dontNeedEncoding.set('.');
@@ -82,9 +82,9 @@ public abstract class URLEncoder {
       char c = sChars[iS];
       // does this character need  encoding?
       if (dontNeedEncoding.get(c)) {  //  no encoding necessary
-	if (' ' == c) { // unless it's a space
-	  c = '+';
-	  }
+//	if (' ' == c) { // unless it's a space
+//	  c = '+';
+//	  }
 	result.append(c);
 	} 
       else {        // this character needs encoding

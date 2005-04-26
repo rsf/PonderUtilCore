@@ -24,7 +24,7 @@ public class TransactionThreadMap {
   private ThreadLocal transmap = new ThreadLocal() {};
   // this is currently only called by NestedTransactionWrapper constructor
   public void enterTransaction(Transaction tran) {
-    //Logger.log.log(Level.INFO, "*|*|*|*|*|  Thread " + Thread.currentThread() + " entered transaction");
+    //Logger.log.info("*|*|*|*|*|  Thread " + Thread.currentThread() + " entered transaction");
     transmap.set(tran);
   }
   public Transaction getTransaction() {
@@ -32,7 +32,7 @@ public class TransactionThreadMap {
   }
 
   public void endTransaction() {
-    //Logger.log.log(Level.INFO, "*|*|*|*|*|   Thread " + Thread.currentThread() + " left transaction");
+    //Logger.log.info("*|*|*|*|*|   Thread " + Thread.currentThread() + " left transaction");
     transmap.set(null);
   }
 

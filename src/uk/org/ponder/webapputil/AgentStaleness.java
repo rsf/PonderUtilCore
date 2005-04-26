@@ -17,4 +17,10 @@ public class AgentStaleness {
     this.agentid = agentid;
     this.staleness = staleness;
   }
+  public AgentStaleness copy() {
+    AgentStaleness togo = new AgentStaleness();
+    togo.agentid = agentid;
+    togo.staleness = staleness;
+    return togo;
+  }
 }

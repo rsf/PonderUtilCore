@@ -68,11 +68,12 @@ public class StreamCopyUtil {
     try {
       while (true) {
         int bytesread = source.read(buffer);
-        totalbytes += bytesread;
+      
         if (bytesread > 0)
           dest.write(buffer, 0, bytesread);
         if (bytesread == -1)
           break;
+        totalbytes += bytesread;
       }
       System.out.println("inputToOutput copied " + totalbytes + " bytes");
     }
@@ -106,8 +107,9 @@ public class StreamCopyUtil {
     try {
       while (true) {
         int charsread = source.read(buffer);
-        dest.write(buffer, 0, charsread);
-        if (charsread != BUF_SIZ)
+        if (charsread > 0)
+          dest.write(buffer, 0, charsread);
+        if (charsread == -1)
           break;
       }
     }

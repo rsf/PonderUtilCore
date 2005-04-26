@@ -2,6 +2,7 @@ package uk.org.ponder.event;
 
 import uk.org.ponder.arrayutil.ArrayUtil;
 import uk.org.ponder.util.AssertionException;
+import uk.org.ponder.util.Logger;
 
 import java.util.ArrayList;
 ///  Event handling
@@ -80,7 +81,7 @@ public class EventFirer {
             ((Listener)listeners.get(i)).receiveEvent(tofire);
             }
           catch (Throwable t) {
-            t.printStackTrace();
+            Logger.log.warn("Error propagating event", t);
             }
           }
         }

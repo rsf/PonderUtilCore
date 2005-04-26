@@ -14,6 +14,8 @@ public class ConsumerInfo {
   /** The FULL URL for requests made to the consumer's Information Servlet */
   public String informationbase;
   public String consumertype;
+  // NB - urlbase, extraparameters and externalURL may vary between resources
+  // for the same consumer. We expect everything else to be consumer-static.
   /** The URL base required
    * for URLs holding dynamic content written to a remote consumer during 
    * this request cycle. This URL includes a trailing slash.
@@ -24,6 +26,12 @@ public class ConsumerInfo {
    * consists of fully-encoded parameter pairs ready to be postpended
    * to a parameter string.*/
   public String extraparameters;
+  
+  /** The URL to be issued by a user out in the wild to navigate the hosting
+   * environment to the point where the tool instance corresponding to this
+   * resource is visible. If this is null, the tool URL itself is presumed
+   * to be valid (as per Coursework) */
+  public String externalURL;
   /** The URL base required
    * for statically served resource URLs written to a remote consumer 
    * during this request cycle. Note that this may not refer to the same

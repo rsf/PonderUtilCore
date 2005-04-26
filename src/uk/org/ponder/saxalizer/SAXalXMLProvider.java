@@ -108,12 +108,15 @@ public class SAXalXMLProvider implements MappableXMLProvider {
     }
     int roottagt = roottagi + 1;
     
-    for (; roottagt < toread.length(); ++ roottagt) {
-      char c = toread.charAt(roottagt);
-      if (c == '>') break;
+    int endtag = toread.indexOf('>', roottagi);
+    if (endtag == -1) {
+      throw new UniversalRuntimeException("Unterminated root tag in string " + toread);
     }
-    if (roottagt == toread.length()) {
-      throw new UniversalRuntimeException("Couldn't find root tag in string "+ toread);
+    
+    for (; roottagt < endtag; ++ roottagt) {
+      char c = toread.charAt(roottagt);
+      // QQQQQ technically not correct, XML whitespace does not agree with Java.
+      if (Character.isWhitespace(c)) break;
     }
     String roottag = toread.substring(roottagi + 1, roottagt);
     Class objclass = findClass(roottag);

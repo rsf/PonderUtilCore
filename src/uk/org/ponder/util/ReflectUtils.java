@@ -38,7 +38,7 @@ public class ReflectUtils {
         }
       }
       catch (Throwable t) {
-        Logger.log.log(Level.SEVERE, "Error reflecting for static names ", t);
+        Logger.log.fatal("Error reflecting for static names ", t);
       }
     }
   }

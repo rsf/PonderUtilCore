@@ -25,7 +25,7 @@ import uk.org.ponder.arrayutil.ArrayUtil;
 public class Logger {
   // The ponder Logger is now deprecated. All new logging should be done
   // via this commons standard logger.
-  public static java.util.logging.Logger log = java.util.logging.Logger.getLogger("PonderUtilCore");
+  public static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger("PonderUtilCore");
   static {
     //FineFormatter.configureLogger(log);
   }
