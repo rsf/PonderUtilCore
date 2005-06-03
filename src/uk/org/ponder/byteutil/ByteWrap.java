@@ -392,22 +392,6 @@ public class ByteWrap {
     return build.toString();
     }
 
-  /** Converts a character to a String holding a hexadecimal representation.
-   * The form of the representation is the HTML entity encoding the character
-   * as Unicode.
-   * @param tohex The character to be represented as hexadecimal.
-   * @return A string holding the character in HTML Unicode-entity form.
-   */
-
-  public static final String charToHex(char tohex) {
-    int itohex = (int) tohex;
-    StringBuffer build = new StringBuffer("&#x");
-    build.append(toHex((itohex & 0xf000) >> 12));
-    build.append(toHex((itohex & 0xf00)  >> 8));
-    build.append(toHex((itohex & 0xf0)   >> 4));
-    build.append(toHex((itohex & 0xf)));
-    build.append(';');
-    return build.toString();
-    }
+  
 
   }

@@ -15,10 +15,11 @@ public class ByteToCharBase64 {
     'g','h','i','j','k','l','m','n', // 4
     'o','p','q','r','s','t','u','v', // 5
     'w','x','y','z','0','1','2','3', // 6
-    '4','5','6','7','8','9','-','_'  // 7
+    '4','5','6','7','8','9','(','_'  // 7
     };
-// NB !!!!! characters + and / have been replaced with - and _ for
+// NB !!!!! characters + and / have been replaced with ( and ) for
    // file and URL safety.
+  // NB - formerly - and _, these have been reclaimed.
   //  public static void getOutputWidth(int inputbytes) {
   //    }
 

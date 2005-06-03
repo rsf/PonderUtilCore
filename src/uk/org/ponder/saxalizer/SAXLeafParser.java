@@ -6,8 +6,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Hashtable;
 
-import org.xml.sax.SAXException;
-
 import uk.org.ponder.util.AssertionException;
 import uk.org.ponder.util.LexReader;
 import uk.org.ponder.util.LexUtil;
@@ -221,9 +219,6 @@ public class SAXLeafParser {
    *          The type of the required object.
    * @param bulk
    *          The data to be parsed.
-   * @exception SAXException
-   *              if the supplied text cannot be parsed into an object of the
-   *              type.
    * @return the data parsed into an object of the required type.
    */
 

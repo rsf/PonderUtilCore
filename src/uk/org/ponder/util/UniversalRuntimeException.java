@@ -53,7 +53,7 @@ public class UniversalRuntimeException extends RuntimeException implements
         addUnwrapper((ExceptionUnwrapper) unwrapper);
       }
       catch (Throwable t) {
-        Logger.log.warn("Couldn't load unwrapper " + unwrapclasses[i], t);
+        Logger.log.warn("Couldn't load unwrapper " + unwrapclasses[i]);
       }
     }
   }

@@ -83,9 +83,9 @@ public class StreamCopyUtil {
     }
     finally {
       if (closeinput)
-        StreamUtil.closeInputStream(source);
+        StreamCloseUtil.closeInputStream(source);
       if (closeoutput)
-        StreamUtil.closeOutputStream(dest);
+        StreamCloseUtil.closeOutputStream(dest);
     }
   }
 
@@ -199,7 +199,7 @@ public class StreamCopyUtil {
           "Error converting stream to string");
     }
     finally {
-      StreamUtil.closeReader(disr);
+      StreamCloseUtil.closeReader(disr);
     }
   }
 

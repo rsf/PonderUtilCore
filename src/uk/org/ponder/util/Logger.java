@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import uk.org.ponder.byteutil.ByteWrap;
 
 import uk.org.ponder.intutil.intVector;
+import uk.org.ponder.stringutil.CharWrap;
 
 import uk.org.ponder.arrayutil.ArrayUtil;
 
@@ -164,7 +165,7 @@ public class Logger {
   }
 
   private static void printInternal(String toprint) {
-    StringBuffer buildup = new StringBuffer(toprint.length() + 16);
+    CharWrap buildup = new CharWrap(toprint.length() + 16);
     String prefix = null;
     synchronized (threadnames) {
       String threadname = Thread.currentThread().getName();
@@ -196,7 +197,7 @@ public class Logger {
         buildup.append("        ");
       }
       else
-        buildup.append(ByteWrap.charToHex(charat));
+        buildup.appendHexChar(charat);
       if (charat == '\n' && i != toprint.length() - 1) {
         buildup.append(prefix);
       }

@@ -9,7 +9,7 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.Parser;
 
 import uk.org.ponder.saxalizer.mapping.ClassNameManager;
-import uk.org.ponder.streamutil.StreamUtil;
+import uk.org.ponder.streamutil.StreamCloseUtil;
 import uk.org.ponder.util.Logger;
 import uk.org.ponder.util.UniversalRuntimeException;
 
@@ -65,7 +65,7 @@ public class SAXalizerHelper extends HandlerBase {
     return produceSubtreeInternal(rootobj, i);
     }
     finally {
-      StreamUtil.closeReader(reader);
+      StreamCloseUtil.closeReader(reader);
     }
   }
   
@@ -86,7 +86,7 @@ public class SAXalizerHelper extends HandlerBase {
       return produceSubtreeInternal(rootobj, i);
     }
     finally {
-      StreamUtil.closeInputStream(stream);
+      StreamCloseUtil.closeInputStream(stream);
     }
   }
 

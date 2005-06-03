@@ -42,6 +42,10 @@ public class MappingLoadManager {
     }
   }
 
+  public ClassNameManager getClassNameManager() {
+    return mappingcontext.classnamemanager;
+  }
+  
   public XMLProvider getXMLProvider() {
     return xmlprovider;
   }

@@ -3,8 +3,6 @@
  */
 package uk.org.ponder.transaction;
 
-import java.util.logging.Level;
-
 import uk.org.ponder.util.Logger;
 import uk.org.ponder.util.UniversalRuntimeException;
 
