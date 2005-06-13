@@ -75,6 +75,14 @@ public class DoubleArrayUtil {
     bounds[1] = max;
   }
 
+  public static double sum(double[] tosum) {
+    double total = 0;
+    for (int i = tosum.length - 1; i >= 0; --i) {
+      total += tosum[i];
+    }
+    return total;
+  }
+  
   public static double dotprod(double[] vec1, double[] vec2) {
     double total = 0;
     for (int i = vec1.length - 1; i >= 0; --i) {
