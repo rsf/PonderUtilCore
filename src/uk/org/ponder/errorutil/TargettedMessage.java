@@ -24,4 +24,9 @@ public class TargettedMessage {
     this.message = message;
     this.exceptionclass = exceptionclass;
   }
+  public TargettedMessage(String message, Class exceptionclass, String targetid) {
+    this.message = message;
+    this.exceptionclass = exceptionclass;
+    this.targetid = targetid;
+  }
 }

@@ -113,7 +113,7 @@ class LongParser implements SAXLeafTypeParser {
 
 public class SAXLeafParser {
 
-  public Class wrapClass(Class towrap) {
+  public static Class wrapClass(Class towrap) {
     if (towrap.equals(Double.TYPE))
       return Double.class;
     else if (towrap.equals(Long.TYPE))
