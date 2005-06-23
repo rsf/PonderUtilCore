@@ -127,6 +127,16 @@ public class intVector implements Comparable {
     ints[size] = i;
     ++size;
   }
+  
+  /** Appends all the elements from the supplied intVector */
+  public void addAll(intVector toadd) {
+    int newsize = size + toadd.size; 
+    if (newsize >= ints.length) {
+      reallocate(newsize * 2);
+    }
+    System.arraycopy(toadd.ints, 0, ints, size, toadd.size);
+    size = newsize;
+  }
 
   /** Inserts the supplied value at the index position specified - following elements
    * will be shifted to the right and the vector capacity expanded if necessary.

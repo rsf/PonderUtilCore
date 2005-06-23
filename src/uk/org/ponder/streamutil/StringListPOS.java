@@ -25,6 +25,7 @@ public class StringListPOS implements PrintOutputStream {
     if (incompleteline.size() > 0) {
       incompleteline.append(toprint);
       stringlist.add(incompleteline.toString());
+      incompleteline.clear();
     }
     else {
       stringlist.add(toprint);

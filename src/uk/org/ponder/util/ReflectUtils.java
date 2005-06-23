@@ -16,7 +16,7 @@ import uk.org.ponder.stringutil.StringList;
 public class ReflectUtils {
   public static final boolean PREFIX = true;
   public static final boolean SUFFIX = false;
-
+  
   public static boolean isPublicStatic(int modifiers) {
     return Modifier.isPublic(modifiers) && Modifier.isStatic(modifiers);
   }
