@@ -124,6 +124,15 @@ public class Algorithms {
     return togo;
   }
   
+  /** Count the number of set bits in the argument, by the accepted method */
+  public static int count_bits(int tocount) {
+    int n = 0;
+    for (; tocount != 0; n++) {
+      tocount &= tocount - 1;
+    }
+    return n;
+  }
+  
   /*
   public static void reverse(intIterator first, intIterator last) {
     while (true)
