@@ -121,6 +121,7 @@ public class CharWrap {
    */
 
   public CharWrap append(String s) {
+    if (s == null) s = "null";
     int length = s.length();
     ensureCapacity(size + length);
     s.getChars(0, length, storage, size + offset);
