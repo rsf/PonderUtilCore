@@ -273,6 +273,10 @@ public class CharWrap {
     return new String(storage, offset, size);
   }
 
+  
+  public String toString(int start) {
+    return new String(storage, offset + start, size - start);
+  }
   /**
    * Computes a hashcode for this CharWrap.
    * 

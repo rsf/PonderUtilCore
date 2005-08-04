@@ -10,6 +10,7 @@ package uk.org.ponder.errorutil;
 public class SubmittedValueEntry {
   public static final String FOSSIL_SUFFIX = "-fossil";
   public static final String DELETION_BINDING = "deletion"+FOSSIL_SUFFIX;
+  public static final String ACTION_METHOD = "action method";
   // key = componentid-fossil, value = {value-binding}oldvalue
   // deletion - first id character is *, does not enter rsvc.
   public String valuebinding;

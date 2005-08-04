@@ -8,5 +8,6 @@ package uk.org.ponder.mapping;
  * 
  */
 public interface DARReceiver {
+  public void setRootPath(String rootpath);
   public void addDataAlterationRequest(DataAlterationRequest toadd);
 }

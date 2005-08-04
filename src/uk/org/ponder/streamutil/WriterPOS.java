@@ -42,13 +42,14 @@ public class WriterPOS implements PrintOutputStream {
     StreamCloseUtil.closeWriter(w);
   }
 
-  public void print(String string) {
+  public PrintOutputStream print(String string) {
     try {
       w.write(string);
     }
     catch (Exception e) {
       throw UniversalRuntimeException.accumulate(e);
     }
+    return this;
   }
 
   public void println() {

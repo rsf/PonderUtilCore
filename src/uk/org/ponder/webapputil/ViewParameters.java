@@ -43,13 +43,15 @@ public abstract class ViewParameters implements Cloneable {
   public abstract FieldHash getFieldHash();
   public abstract void clearActionState();
   public abstract void clearParams();
+  public abstract void parsePathInfo(String pathinfo);
+  public abstract String toPathInfo();
 
   /** Fill in the fields of the supplied view parameter object with data
    * from the supplied URL (which may be null), the supplied parameter map
    * and any other statically accessible sources of information.
    */
-  public void fromRequest(Map parameters) {
-    viewID = viewstatehandler.extractViewID(null);
+  public void fromRequest(Map parameters, String pathinfo) {
+    parsePathInfo(pathinfo);
     getFieldHash().fromMap(parameters, this);
   }
   
@@ -68,9 +70,13 @@ public abstract class ViewParameters implements Cloneable {
     } // CANNOT THROW! IDIOTIC SYSTEM!!   
   }
 
+  /** Returns the "mid-portion" of the URL corresponding to these parameters,
+   * i.e. view-id/more-path-info?param1=val&param2=val 
+   */
   public String toHTTPRequest() {
     StringList[] vals = getFieldHash().fromObj(this);
     CharWrap togo = new CharWrap();
+    togo.append(toPathInfo());
     for (int i = 0; i < vals[0].size(); ++i) {
       togo.append(i == 0? '?' : '&');
       togo.append(vals[0].stringAt(i));

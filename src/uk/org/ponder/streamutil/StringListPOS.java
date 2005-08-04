@@ -38,8 +38,9 @@ public class StringListPOS implements PrintOutputStream {
   public void close() {
   }
 
-  public void print(String string) {
+  public PrintOutputStream print(String string) {
     incompleteline.append(string);
+    return this;
   }
 
   public void println() {

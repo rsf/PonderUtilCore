@@ -25,8 +25,9 @@ public class PrintStreamPOS implements PrintOutputStream {
       printstream.close();
     }
   }
-  public void print(String string) {
+  public PrintOutputStream print(String string) {
     printstream.print(string);
+    return this;
   }
   public void println() {
     printstream.println();

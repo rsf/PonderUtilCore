@@ -63,10 +63,11 @@ public class POSMulticaster implements PrintOutputStream {
     }
   }
   
-  public void print(String string) {
+  public PrintOutputStream print(String string) {
     for (int i = 0; i < targets.size(); ++i) {
       POSAt(i).print(string);
     }
+    return this;
   }
   
   public void println() {

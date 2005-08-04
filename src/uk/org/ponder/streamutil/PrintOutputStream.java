@@ -13,7 +13,7 @@ public interface PrintOutputStream {
   public void println(String toprint);
   public void flush();
   public void close();
-  public void print(String string);
+  public PrintOutputStream print(String string);
   public void println();
   public void println(Object obj);
  

@@ -87,7 +87,7 @@ public class DARApplier {
     StringList messages = new StringList();
     for (int i = 0; i < toapply.size(); ++i) {
       DataAlterationRequest dar = toapply.DARAt(i);
-     applyAlteration(rootobj, dar, mappingcontext, xmlprovider, messages);
+      applyAlteration(rootobj, dar, mappingcontext, xmlprovider, messages);
     }
     return messages;
   }

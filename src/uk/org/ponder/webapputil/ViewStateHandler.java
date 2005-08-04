@@ -28,6 +28,4 @@ public interface ViewStateHandler {
    * of the view specified.
    */
   public void issueRedirect(ViewParameters viewparams);
-  public String extractViewID(String requesturl);
-
 }
