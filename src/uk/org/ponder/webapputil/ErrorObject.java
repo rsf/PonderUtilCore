@@ -6,6 +6,8 @@ package uk.org.ponder.servletutil;
 import uk.org.ponder.stringutil.StringList;
 
 /**
+ * A quick and dirty serialisable object designed to transport a stack
+ * trace between webapps. Generally not used.
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
  *  
  */
