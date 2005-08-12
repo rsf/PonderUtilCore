@@ -38,7 +38,6 @@ public abstract class ViewParameters implements Cloneable {
   }
   public String viewtoken;
   public String viewID;
-  public String errortoken;
 
   public abstract FieldHash getFieldHash();
   public abstract void clearActionState();
@@ -62,7 +61,7 @@ public abstract class ViewParameters implements Cloneable {
   public ViewParameters copyBase() {
     try {
       ViewParameters togo = (ViewParameters) clone(); 
-      togo.errortoken = null;
+      togo.viewtoken = null;
       return togo;
     }
     catch (Throwable t) {
@@ -91,17 +90,4 @@ public abstract class ViewParameters implements Cloneable {
     return viewstatehandler.getFullURL(this);
   }
 
-  public void issueRedirect() {
-    viewstatehandler.issueRedirect(this);
-  }
-
-  /** Issue the redirect required at the end of handling an action
-   * request. This simply issues a GET request to the original URL
-   * requested by the POST. QQQQQ does someone clear action params??
-   */
-  public static final void issueActionRedirect(ViewParameters origrequest) {
-    // No real cost doing this to orig- we will never see this request again.
-    origrequest.clearActionState();
-    origrequest.issueRedirect();
-  }
 }

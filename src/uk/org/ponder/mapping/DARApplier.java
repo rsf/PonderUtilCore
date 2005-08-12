@@ -3,15 +3,22 @@
  */
 package uk.org.ponder.mapping;
 
-import java.util.logging.Level;
-
+import uk.org.ponder.beanutil.BeanGetter;
+import uk.org.ponder.beanutil.BeanUtil;
+import uk.org.ponder.beanutil.PathUtil;
+import uk.org.ponder.beanutil.RootBeanLocator;
+import uk.org.ponder.errorutil.CoreMessages;
+import uk.org.ponder.errorutil.TargettedMessage;
+import uk.org.ponder.errorutil.TargettedMessageList;
+import uk.org.ponder.errorutil.ThreadErrorState;
 import uk.org.ponder.saxalizer.MethodAnalyser;
 import uk.org.ponder.saxalizer.SAXAccessMethod;
+import uk.org.ponder.saxalizer.SAXalXMLProvider;
 import uk.org.ponder.saxalizer.SAXalizerMappingContext;
 import uk.org.ponder.saxalizer.XMLProvider;
-import uk.org.ponder.stringutil.StringList;
 import uk.org.ponder.util.Denumeration;
 import uk.org.ponder.util.EnumerationConverter;
+import uk.org.ponder.util.Logger;
 import uk.org.ponder.util.UniversalRuntimeException;
 
 /**
@@ -19,32 +26,66 @@ import uk.org.ponder.util.UniversalRuntimeException;
  *  
  */
 public class DARApplier {
+  private XMLProvider xmlprovider;
+  private SAXalizerMappingContext mappingcontext;
 
-  public static StringList applyAlteration(Object rootobj, DataAlterationRequest dar,
-      SAXalizerMappingContext mappingcontext, XMLProvider xmlprovider, StringList messages) {
-    String[] components = dar.path.split("\\.");
-    Object moveobj = rootobj;
-    SAXAccessMethod am = null;
-    for (int comp = 0; comp < components.length; ++comp) {
-      MethodAnalyser ma = MethodAnalyser.getMethodAnalyser(moveobj,
-          mappingcontext);
-      am = ma.getAccessMethod(components[comp]);
-      if (am == null) {
-        throw new UniversalRuntimeException("Access method " + components[comp] + " not found in " + moveobj.getClass());
-      }
-      if (comp != components.length - 1) {
-        moveobj = am.getChildObject(moveobj);
-      }
+  public void setSAXalXMLProvider(SAXalXMLProvider saxal) {
+    xmlprovider = saxal;
+    mappingcontext = saxal.getMappingContext();
+  }
+
+  public static SAXAccessMethod getAMExpected(Object target, String methodname,
+      SAXalizerMappingContext mappingcontext) {
+    MethodAnalyser ma = MethodAnalyser
+        .getMethodAnalyser(target, mappingcontext);
+    SAXAccessMethod am = ma.getAccessMethod(methodname);
+    if (am == null) {
+      throw new UniversalRuntimeException("Access method " + methodname
+          + " not found in " + target.getClass());
     }
+    return am;
+  }
+
+  // a convenience method to have the effect of a "set" ValueBinding,
+  // constructs a mini-DAR just for setting. Errors will be accumulated
+  // into ThreadErrorState
+  public void setBeanValue(String fullpath, RootBeanLocator rbl, Object value) {
+    String restpath = PathUtil.getFromHeadPath(fullpath);
+    String headpath = PathUtil.getHeadPath(fullpath);
+    Object rootbean = rbl.locateRootBean(headpath);
+    DataAlterationRequest dar = new DataAlterationRequest(restpath, value);
+    TargettedMessageList messages = ThreadErrorState.getErrorState().errors;
+    messages.pushNestedPath(headpath);
+    try {
+      applyAlteration(rootbean, dar, messages);
+    }
+    finally {
+      messages.popNestedPath();
+    }
+  }
+
+  public TargettedMessageList applyAlteration(Object rootobj,
+      DataAlterationRequest dar, TargettedMessageList messages) {
+    String totail = PathUtil.getToTailPath(dar.path);
+    Object moveobj = BeanUtil.navigate(rootobj, totail, mappingcontext);
     Object convert = dar.data;
+    String tail = PathUtil.getTailPath(dar.path);
+    SAXAccessMethod am = getAMExpected(moveobj, tail, mappingcontext);
     if (convert instanceof String) {
-      Class leaftype = am.getAccessedType();
-      if (mappingcontext.saxleafparser.isLeafType(leaftype)) {
-        convert = mappingcontext.saxleafparser.parse(leaftype,
-            (String) dar.data);
+      try {
+        messages.pushNestedPath(totail);
+        Class leaftype = am.getAccessedType();
+        if (mappingcontext.saxleafparser.isLeafType(leaftype)) {
+          convert = mappingcontext.saxleafparser.parse(leaftype,
+              (String) dar.data);
+        }
+        else {
+          // TODO: catch conversion errors by putting messages into TES.
+          convert = xmlprovider.fromString((String) convert);
+        }
       }
-      else {
-        convert = xmlprovider.fromString((String)convert);
+      finally {
+        messages.popNestedPath();
       }
     }
 
@@ -64,8 +105,12 @@ public class DARApplier {
         Object lastobj = am.getChildObject(moveobj);
         Denumeration den = EnumerationConverter.getDenumeration(lastobj);
         boolean removed = den.remove(convert);
-        if (!removed) {messages.add("Couldn't remove object " + convert 
-            + " from path " + dar.path);
+        if (!removed) {
+          TargettedMessage message = new TargettedMessage(
+              CoreMessages.MISSING_DATA_ERROR, dar.path);
+          messages.addMessage(message);
+          Logger.log.warn("Couldn't remove object " + convert + " from path "
+              + dar.path);
         }
       }
     }
@@ -82,12 +127,11 @@ public class DARApplier {
     return messages;
   }
 
-  public static StringList applyAlterations(Object rootobj, DARList toapply,
-      SAXalizerMappingContext mappingcontext, XMLProvider xmlprovider) {
-    StringList messages = new StringList();
+  public TargettedMessageList applyAlterations(Object rootobj, DARList toapply) {
+    TargettedMessageList messages = new TargettedMessageList();
     for (int i = 0; i < toapply.size(); ++i) {
       DataAlterationRequest dar = toapply.DARAt(i);
-      applyAlteration(rootobj, dar, mappingcontext, xmlprovider, messages);
+      applyAlteration(rootobj, dar, messages);
     }
     return messages;
   }

@@ -14,13 +14,18 @@ public class RequestSubmittedValueCache {
   public String errortoken;
   public void addEntry(SubmittedValueEntry sve) {
     idmap.put(sve.componentid, sve);
+    pathmap.put(sve.valuebinding, sve);
     entries.add(sve);
   }
   
   public SubmittedValueEntry byID(String componentid) {
     return (SubmittedValueEntry)idmap.get(componentid);
   }
-  HashMap idmap = new HashMap();
+  public SubmittedValueEntry byPath(String beanpath) {
+    return (SubmittedValueEntry) pathmap.get(beanpath);
+  }
+  private HashMap idmap = new HashMap();
+  private HashMap pathmap = new HashMap();
   public ArrayList entries = new ArrayList();
   
 }

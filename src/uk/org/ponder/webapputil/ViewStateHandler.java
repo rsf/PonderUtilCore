@@ -12,7 +12,8 @@ package uk.org.ponder.webapputil;
 public interface ViewStateHandler { 
   /** Return a "complete" URL suitable for rendering to our upstream 
    * consumer for a link to the view specified in these parameters.
-   * This URL may not be valid for any external purposes.
+   * This URL may not be valid for any external purposes. This form of
+   * URL is also to be used for issuing redirects.
    */
   public String getFullURL(ViewParameters viewparams);
   /** The equivalent of getFullURL for static resources that are not
@@ -24,8 +25,4 @@ public interface ViewStateHandler {
    * large. 
    */
   public String getUltimateURL(ViewParameters viewparams);
-  /** Issue a redirect from the current request to a render request
-   * of the view specified.
-   */
-  public void issueRedirect(ViewParameters viewparams);
 }

@@ -18,7 +18,10 @@ import uk.org.ponder.util.UniversalRuntimeException;
  *  
  */
 public class SAXalXMLProvider implements MappableXMLProvider {
-  SAXalizerMappingContext mappingcontext;
+  private SAXalizerMappingContext mappingcontext;
+  public SAXalizerMappingContext getMappingContext() {
+    return mappingcontext;
+  }
 
   private ThreadLocal saxalizergetter = new ThreadLocal() {
     public Object initialValue() {

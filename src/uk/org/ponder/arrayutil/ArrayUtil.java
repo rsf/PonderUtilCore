@@ -167,6 +167,23 @@ public class ArrayUtil {
     System.arraycopy(array, index + 1, array, index, array.length - index - 1);
     }
 
+  public static int lexicalCompare(Comparable[] array1, int length1, Comparable[] array2, int length2) {
+    int i = 0;
+    while (true) {
+      if (i >= length1) { 
+        // off the end of 1 means that 1 is possibly shorter
+        if (length1 == length2) return 0;
+        else return -1;
+      }
+      if (i >= length2) return 1;
+      Comparable a1 = array1[i];
+      Comparable a2 = array2[i];
+      if (a1.compareTo(a2) < 0) return -1;
+      else if (a1.compareTo(a2) > 0) return 1;
+      ++i;
+    }
+  }
+  
   /** Converts the supplied array into a String for debugging purposes.
    * @return A String formed from the results of the <code>.toString()</code> method
    * on each array element, separated by single space characters. If the supplied

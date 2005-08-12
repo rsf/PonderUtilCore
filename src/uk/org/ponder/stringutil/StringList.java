@@ -71,6 +71,11 @@ public class StringList extends ArrayList {
     return togo.toString();
   }
   
+  public String[] toStringArray() {
+    String[] togo = (String[]) toArray(new String[size()]);
+    return togo;
+  }
+  
   public String toString() {
     CharWrap togo = new CharWrap();
     for (int i = 0; i < size(); ++ i) {
