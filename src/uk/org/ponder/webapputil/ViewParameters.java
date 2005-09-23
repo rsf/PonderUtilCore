@@ -38,6 +38,7 @@ public abstract class ViewParameters implements Cloneable {
   }
   public String viewtoken;
   public String viewID;
+  public String errorredirect;
 
   public abstract FieldHash getFieldHash();
   public abstract void clearActionState();
@@ -70,7 +71,7 @@ public abstract class ViewParameters implements Cloneable {
   }
 
   /** Returns the "mid-portion" of the URL corresponding to these parameters,
-   * i.e. view-id/more-path-info?param1=val&param2=val 
+   * i.e. /view-id/more-path-info?param1=val&param2=val 
    */
   public String toHTTPRequest() {
     StringList[] vals = getFieldHash().fromObj(this);

@@ -77,4 +77,9 @@ public class POSMulticaster implements PrintOutputStream {
   public void println(Object obj) {
     println (""+obj);
   }
+  public void write(char[] storage, int offset, int size) {
+    for (int i = 0; i < targets.size(); ++i) {
+      POSAt(i).write(storage, offset, size);
+    }
+  }
 }

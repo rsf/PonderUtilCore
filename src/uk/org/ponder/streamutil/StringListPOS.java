@@ -50,4 +50,7 @@ public class StringListPOS implements PrintOutputStream {
   public void println(Object obj) {
     println(obj.toString());
   }
+  public void write(char[] storage, int offset, int size) {
+    incompleteline.append(storage, offset, size);
+  }
 }

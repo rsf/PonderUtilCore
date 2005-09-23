@@ -47,7 +47,8 @@ public class FieldHash {
       String fieldname = (String) keys.next();
       Field field = (Field) fieldmap.get(fieldname);
       if (field != null) {
-        String value = (String) from.get(fieldname);
+        Object valueo = from.get(fieldname);
+        String value = valueo instanceof String? (String)valueo : ((String[])valueo)[0];
         try {
           field.set(targetobj, value);
         }

@@ -35,4 +35,8 @@ public class PrintStreamPOS implements PrintOutputStream {
   public void println(Object obj) {
     printstream.println(obj);
   }
+  public void write(char[] storage, int offset, int size) {
+    String toprint = new String(storage, offset, size);
+    print(toprint);
+  }
 }

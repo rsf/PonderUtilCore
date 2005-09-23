@@ -9,6 +9,10 @@ import java.io.Writer;
 import uk.org.ponder.util.UniversalRuntimeException;
 
 /**
+ * A wrapper to convert a Java Writer object into a PrintOutputStream. All
+ * IOExceptions (or others) will be wrapped into unchecked 
+ * UniversalRuntimeExceptions, q.v. Note that since Writers have horrible
+ * dependence on synchronization, you'd be better off using an OutputStreamPOS.
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
  *  
  */
@@ -58,6 +62,15 @@ public class WriterPOS implements PrintOutputStream {
 
   public void println(Object obj) {
     println(obj.toString());
+  }
+
+  public void write(char[] storage, int offset, int size) {
+    try {
+      w.write(storage, offset, size);
+    }
+    catch (IOException e) {
+      throw UniversalRuntimeException.accumulate(e);
+    }
   }
 
 }

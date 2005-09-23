@@ -13,12 +13,13 @@ import uk.org.ponder.stringutil.StringList;
  * 
  */
 public class TargettedMessageList {
-  private ArrayList errors;
+  private ArrayList errors = new ArrayList();
   public int size() {
     return errors.size();
   }
   public void addMessage(TargettedMessage message) {
-    if (nestedpath != null && nestedpath.length() != 0) {
+    if (nestedpath != null && nestedpath.length() != 0 && 
+        !message.targetid.equals(TargettedMessage.TARGET_NONE)) {
       message.targetid = nestedpath + message.targetid;
     }
     errors.add(message);
@@ -33,13 +34,13 @@ public class TargettedMessageList {
   private String nestedpath = null;
   
   public void pushNestedPath(String nestedpath) {
-    pathstack.add(this.nestedpath);
     if (nestedpath == null) {
 		nestedpath = "";
 	}
 	if (nestedpath.length() > 0 && !nestedpath.endsWith(".")) {
 		nestedpath += '.';
 	}
+     pathstack.add(nestedpath);
 	this.nestedpath = nestedpath;
   }
   

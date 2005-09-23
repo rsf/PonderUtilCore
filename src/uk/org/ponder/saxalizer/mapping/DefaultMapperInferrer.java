@@ -62,7 +62,8 @@ public class DefaultMapperInferrer implements SAXalizerMapperInferrer {
     }
     return -1;
   }
-
+// TODO: check that this actually agrees with beans spec!
+// implement "isXxxx" methods for pedants.
   public static String deBean(String methodname) {
     return Character.toLowerCase(methodname.charAt(3))
         + methodname.substring(4);
