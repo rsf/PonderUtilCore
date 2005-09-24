@@ -33,6 +33,10 @@ public class XMLWriter {
   public static final String DEFAULT_ENCODING = "UTF-8";
   private static String DEFAULT_DECLARATION = "<?xml version=\"1.0\" ?>\n";
   private PrintOutputStream internalwriter;
+  
+  public PrintOutputStream getInternalWriter() {
+    return internalwriter;
+  }
 
   /**
    * Creates an XMLWriter wrapping the supplied OutputStream. Character data is
