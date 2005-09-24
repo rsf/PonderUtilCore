@@ -3,7 +3,6 @@
  */
 package uk.org.ponder.webapputil;
 
-
 /**
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
  * 
@@ -36,15 +35,18 @@ public class ConsumerRequestInfo {
   /** A view template provided by the remote consumer with which this
    * response is to be framed.
    */
-  public String viewtemplate;
+  //public String viewtemplate;
   /** A staleness record supplied by the consumer which is relevant for
    * the currently processing request. Full generality would make this a list.
    */
   public AgentStaleness requeststaleness; 
+  
+  // This is currently a BasicSCR, possibly to be upgraded further. No
+  // dependence possible on RSFUtil at this level.
+  public Object rewriter;
   /** A URL returned by the system to be the target of a redirect issued
    * to the client. In fact, this will be delivered as the body of the
    * POST response, which otherwise is traditionally blank.
    */
-  
   //public String returnredirect;
 }
