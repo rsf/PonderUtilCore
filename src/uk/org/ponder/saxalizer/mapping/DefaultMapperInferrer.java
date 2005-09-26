@@ -14,6 +14,7 @@ import uk.org.ponder.saxalizer.SAMSList;
 import uk.org.ponder.saxalizer.SAXAccessMethodSpec;
 import uk.org.ponder.stringutil.StringList;
 import uk.org.ponder.stringutil.StringSet;
+import uk.org.ponder.util.Logger;
 
 /**
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
@@ -95,13 +96,18 @@ public class DefaultMapperInferrer implements SAXalizerMapperInferrer {
     togo.targetclass = clazz;
     SAMSList sams = togo.getSAMSList();
     Method[] methods = clazz.getMethods();
-
+    if (Logger.log.isInfoEnabled()) {
+      Logger.log.info("Inferring default mapping for " + clazz);
+    }
     for (int i = 0; i < methods.length; ++i) {
       int modifiers = methods[i].getModifiers(); 
       if (!isPublicNonStatic(modifiers)) continue;
       String methodname = methods[i].getName();
       if (methodname.equals("getClass")) continue;
       int methodtype = accessorType(methods[i]);
+      if (Logger.log.isInfoEnabled()) {
+        Logger.log.info("Method " + methodname + " access type " + methodtype);
+      }
       if (methodtype != -1) {
         String basename = deBean(methodname);
         SAXAccessMethodSpec spec = byXMLNameSafe(sams, basename, methods[i].getReturnType());
@@ -110,6 +116,9 @@ public class DefaultMapperInferrer implements SAXalizerMapperInferrer {
         }
         else {
           spec.setmethodname = methodname;
+        }
+        if (Logger.log.isInfoEnabled()) {
+          Logger.log.info("Method gave access method " + spec);
         }
         togo.addNonDuplicate(spec);
       }
@@ -122,6 +131,9 @@ public class DefaultMapperInferrer implements SAXalizerMapperInferrer {
       if (!isPublicNonStatic(modifiers)) continue;
       SAXAccessMethodSpec spec = byXMLNameSafe(sams, fieldname, fields[i].getType());
       spec.fieldname = fieldname;
+      if (Logger.log.isInfoEnabled()) {
+        Logger.log.info("Field gave access method " + spec);
+      }
       togo.addNonDuplicate(spec);
     }
     

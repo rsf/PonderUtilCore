@@ -87,6 +87,8 @@ public class MethodAnalyser {
     while (newmethods.hasMoreElements()) {
       SAXAccessMethodSpec nextentry = (SAXAccessMethodSpec) newmethods
           .nextElement();
+      // fuse together any pairs of methods that refer to the same tag/property name(xmlname)
+      // as getters and setters.
       if (nextentry.xmlform.equals(xmlform)) {
         SAXAccessMethodSpec previous = existingmethods
             .byXMLName(nextentry.xmlname);
@@ -101,6 +103,11 @@ public class MethodAnalyser {
                       + previous.xmlname + " with java type " + previous.clazz);
             }
             setmethod = nextentry;
+            previous.setmethodname = nextentry.setmethodname;
+          }
+          if (setmethod == null) {
+            throw new UniversalRuntimeException("Neither of specifications " + previous + " and " +nextentry 
+                + " referring to property " + xmlform + " defines a set method");
           }
           // The "set" method will in general have a more precise argument type.
           previous.clazz = setmethod.clazz;
