@@ -1,7 +1,7 @@
 /*
  * Created on 15-Aug-2003
  */
-package uk.org.ponder.doubleutil;
+package uk.org.ponder.intutil;
 
 /**
  * @author Bosmon
@@ -10,6 +10,6 @@ package uk.org.ponder.doubleutil;
  * integers. 
  */
 // This technique is deprecated by Kevlin, but we use it anyway.
-public interface doubleIterator extends constDoubleIterator {
-   public void setDouble(double toset);
+public interface intIterator extends constIntIterator {
+   public void setInt(int toset);
 }
