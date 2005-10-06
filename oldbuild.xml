@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="jar">
+ <property name="src.dir" value="src"/>
+ <property name="outclasses" value="bin"/>   
+ <property name="outjar" value="target"/>   
+ <target name="jar" depends="compile">
+   <jar jarfile="${outjar}/PonderUtilCore.jar"   
+     basedir="${outclasses}"/>  
+ </target> 
+ <target name="compile">
+    <javac srcdir="${src.dir}" destdir="${outclasses}"/>  
+  </target>  
+</project>
