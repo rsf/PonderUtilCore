@@ -33,7 +33,7 @@ public class XMLWriter {
   public static final String DEFAULT_ENCODING = "UTF-8";
   private static String DEFAULT_DECLARATION = "<?xml version=\"1.0\" ?>\n";
   private PrintOutputStream internalwriter;
-  
+
   public PrintOutputStream getInternalWriter() {
     return internalwriter;
   }
@@ -157,11 +157,25 @@ public class XMLWriter {
     internalwriter.print(DEFAULT_DECLARATION);
   }
 
+  public static String[] entitytable;
+
+  static {
+    entitytable = new String['>' + 1];
+    entitytable['&'] = "&amp;";
+    entitytable['<'] = "&lt;";
+    entitytable['>'] = "&gt;";
+    entitytable['"'] = "&quot;";
+    // HTML 4.0 does not define &apos; and does not plan to
+    entitytable['\''] = "&#39;";
+  }
+
   /**
    * Writes the supplied data to the wrapped stream, escaping all mandatory
-   * XML/HTML entities, being &amp;, &lt;, &gt;, &quot and &#39;. &#39; is
+   * XML entities, being &amp;, &lt;, &gt;, &quot.
+   * NB apostrophe is no longer encoded, since this seems to give a measurable
+   * Increase in speed. (&#39; is
    * escaped to &amp;#39; since HTML 4.0 does not define the &amp;apos; entity
-   * and does not plan to.
+   * and does not plan to)
    * 
    * @param towrite
    *          A character array holding the data to be written.
@@ -169,32 +183,123 @@ public class XMLWriter {
    *          The offset of the data to be written within the array.
    * @param length
    *          The length of the data to be written.
-   * @exception IOException
-   *              If an I/O error occurs while writing the data.
    */
 
-  public void write(char[] towrite, int start, int length) {
-    CharWrap svb = new CharWrap();
-    for (int i = 0; i < length; ++i) {
-      char c = towrite[start + i];
-      if (c == '&') {
+  // This odd strategy is based on the observation that MOST attributes/XML
+  // data do NOT contain any of the entity characters, but those that do
+  // are likely to contain more than one. This could no doubt be tuned
+  // even further but there is only a maximum of 5% slack left in typical
+  // page rendering -
+  // original timing:             690탎
+  // timing with strategy:        680탎
+  // timing with strategy - apos: 658탎
+  // timing with unencoded write: 650탎
+  // timing with write as no-op:  630탎
+  public final void write(char[] towrite, int start, int length) {
+    int limit = start + length;
+    // String ent = null;
+     //while (length > 0) {
+    for (; length > 0; --length) {
+      char c = towrite[limit - length];
+      if (c == '&' || c == '<' || c == '>' || c == '"') break;
+      //on JDK 1.5, amazingly this line puts it back up to 670 with the 4 cases.
+      //if ((c & 35) != 32) continue;
+//      switch (c) {
+//      
+//      case '&':
+//      // ent = "&amp;";
+//      // break outer;
+//      case '<':
+//      // ent = "&lt;";
+//      // break outer;
+//      case '>':
+//      // ent = "&gt;";
+//      // break outer;
+//      case '"':
+//      // ent = "&quot;";
+//      // break outer;
+//      case '\'':
+//        // ent = "&#39;";
+//        break outer;
+//      }
+    }
+    internalwriter.write(towrite, start, limit - start - length);
+    // if (ent != null) {
+    // internalwriter.print(ent);
+    // --length;
+    // }
+    // }
+    if (length > 0) {
+//      writeEntity(towrite[limit - length], internalwriter);
+//      --length;
+      writeSlow(towrite, start + limit - length, length);
+    }
+     //}
+  }
+
+  public static final void writeEntity(char c, PrintOutputStream pos) {
+    switch (c) {
+    case '&':
+      pos.print("&amp;");
+      return;
+    case '<':
+      pos.print("&lt;");
+      return;
+    case '>':
+      pos.print("&gt;");
+      return;
+    case '"':
+      pos.print("&quot;");
+      return;
+    case '\'':
+      pos.print("&#39;");
+      return;
+    }
+    return;
+  }
+
+  public final void writeSlow(char[] towrite, int start, int length) {
+    // AMAZINGLY, in 1.5 it is quicker to create this here than economise it.
+    CharWrap svb = new CharWrap(length + 10);
+    int limit = start + length;
+    for (int i = length; i > 0; --i) {
+      char c = towrite[limit - i];
+      switch (c) {
+      case '&':
         svb.append("&amp;");
-      }
-      else if (c == '<') {
+        svb.ensureCapacity(svb.size + i);
+        break;
+      case '<':
         svb.append("&lt;");
-      }
-      else if (c == '>') {
+        svb.ensureCapacity(svb.size + i);
+        break;
+      case '>':
         svb.append("&gt;");
-      }
-      else if (c == '"') {
+        svb.ensureCapacity(svb.size + i);
+        break;
+      case '"':
         svb.append("&quot;");
-      }
-      else if (c == '\'') {
-        // HTML 4.0 does not define &apos; and does not plan to
+        svb.ensureCapacity(svb.size + i);
+        break;
+
+      // HTML 4.0 does not define &apos; and does not plan to
+      case '\'':
         svb.append("&#39;");
+        svb.ensureCapacity(svb.size + i);
+        break;
+      default:
+        svb.appendFast(c);
       }
-      else
-        svb.append(c);
+      // String lookup = c > entitytable.length? null : entitytable[c];
+      // // optimised on the basis that entitising is RARE - we only check
+      // // available capacity at that point.
+      // if (lookup == null) {
+      // svb.appendFast(c);
+      // }
+      // else {
+      // svb.append(lookup);
+      // svb.ensureCapacity(svb.size + (limit - i));
+      // }
     }
     internalwriter.write(svb.storage, svb.offset, svb.size);
   }
