@@ -1,0 +1,104 @@
+package uk.org.ponder.streamutil;
+
+/** This class was a first attempt at creating what is now BytePen, and
+ * now largely serves as a historical note and repository for ramblings.
+ */
+
+// use case 1:
+// each server method comes with an OutputStream supplied by the servlet engine.
+// task is to write any data into it, and then return. When the servlet engine
+// calls a method, it expects to be able to supply this OutputStream.
+
+// However, each remote method returns an InputStream from which content can be read.
+
+// Say the server, providing OutputStream, calls a remote method. 
+// The Remote object can only dispense 
+// InputStream, so in order to adapt, all that is required is an inputToOutput.
+
+// Making the ConnectionBox take the part of an OutputStream is thus easy --- if 
+// the client requests Input, a simple copy occurs.
+// However, what will the provider do if an InputStream is requested, but it
+// can only provide an OutputStream? It is in this case a thread is required....
+// but when can this ever occur? 
+
+// what if a local client requests an assembleDiffPackage, for example? This is the
+// bad case, and must be absolutely prevented. BUT - in the case a call to 
+// assembleDiffPackage has been resolved to a client
+
+// On the other hand, say a client requires an InputStream. They signal this by putting
+// NOTHING into the box on input, indicating that they expect it to contain an 
+// InputStream on output. In fact, the Box can be passed in as NULL! And a simple
+// InputStream returned...
+
+
+// In Feliform view, the package assembler in local form is a SinkReceiver err Recipient.
+// i.e. an "active output end"
+// whereas everything in remote form is a SourceProvider, i.e. a "passive output end".
+
+// NOW THEN, how would we convert an active output end to a passive output end?
+// active output -> passive input ........active input -> passive output
+
+// There appears to be nothing natural to do it. OK then, how would I do it personally?
+// A (required) thing returning an InputStream is a SourceProvider. 
+// A (present) thing accepting an OutputStream
+// is a SinkReceiver. What we do is to wrap the thing in a thread call that pushes it
+// to "Go" and returns the other half of the StreamPair.
+
+// Does the Feliform viewpoint actually help? If it was used, the local and remote methods
+// would have different types, whereas we want them to be unified.
+
+// SIP + SIR = OF. SOP + SOR = IF. SIR + SOR = CR. SIP + SOP = BU.
+// Hah, only 4 out of 6 combinations :!!!!!!!
+// SOP + SIR = ConfusedOutput
+// SIP + SOR = ConfusedInput
+
+// Given an pair of COO and COI, we should be able to resolve them.
+
+// supplier either RETURNS an InputStream,
+// or is SENT an OutputStream to write to.
+// SO! Either an OutputStream is stuffed in, or IF IT IS NOT, the supplier
+// STUFFS IN an InputStream ITSELF!
+
+// consumer either ACCEPTS an InputStream
+public class StreamConnectionBox {
+  InputStream supplierinput;
+  OutputStream supplieroutput;
+  
+  InputStream consumerinput;
+  OutputStream consumeroutput;
+
+  public void plugSupplier(InputStream supplierinput) {
+    this.supplierinput = supplierinput;
+    }
+
+  public void plugSupplier(OutputStream supplieroutput) {
+    this.supplieroutput = supplieroutput;
+    }
+
+
+  public InputStream getInputStream() {
+    if (supplierinput != null) return supplierinput;
+    else {
+      StreamPair pair = new StreamPair();
+      final OutputStream outputstream = pair.outputstream;
+      // This must be started off in a separate thread, since it will block forever
+      // once the buffer of the pipe fills up with writes.
+      Thread copier = new Thread() {
+	  public void run() {
+	    try {
+	      sourcestore.getBookStream(bookID, outputstream);
+	      }
+	    catch (Exception e) {
+	      e.printStackTrace();
+	      }
+	    }
+	  };
+      copier.start(); 
+      }
+    }
+
+  public void toOutputStream(OutputStream os) {
+    
+    }
+  
+  }

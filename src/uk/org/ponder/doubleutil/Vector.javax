@@ -1,0 +1,120 @@
+/*
+ * Copyright 2004 Felix Pahl. All rights reserved.
+ * Use is subject to license terms.
+ */
+/*
+package linalg;
+
+import util.Assertions;
+import util.General;
+
+public class Vector
+{
+  final public int n;
+  final public double [] vector;
+  
+  public Vector (int n)
+  {
+    this (new double [n]);
+  }
+  
+  public Vector (double [] vector)
+  {
+    this.vector = vector;
+    this.n = vector.length;
+  }
+
+  public Vector (Matrix m,Vector v)
+  {
+    this (m.m);
+    Assertions.expect (m.n,v.n);
+    for (int i = 0;i < n;i++)
+      for (int j = 0;j < v.n;j++)
+        vector [i] += m.matrix [i] [j] * v.vector [j];
+  }
+  
+  
+
+  public void normalize()
+  {
+    double norm = norm ();
+    for (int i = 0;i < n;i++)
+      vector [i] /= norm;
+  }
+
+  public double norm()
+  {
+    double sum = 0;
+    for (int i = 0;i < n;i++)
+      sum += vector [i] * vector [i];
+    return Math.sqrt (sum);
+  }
+  
+  public static double dot (Vector v1,Vector v2)
+  {
+    Assertions.expect (v1.n,v2.n);
+    double dot = 0;
+    for (int i = 0;i < v1.n;i++)
+      dot += v1.vector [i] * v2.vector [i];
+    return dot;
+  }
+
+  public String toString ()
+  {
+    StringBuffer buffer = new StringBuffer ();
+    buffer.append ('{');
+    General.append (buffer,vector);
+    buffer.append ('}');
+    return buffer.toString ();
+  }
+
+  public void scaleBy (double d)
+  {
+    for (int i = 0;i < n;i++)
+      vector [i] *= d;
+  }
+
+  public void subtract (Vector v)
+  {
+    Assertions.expect (v.n,n);
+    for (int i = 0;i < n;i++)
+      vector [i] -= v.vector [i];
+  }
+
+  public static Vector difference (Vector v1,Vector v2)
+  {
+    Assertions.expect (v1.n,v2.n);
+    Vector difference = new Vector (v1.n);
+    for (int i = 0;i < difference.n;i++)
+      difference.vector [i] = v1.vector [i] - v2.vector [i];
+    return difference;
+  }
+
+  public static Vector sum (Vector v1,Vector v2)
+  {
+    Assertions.expect (v1.n,v2.n);
+    Vector difference = new Vector (v1.n);
+    for (int i = 0;i < difference.n;i++)
+      difference.vector [i] = v1.vector [i] + v2.vector [i];
+    return difference;
+  }
+
+  public void randomize()
+  {
+    for (int i = 0;i < n;i++)
+      vector [i] = Math.random ();
+  }
+
+  public void multiplyBy (Matrix m)
+  {
+    Assertions.expect (m.n,n);
+    Assertions.expect (m.m,n);
+    double [] tmp = (double []) vector.clone ();
+    for (int i = 0;i < n;i++)
+    {
+      vector [i] = 0;
+      for (int j = 0;j < n;j++)
+        vector [i] += m.matrix [i] [j] * tmp [j];
+    }
+  }
+}*/
