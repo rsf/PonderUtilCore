@@ -100,7 +100,7 @@ public class ByteToCharUTF8 extends ByteToCharConverter {
 	  outputChar[0] = (char)(((byte1 & 0x1f) << 6) | (byte2 & 0x3f));
 	  output_sequence_length = 1;
 	  }
-	System.out.print("[2]"+outputChar[0]);
+	//System.out.print("[2]"+outputChar[0]);
 	} 
       else if ((byte1 & 0xf0) == 0xe0) { // level 3 high bits should be 1110llll 10lxxxxx 
 	// level 3 - 3 bytes U-0x800 - 0xffff
@@ -125,7 +125,7 @@ public class ByteToCharUTF8 extends ByteToCharConverter {
 	  }
 	// This is the place we would reject incorrect UTF-16 surrogates if we could
 	// be bothered
-	System.out.print("[3]"+outputChar[0]);
+	//System.out.print("[3]"+outputChar[0]);
 	} 
       else if ((byte1 & 0xf8) == 0xf0) { // level 4 high bits should be 11110lll 10llxxxxtc.
 	// l bits should be 1 for non-overlong sequence
@@ -169,7 +169,7 @@ public class ByteToCharUTF8 extends ByteToCharConverter {
 	  outputChar[0] = (char)((ucs4 - 0x10000) / 0x400 + 0xd800);
 	  outputChar[1] = (char)((ucs4 - 0x10000) % 0x400 + 0xdc00);
 	  output_sequence_length = 2;
-	  System.out.print("[4]"+outputChar[0]+outputChar[1]);
+	  //System.out.print("[4]"+outputChar[0]+outputChar[1]);
 	  }
 	} 
       else if ((byte1 & 0xfc) == 0xf8) {

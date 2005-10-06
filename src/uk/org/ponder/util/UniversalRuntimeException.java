@@ -67,7 +67,8 @@ public class UniversalRuntimeException extends RuntimeException implements
   }
 
   public String getMessage() {
-    return message;
+    // fix for failure in log4j to tolerate null message.
+    return message == null? "" : message;
   }
 
   public Class getCategory() {

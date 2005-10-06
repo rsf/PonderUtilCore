@@ -3,12 +3,13 @@
  */
 package uk.org.ponder.saxalizer;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import uk.org.ponder.saxalizer.mapping.ClassNameManager;
 import uk.org.ponder.saxalizer.mapping.DefaultMapperInferrer;
 import uk.org.ponder.saxalizer.mapping.SAXalizerMapper;
 import uk.org.ponder.saxalizer.mapping.SAXalizerMapperInferrer;
+import uk.org.ponder.util.ReflectiveCache;
 
 /**
  * The complete context for serialisation and deserialisation of objects
@@ -29,7 +30,7 @@ public class SAXalizerMappingContext {
   public ClassNameManager classnamemanager = ClassNameManager.instance();
   public SAXalizerMapper mapper = new SAXalizerMapper();
 // this is a Hashtable of Classes to MethodAnalysers
-  private HashMap methodanalysers = new HashMap();
+  private Map methodanalysers = ReflectiveCache.getConcurrentMap();
   public MethodAnalyser getAnalyser(Class clazz) {
     return (MethodAnalyser) methodanalysers.get(clazz); 
   }

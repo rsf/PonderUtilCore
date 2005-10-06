@@ -103,7 +103,7 @@ public class CharWrap {
 
   // copy the current contents into a new buffer if required to
   // accommodate extra data
-  private void ensureCapacity(int requiredsize) {
+  public final void ensureCapacity(int requiredsize) {
     if (requiredsize + offset > storage.length) {
       char[] newstorage = new char[requiredsize * 2];
       System.arraycopy(storage, offset, newstorage, 0, size);
@@ -120,7 +120,7 @@ public class CharWrap {
    * @return A reference to this CharWrap.
    */
 
-  public CharWrap append(String s) {
+  public final CharWrap append(String s) {
     if (s == null) s = "null";
     int length = s.length();
     ensureCapacity(size + length);
@@ -193,6 +193,15 @@ public class CharWrap {
     storage[size + offset] = c;
     size++;
     return this;
+  }
+  
+  /** Appends the specified character onto this CharWrap, without
+   * bounds checks.
+   */
+  
+  public final void appendFast(char c) {
+    storage[size + offset] = c;
+    size ++;
   }
 
   /**

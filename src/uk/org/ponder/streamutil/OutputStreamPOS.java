@@ -117,9 +117,21 @@ public class OutputStreamPOS implements PrintOutputStream {
   }
 
   public void write(char[] storage, int offset, int size) {
-  // TODO: optimise this someday.
-    String towrite = new String(storage, offset, size);
-    print(towrite);
+    while (true) {
+      int remaining = charbuffer.remaining();
+      int towrite = size;
+      if (towrite > remaining) {
+        towrite = remaining;
+      }
+      int bufpos = charbuffer.position();
+      charbuffer.put(storage, offset, towrite);
+      offset += towrite;
+      size -= towrite;
+      charbuffer.position(bufpos + towrite);
+      if (size == 0)
+        break;
+      flushInternal();
+    }
   }
 
   public void println() {

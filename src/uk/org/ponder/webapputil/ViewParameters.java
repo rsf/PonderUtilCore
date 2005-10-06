@@ -27,7 +27,7 @@ import uk.org.ponder.util.FieldHash;
 // in fact, since we only ever have ONE view id, in fact we could simply
 // omit baseurl!!
 
-public abstract class ViewParameters implements Cloneable, Copiable {
+public abstract class ViewParameters implements Cloneable {
   public static final String CURRENT_REQUEST = "ViewParameters for current request";
   public static final String FAST_TRACK_ACTION = "Fast track action";
   private ViewStateHandler viewstatehandler;
@@ -60,7 +60,7 @@ public abstract class ViewParameters implements Cloneable, Copiable {
 // Note that copying does not copy the error token! All command links
 // take the original request, and all non-command links should not share
 // error state.
-  public Object copy() {
+  public ViewParameters copyBase() {
     try {
       ViewParameters togo = (ViewParameters) clone(); 
       togo.viewtoken = null;

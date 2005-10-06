@@ -2,7 +2,6 @@ package uk.org.ponder.saxalizer;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Enumeration;
 
 import uk.org.ponder.util.AssertionException;
 import uk.org.ponder.util.EnumerationConverter;
@@ -13,7 +12,7 @@ import uk.org.ponder.util.UniversalRuntimeException;
  * SAXAccessMethodSpec that the SAXalizer has resolved to an actual method by
  * means of reflection. For a set method, when the correct XML closing tag is
  * seen, the method will be invoked with the just-constructed tag as argument.
- * All reflection is done during the construction of this class.
+ * All construction of reflectors is done during the construction of this class.
  */
 public class SAXAccessMethod {
   public static final Class[] emptyclazz = {};

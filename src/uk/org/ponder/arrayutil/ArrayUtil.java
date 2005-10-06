@@ -184,6 +184,14 @@ public class ArrayUtil {
     }
   }
   
+  public static boolean equals(String string, char[] buffer, int start, int length) {
+    if (length != string.length()) return false;
+    for (int i = length - 1; i >= 0; -- i) {
+      if (buffer[start + i] != string.charAt(i)) return false;
+    }
+    return true;
+  }
+  
   /** Converts the supplied array into a String for debugging purposes.
    * @return A String formed from the results of the <code>.toString()</code> method
    * on each array element, separated by single space characters. If the supplied
