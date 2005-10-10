@@ -30,7 +30,7 @@ public class SAXalizerMappingContext {
   public ClassNameManager classnamemanager = ClassNameManager.instance();
   public SAXalizerMapper mapper = new SAXalizerMapper();
 // this is a Hashtable of Classes to MethodAnalysers
-  private Map methodanalysers = ReflectiveCache.getConcurrentMap();
+  private Map methodanalysers = ReflectiveCache.getConcurrentMap(1);
   public MethodAnalyser getAnalyser(Class clazz) {
     return (MethodAnalyser) methodanalysers.get(clazz); 
   }

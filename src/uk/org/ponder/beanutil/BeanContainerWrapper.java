@@ -48,12 +48,13 @@ public class BeanContainerWrapper implements RootBeanLocator {
     return bean;
   }
   
-  public void invokeBeanMethod(String pathwithmethod) {
+  public Object invokeBeanMethod(String pathwithmethod) {
     String totail = PathUtil.getToTailPath(pathwithmethod);
     String methodname = PathUtil.getTailPath(pathwithmethod);
     Object bean = getBean(totail);
     try {
-      ReflectiveCache.invokeMethod(bean, methodname);
+      
+      return ReflectiveCache.invokeMethod(bean, methodname);
     }
     catch (Exception e) {
       throw UniversalRuntimeException.accumulate(e, "Error invoking method " + methodname + " in bean of " + 

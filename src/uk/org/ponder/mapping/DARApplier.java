@@ -63,7 +63,7 @@ public class DARApplier {
     }
   }
 
-  public TargettedMessageList applyAlteration(Object rootobj,
+  private void applyAlteration(Object rootobj,
       DataAlterationRequest dar, TargettedMessageList messages) {
     String totail = PathUtil.getToTailPath(dar.path);
     Object moveobj = BeanUtil.navigate(rootobj, totail, mappingcontext);
@@ -123,15 +123,23 @@ public class DARApplier {
         am.setChildObject(moveobj, convert);
       }
     }
-    return messages;
   }
 
-  public TargettedMessageList applyAlterations(Object rootobj, DARList toapply) {
-    TargettedMessageList messages = new TargettedMessageList();
+  /** Apply the alterations mentioned in the enclosed DARList to the supplied
+   * bean. Note that this method assumes that the TargettedMessageList is
+   *  already navigated to the root path referred to by the
+   * bean, and that the DARList mentions paths relative to that bean.
+   * @param rootobj The object to which alterations are to be applied
+   * @param toapply The list of alterations
+   * @param messages The list to which error messages accreted during application
+   * are to be appended. This is probably the same as that in the ThreadErrorState,
+   * but is supplied as an argument to reduce costs of ThreadLocal gets.
+   */
+  public void applyAlterations(Object rootobj, DARList toapply, 
+      TargettedMessageList messages) {
     for (int i = 0; i < toapply.size(); ++i) {
       DataAlterationRequest dar = toapply.DARAt(i);
       applyAlteration(rootobj, dar, messages);
     }
-    return messages;
   }
 }

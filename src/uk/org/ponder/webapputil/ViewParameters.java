@@ -42,7 +42,6 @@ public abstract class ViewParameters implements Cloneable {
   public String errorredirect;
 
   public abstract FieldHash getFieldHash();
-  public abstract void clearActionState();
   public abstract void clearParams();
   public abstract void parsePathInfo(String pathinfo);
   public abstract String toPathInfo();

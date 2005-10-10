@@ -4,30 +4,33 @@
 package uk.org.ponder.errorutil;
 
 import uk.org.ponder.hashutil.EighteenIDGenerator;
-import uk.org.ponder.webapputil.ViewParameters;
+import uk.org.ponder.hashutil.IDGenerator;
 
 /**
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
  * 
  */
 public class ThreadErrorState {
+  /** An ID generator used to assign ids to error messages, for easy
+   * location in logs.
+   */
+  public static IDGenerator idgenerator = new EighteenIDGenerator(); 
+  
   private static ThreadLocal errormap = new ThreadLocal() {
     public Object initialValue() {
-      return new RequestStateEntry();
+      return new ErrorStateEntry();
     }
   };
    
-  public static RequestStateEntry getErrorState() {
-    return (RequestStateEntry) errormap.get();
+  public static ErrorStateEntry getErrorState() {
+    return (ErrorStateEntry) errormap.get();
   }
   
-  private static EighteenIDGenerator idgenerator = new EighteenIDGenerator();
-  
-
-  public static void initRequest(ViewParameters viewparams) {
-    RequestStateEntry rse = ThreadErrorState.getErrorState();
-    rse.incomingtokenID = viewparams == null? null : viewparams.viewtoken;
-    rse.outgoingtokenID = idgenerator.generateID();
+  /** Determines whether any errors have occured during the processing of 
+   * the current request.
+   */
+  public static boolean isError() {
+    return getErrorState().errors.size() > 0;
   }
   
   // Idea is that during POST processing, this will be full of messages
@@ -36,8 +39,17 @@ public class ThreadErrorState {
     getErrorState().errors.addMessage(message);
   }
   
-  public static void endRequest() {
-    RequestStateEntry rse = ThreadErrorState.getErrorState();
-    rse.errors.clear();
+  public static void beginRequest() {
+    beginRequest(idgenerator.generateID());
+  }
+  
+  public static void beginRequest(String tokenid) {
+    clearState();
+    getErrorState().tokenid = tokenid;
+  }
+  
+  public static void clearState() {
+    getErrorState().tokenid = null;
+    getErrorState().errors.clear();
   }
 }
