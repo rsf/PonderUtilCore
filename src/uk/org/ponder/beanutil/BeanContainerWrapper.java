@@ -9,7 +9,6 @@ import java.util.HashMap;
 import uk.org.ponder.arrayutil.ArrayUtil;
 import uk.org.ponder.saxalizer.SAXAccessMethod;
 import uk.org.ponder.stringutil.StringList;
-import uk.org.ponder.util.ReflectiveCache;
 import uk.org.ponder.util.UniversalRuntimeException;
 
 /**
@@ -17,8 +16,11 @@ import uk.org.ponder.util.UniversalRuntimeException;
  * 
  */
 public class BeanContainerWrapper implements RootBeanLocator {
+
   private BeanGetter factory;
   private String[] permittedroots;
+  
+  private HashMap cachedmethods = new HashMap();
   
   public void setBeanGetter(BeanGetter beangetter) {
     factory = beangetter;
@@ -49,17 +51,27 @@ public class BeanContainerWrapper implements RootBeanLocator {
   }
   
   public void invokeBeanMethod(String pathwithmethod) {
+    Method method = (Method) cachedmethods.get(pathwithmethod);
     String totail = PathUtil.getToTailPath(pathwithmethod);
-    String methodname = PathUtil.getTailPath(pathwithmethod);
     Object bean = getBean(totail);
+     
+    if (method == null) {
+      String methodname = PathUtil.getTailPath(pathwithmethod);
+      try {
+        method = bean.getClass().getMethod(methodname, SAXAccessMethod.emptyclazz);
+      }
+      catch (Exception e) {
+        throw UniversalRuntimeException.accumulate(e, "Error reflecting for method " + methodname + " in bean of " + 
+            bean.getClass() + " at path " + totail);
+      }
+      cachedmethods.put(pathwithmethod, method);
+    }
     try {
-      ReflectiveCache.invokeMethod(bean, methodname);
+      method.invoke(bean, SAXAccessMethod.emptyobj);
     }
     catch (Exception e) {
-      throw UniversalRuntimeException.accumulate(e, "Error invoking method " + methodname + " in bean of " + 
-          bean.getClass() + " at path " + totail);
-      }
-    
+      throw UniversalRuntimeException.accumulate(e, "Error invoking method for path " + pathwithmethod);
+    }
   }
  
 

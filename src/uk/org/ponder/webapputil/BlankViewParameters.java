@@ -1,14 +1,13 @@
 /*
  * Created on Dec 14, 2004
  */
-package uk.org.ponder.jsfutil;
+package uk.org.ponder.webapputil;
 
 import uk.org.ponder.util.FieldHash;
-import uk.org.ponder.webapputil.ViewParameters;
 
 /**
- * A blank ViewParameters object for those who want to use only 
- * JSF-style navigation.
+ * A blank ViewParameters object for cases where a concrete dummy implementation
+ * is required.
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
  *  
  */
@@ -23,6 +22,14 @@ public class BlankViewParameters extends ViewParameters {
 
   public void clearParams() {
     // TODO Auto-generated method stub
+  }
+  public void parsePathInfo(String pathinfo) {
+    // TODO Auto-generated method stub
+    
+  }
+  public String toPathInfo() {
+    // TODO Auto-generated method stub
+    return null;
   }
 
 }
