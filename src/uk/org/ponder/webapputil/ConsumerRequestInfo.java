@@ -39,6 +39,7 @@ public class ConsumerRequestInfo {
   /** A staleness record supplied by the consumer which is relevant for
    * the currently processing request. Full generality would make this a list.
    */
+  // This ALSO needs to be moved out of PonderUtilCore asap!!!
   public AgentStaleness requeststaleness; 
   
   // This is currently a BasicSCR, possibly to be upgraded further. No

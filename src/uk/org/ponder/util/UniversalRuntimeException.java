@@ -29,7 +29,7 @@ import java.util.ArrayList;
  * A UniversalRuntimeException also contains a Class representing its
  * "category", a point in the inheritance hierarchy that may be used to classify
  * the nature of exceptions, as being distinct from the wrapped target exception
- * intended to record its cause. An object of the category need not every be
+ * intended to record its cause. An object of the category need not ever be
  * created, the inheritance hierachy may be queried via
  * Class.isAssignableFrom().
  * <p>

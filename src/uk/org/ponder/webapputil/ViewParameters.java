@@ -7,7 +7,6 @@ import java.util.Map;
 
 import uk.org.ponder.stringutil.CharWrap;
 import uk.org.ponder.stringutil.StringList;
-import uk.org.ponder.util.Copiable;
 import uk.org.ponder.util.FieldHash;
 
 /**
@@ -28,8 +27,6 @@ import uk.org.ponder.util.FieldHash;
 // omit baseurl!!
 
 public abstract class ViewParameters implements Cloneable {
-  public static final String CURRENT_REQUEST = "ViewParameters for current request";
-  public static final String FAST_TRACK_ACTION = "Fast track action";
   private ViewStateHandler viewstatehandler;
   public void setViewStateHandler(ViewStateHandler handler) {
     this.viewstatehandler = handler;

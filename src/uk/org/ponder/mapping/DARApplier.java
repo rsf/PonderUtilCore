@@ -48,6 +48,8 @@ public class DARApplier {
   // a convenience method to have the effect of a "set" ValueBinding,
   // constructs a mini-DAR just for setting. Errors will be accumulated
   // into ThreadErrorState
+  // NB there are two calls in the workspace, both from PostHandler.applyValues.
+  // Should we really try to do away with the ThreadErrorState?
   public void setBeanValue(String fullpath, RootBeanLocator rbl, Object value) {
     String restpath = PathUtil.getFromHeadPath(fullpath);
     String headpath = PathUtil.getHeadPath(fullpath);
@@ -78,6 +80,7 @@ public class DARApplier {
           convert = mappingcontext.saxleafparser.parse(leaftype,
               (String) dar.data);
         }
+        // TODO: parse EL references and resolve them here.
         else {
           // TODO: catch conversion errors by putting messages into TES.
           convert = xmlprovider.fromString((String) convert);
