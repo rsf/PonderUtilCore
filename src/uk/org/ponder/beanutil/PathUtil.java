@@ -4,6 +4,9 @@
 package uk.org.ponder.beanutil;
 
 /**
+ * A set of utility methods to operate on dot-separated bean paths.
+ * TODO: implement the special ['path with.dots'] syntax for property
+ * names that contain periods.
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
  * 
  */
@@ -23,7 +26,7 @@ public class PathUtil {
     int lastdot = path.lastIndexOf('.');
     return lastdot == -1? null : path.substring(0, lastdot);
   }
-  
+  /** Returns the very last path component of a bean path */ 
   public static String getTailPath(String path) {
     int lastdot = path.lastIndexOf('.');
     return lastdot == -1? path : path.substring(lastdot + 1);

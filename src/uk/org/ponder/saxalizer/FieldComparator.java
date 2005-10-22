@@ -16,7 +16,7 @@ import uk.org.ponder.util.UniversalRuntimeException;
  */
 public class FieldComparator implements Comparator {
 
-  public static SAXAccessMethod findSingleGetter(Class objclass,
+  public static AccessMethod findSingleGetter(Class objclass,
       SAXalizerMappingContext context, String tagname) {
     MethodAnalyser ma = MethodAnalyser.getMethodAnalyser(objclass, context);
     SAXAccessMethod method = ma.getAccessMethod(tagname);
@@ -28,7 +28,7 @@ public class FieldComparator implements Comparator {
     return method;
   }
   
-  private SAXAccessMethod accessor;
+  private AccessMethod accessor;
   public FieldComparator(Class objclass, SAXalizerMappingContext context,
       String fieldname) {
     accessor = findSingleGetter(objclass, context, fieldname);

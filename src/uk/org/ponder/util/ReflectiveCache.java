@@ -17,6 +17,9 @@ import uk.org.ponder.saxalizer.SAXAccessMethod;
  * The intention is that **ALL** application-wide reflection will be done either
  * in this class, or in SAXAccessMethod.
  * 
+ * This class is full of static state and methods, in the belief that all 
+ * reflective objects will have the same lifetime as their parent ClassLoader.
+ * 
  * This implementation will probably shortly be replaced by a FastClass variant.
  * 
  * @author Antranig Basman (antranig@caret.cam.ac.uk)

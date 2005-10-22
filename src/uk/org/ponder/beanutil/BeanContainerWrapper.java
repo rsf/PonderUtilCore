@@ -3,65 +3,42 @@
  */
 package uk.org.ponder.beanutil;
 
-import java.lang.reflect.Method;
-import java.util.HashMap;
-
 import uk.org.ponder.arrayutil.ArrayUtil;
-import uk.org.ponder.saxalizer.SAXAccessMethod;
 import uk.org.ponder.stringutil.StringList;
-import uk.org.ponder.util.ReflectiveCache;
 import uk.org.ponder.util.UniversalRuntimeException;
 
 /**
+ * A bean locator that is used to "censor" access to beans based on their 
+ * entries in a list of "permitted roots".
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
  * 
  */
-public class BeanContainerWrapper implements RootBeanLocator {
-  private BeanGetter factory;
+public class BeanContainerWrapper implements BeanLocator {
+  private BeanLocator factory;
   private String[] permittedroots;
   
-  public void setBeanGetter(BeanGetter beangetter) {
+  public void setBeanLocator(BeanLocator beangetter) {
     factory = beangetter;
   }
   public void setPermittedBeanRoots(StringList permittedroots) {
     this.permittedroots = permittedroots.toStringArray();
   }
- 
-  public Object locateRootBean(String path) {
+
+  public Object locateBean(String path) {
     if (path.indexOf('.') != -1) {
       throw new UniversalRuntimeException("Root path of " + path
           + " is not valid");
     }
-    return factory.getBean(path);
+    checkRootPath(path);
+    return factory.locateBean(path);
   }
 
-  
-  public Object getBean(String path) {
-    String headpath = PathUtil.getHeadPath(path);
+  private void checkRootPath(String rootpath) {
     if (permittedroots == null || 
-        ArrayUtil.indexOf(permittedroots, headpath) == -1) {
+        ArrayUtil.indexOf(permittedroots, rootpath) == -1) {
       throw UniversalRuntimeException.accumulate(new SecurityException(), 
-          "Impermissible bean path " + path);
+          "Impermissible bean path " + rootpath);
     }
-    
-    Object bean = factory.getBean(path);
-    return bean;
   }
-  
-  public Object invokeBeanMethod(String pathwithmethod) {
-    String totail = PathUtil.getToTailPath(pathwithmethod);
-    String methodname = PathUtil.getTailPath(pathwithmethod);
-    Object bean = getBean(totail);
-    try {
-      
-      return ReflectiveCache.invokeMethod(bean, methodname);
-    }
-    catch (Exception e) {
-      throw UniversalRuntimeException.accumulate(e, "Error invoking method " + methodname + " in bean of " + 
-          bean.getClass() + " at path " + totail);
-      }
-    
-  }
- 
 
 }

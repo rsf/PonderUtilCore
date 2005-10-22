@@ -3,24 +3,34 @@ package uk.org.ponder.saxalizer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.Map;
 
 import uk.org.ponder.arrayutil.ArrayEnumeration;
+import uk.org.ponder.beanutil.BeanLocator;
+import uk.org.ponder.beanutil.BeanLocatorPropertyAccessor;
+import uk.org.ponder.beanutil.MapPropertyAccessor;
+import uk.org.ponder.beanutil.PropertyAccessor;
+import uk.org.ponder.errorutil.PropertyException;
 import uk.org.ponder.saxalizer.mapping.SAXalizerMapperEntry;
 import uk.org.ponder.util.ClassGetter;
 import uk.org.ponder.util.Logger;
 import uk.org.ponder.util.UniversalRuntimeException;
 
 /**
- * each of the four types of SAXAccessMethods supporter, being get and set
- * methods for subtags and attributes.
- * <p>
  * One instance of a MethodAnalyser is stored for each SAXalizable class that
  * the SAXalizer discovers; this instance is returned when a call is made to
  * <code>getMethodAnalyser</code> with an object of the SAXalizable class as
  * argument. MethodAnalysers are cached in a static hashtable indexed by the
  * SAXalizable class.
+ * <p>Some "bean-sense" has been retroactively blown into this class, which dates
+ * from the dinosaur SAXalizer days of 2000, with the retrofit of the 
+ * <code>PropertyAccessor</code> interface. Its structure still needs a little
+ * work though, since it still maintains separate collections for "tag"
+ * and "attribute" methods &c. 
  */
-public class MethodAnalyser {
+public class MethodAnalyser implements PropertyAccessor {
+  /** Each of the four types of SAXAccessMethods supported, being get and set
+  * methods for subtags and attributes. */
   public SAXAccessMethodHash tagmethods;
   public SAXAccessMethodHash attrmethods;
   public SAXAccessMethod bodymethod;
@@ -51,7 +61,53 @@ public class MethodAnalyser {
     }
     return method;
   }
+  //****** Begin implementation of PropertyAccessor interface 
+  public boolean canSet(String name) {
+    SAXAccessMethod accessmethod = getAccessMethod(name);
+    return accessmethod == null? false : accessmethod.canSet();
+  }
+  
+  public void setProperty(Object parent, String name, Object value) {
+    SAXAccessMethod accessmethod = getAccessMethod(name);
+    if (accessmethod == null) {
+      throw UniversalRuntimeException.accumulate(new PropertyException(), "Property " + name 
+          + " of object " + parent.getClass() + " not found");
+    }
+    accessmethod.setChildObject(parent, value);
+  }
+  
+  public void unlink(Object parent, String name) {
+    SAXAccessMethod accessmethod = getAccessMethod(name);
+    if (accessmethod == null) {
+      throw UniversalRuntimeException.accumulate(new PropertyException(), "Property " + name 
+          + " of object " + parent.getClass() + " not found");
+    }
+    accessmethod.setChildObject(parent, null);
+  }
 
+  public boolean canGet(String name) {
+    SAXAccessMethod accessmethod = getAccessMethod(name);
+    return accessmethod == null? false : accessmethod.canGet();
+  }
+  
+  public Object getProperty(Object parent, String name) {
+    SAXAccessMethod accessmethod = getAccessMethod(name);
+    if (accessmethod == null) {
+      throw UniversalRuntimeException.accumulate(new PropertyException(), "Property " + name 
+          + " of object " + parent.getClass() + " not found");
+    }
+    return accessmethod.getChildObject(parent);
+  }
+  
+  public Class getPropertyType(String name) {
+    SAXAccessMethod accessmethod = getAccessMethod(name);
+    if (accessmethod == null) {
+      throw UniversalRuntimeException.accumulate(new PropertyException(), "Property " + name 
+          + " not found"); // too much trouble to determine the class here
+    }
+    return accessmethod.clazz;
+  }
+  //****** End implementation of PropertyAccessor interface.
   /**
    * Given an object to be serialised/deserialised, return a MethodAnalyser
    * object containing a hash of Method and Field accessors. The
@@ -82,6 +138,17 @@ public class MethodAnalyser {
     return stored;
   }
 
+  public static PropertyAccessor getPropertyAccessor(Object o, SAXalizerMappingContext context) {
+    if (o instanceof BeanLocator) {
+      return BeanLocatorPropertyAccessor.instance;
+    }
+    else if (o instanceof Map) {
+      return MapPropertyAccessor.instance;
+    }
+   
+    else return getMethodAnalyser(o, context);
+  }
+  
   private void condenseMethods(SAMSList existingmethods,
       Enumeration newmethods, String xmlform) {
     while (newmethods.hasMoreElements()) {

@@ -21,7 +21,10 @@ import uk.org.ponder.util.UniversalRuntimeException;
 
 /**
  * The SAXalizer class is used to deserialize a tree of XML tags into a tree of
- * Java objects.
+ * Java objects. Please note that this class is over 5 years old and is due
+ * for a very major sandblasting - many comments are extremely out of date,
+ * in addition to its using the extremely obsolete SAX1 interface. See wiki
+ * for general comments on roadmap for this dinosaur.
  * <p>
  * Every class that wishes to be SAXalized must implement (at least) the
  * interface SAXalizable, which allows the class to report the set methods it
@@ -108,7 +111,7 @@ public class SAXalizer extends HandlerBase {
     MethodAnalyser ma;
     // The SET method in the parent that will be used to deliver this
     // object when it is complete.
-    SAXAccessMethod parentsetter;
+    AccessMethod parentsetter;
     // where the parent is an array or collection, this is used to deliver
     // multiple children. If it is simply an enumeration, a normal setMethod
     // is called multiple times.
@@ -124,7 +127,7 @@ public class SAXalizer extends HandlerBase {
     CharWrap textsofar;
 
     ParseContext(Object object, MethodAnalyser ma, boolean isgeneric,
-        boolean isleaf, SAXAccessMethod parentsetter) {
+        boolean isleaf, AccessMethod parentsetter) {
       this.object = object;
       this.ma = ma;
       this.isgeneric = isgeneric;
@@ -464,7 +467,7 @@ public class SAXalizer extends HandlerBase {
     ParseContext beingparsed = getSaxingObject();
     SAXAccessMethod bodymethod = beingparsed.ma == null? null : beingparsed.ma.bodymethod;
     
-    SAXAccessMethod parentsetter = beingparsed.parentsetter;
+    AccessMethod parentsetter = beingparsed.parentsetter;
     // Test the special cases first, i) leaf node
     if (beingparsed.isleaf) {
       // System.err.println("About to parse leaf element with class

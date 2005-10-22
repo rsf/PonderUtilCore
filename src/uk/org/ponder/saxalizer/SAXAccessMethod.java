@@ -14,7 +14,7 @@ import uk.org.ponder.util.UniversalRuntimeException;
  * seen, the method will be invoked with the just-constructed tag as argument.
  * All construction of reflectors is done during the construction of this class.
  */
-public class SAXAccessMethod {
+public class SAXAccessMethod implements AccessMethod {
   public static final Class[] emptyclazz = {};
   public static final Object[] emptyobj = {};
 
