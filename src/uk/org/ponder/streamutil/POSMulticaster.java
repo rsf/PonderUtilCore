@@ -18,9 +18,16 @@ import uk.org.ponder.util.UniversalRuntimeException;
 public class POSMulticaster implements PrintOutputStream {
   private ArrayList targets = new ArrayList();
 
+  public POSMulticaster() {}
+  
   public POSMulticaster(Object target) {
     addTarget(target);
   }
+  
+  public boolean isEmpty() {
+    return targets.isEmpty();
+  }
+
   private PrintOutputStream POSAt(int i) {
     return (PrintOutputStream) targets.get(i);
   }

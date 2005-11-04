@@ -53,10 +53,11 @@ public class DoubleArrayUtil {
     return togo;
   }
 
-  public static void fill(double[] tofill, double value) {
+  public static double[] fill(double[] tofill, double value) {
     for (int i = 0; i < tofill.length; ++ i) {
       tofill[i] = value;
     }
+    return tofill;
   }
   
   public static void bounds(double[] toscan, double[] bounds) {
