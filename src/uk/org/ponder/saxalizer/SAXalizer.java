@@ -183,6 +183,9 @@ public class SAXalizer extends HandlerBase {
     // arrived.
     Object newinstance = null;
     try {
+      // TODO: This line here is the general battleground - we would really LIKE to
+      // be able to (in most cases) determine which type of container to create - 
+      // and in addition use FastClass.
       if (oldinstance == null || isdenumerable)
         newinstance = isleaf ? topush : topush.newInstance();
       else newinstance = oldinstance;

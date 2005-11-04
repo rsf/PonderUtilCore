@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import uk.org.ponder.beanutil.BeanLocator;
+import uk.org.ponder.beanutil.BeanModelAlterer;
 import uk.org.ponder.beanutil.BeanUtil;
 import uk.org.ponder.beanutil.PathUtil;
 import uk.org.ponder.beanutil.PropertyAccessor;
@@ -28,7 +29,7 @@ import uk.org.ponder.util.UniversalRuntimeException;
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
  * 
  */
-public class DARApplier {
+public class DARApplier implements BeanModelAlterer {
   private XMLProvider xmlprovider;
   private SAXalizerMappingContext mappingcontext;
 
@@ -37,6 +38,11 @@ public class DARApplier {
     mappingcontext = saxal.getMappingContext();
   }
 
+  public Object getBeanValue(String fullpath, BeanLocator rbl) {
+    Object togo = BeanUtil.navigate(rbl, fullpath, mappingcontext);
+    return togo;
+  }
+  
   // a convenience method to have the effect of a "set" ValueBinding,
   // constructs a mini-DAR just for setting. Errors will be accumulated
   // into ThreadErrorState
