@@ -3,6 +3,7 @@
  */
 package uk.org.ponder.arrayutil;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -15,6 +16,8 @@ import uk.org.ponder.util.AssertionException;
  * The class 
  */
 public class ListUtil {
+  public static final List EMPTY_LIST = new ArrayList(0);
+  
   public static Enumeration getEnumeration(final List list) {
     return new Enumeration () {
       int pos = 0;      

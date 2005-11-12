@@ -1,11 +1,12 @@
 /*
  * Created on May 19, 2005
  */
-package uk.org.ponder.streamutil;
+package uk.org.ponder.streamutil.write;
 
 import java.io.IOException;
 import java.io.Writer;
 
+import uk.org.ponder.streamutil.StreamCloseUtil;
 import uk.org.ponder.util.UniversalRuntimeException;
 
 /**

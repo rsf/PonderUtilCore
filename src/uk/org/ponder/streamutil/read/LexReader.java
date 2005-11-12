@@ -1,7 +1,7 @@
 /*
  * Created on 07-Oct-2003
  */
-package uk.org.ponder.util;
+package uk.org.ponder.streamutil.read;
 
 import java.io.IOException;
 import java.io.PushbackReader;
@@ -14,6 +14,7 @@ import java.io.Reader;
  * checking the EOF() method.
  * @author Bosmon
  */
+//TODO: replace Reader with a non-synchronized infrastructure, a la PrintOutputStream.
 public class LexReader extends PushbackReader {
   private int read = 0;
   private boolean EOF = false;

@@ -11,6 +11,7 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+import uk.org.ponder.conversion.StaticLeafParser;
 import uk.org.ponder.saxalizer.mapping.ClassNameManager;
 import uk.org.ponder.stringutil.CharWrap;
 import uk.org.ponder.util.AssertionException;
@@ -76,7 +77,7 @@ import uk.org.ponder.util.UniversalRuntimeException;
 
 public class SAXalizer extends HandlerBase {
   private SAXalizerMappingContext mappingcontext;
-  private SAXLeafParser leafparser;
+  private StaticLeafParser leafparser;
 
   public SAXalizer(SAXalizerMappingContext mappingcontext) {
     this.mappingcontext = mappingcontext;
@@ -220,7 +221,7 @@ public class SAXalizer extends HandlerBase {
   // if it does not support the SAXalizableAttrs interface,
   // the attributes will be simply thrown away.
   private static void tryBlastAttrs(AttributeList attrlist,
-      SAXAccessMethodHash attrmethods, Object obj, SAXLeafParser leafparser,
+      SAXAccessMethodHash attrmethods, Object obj, StaticLeafParser leafparser,
       boolean waspolymorphic)
       throws SAXException {
     SAXalizableExtraAttrs extraattrs = obj instanceof SAXalizableExtraAttrs?

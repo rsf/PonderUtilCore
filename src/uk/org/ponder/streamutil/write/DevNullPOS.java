@@ -1,7 +1,7 @@
 /*
  * Created on Sep 30, 2005
  */
-package uk.org.ponder.streamutil;
+package uk.org.ponder.streamutil.write;
 
 public class DevNullPOS implements PrintOutputStream{
 

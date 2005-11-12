@@ -5,6 +5,7 @@ package uk.org.ponder.saxalizer;
 
 import java.util.Map;
 
+import uk.org.ponder.conversion.StaticLeafParser;
 import uk.org.ponder.saxalizer.mapping.ClassNameManager;
 import uk.org.ponder.saxalizer.mapping.DefaultMapperInferrer;
 import uk.org.ponder.saxalizer.mapping.SAXalizerMapper;
@@ -26,7 +27,7 @@ import uk.org.ponder.util.ReflectiveCache;
  */
 public class SAXalizerMappingContext {
   public SAXalizerMapperInferrer inferrer = new DefaultMapperInferrer();
-  public SAXLeafParser saxleafparser = SAXLeafParser.instance();
+  public StaticLeafParser saxleafparser = StaticLeafParser.instance();
   public ClassNameManager classnamemanager = ClassNameManager.instance();
   public SAXalizerMapper mapper = new SAXalizerMapper();
 // this is a Hashtable of Classes to MethodAnalysers
@@ -38,11 +39,11 @@ public class SAXalizerMappingContext {
     methodanalysers.put(clazz, analyser);
   }
   private SAXalizerMappingContext(boolean systemwide) {
-    saxleafparser = SAXLeafParser.instance();
+    saxleafparser = StaticLeafParser.instance();
     classnamemanager = ClassNameManager.instance();
   }
   public SAXalizerMappingContext() {
-    saxleafparser = new SAXLeafParser();
+    saxleafparser = new StaticLeafParser();
     classnamemanager = new ClassNameManager();
   }
   private static SAXalizerMappingContext instance = new SAXalizerMappingContext(true);

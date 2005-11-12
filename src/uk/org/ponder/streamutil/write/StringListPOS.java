@@ -1,7 +1,7 @@
 /*
  * Created on Jun 17, 2005
  */
-package uk.org.ponder.streamutil;
+package uk.org.ponder.streamutil.write;
 
 import uk.org.ponder.stringutil.CharWrap;
 import uk.org.ponder.stringutil.StringList;

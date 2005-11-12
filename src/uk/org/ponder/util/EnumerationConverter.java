@@ -50,6 +50,16 @@ public class EnumerationConverter {
         o.getClass());
   }
   
+  public static int getEnumerableSize(Object o) {
+    if (o instanceof Collection) {
+      return ((Collection) o).size();
+    }
+    else if (o.getClass().isArray()) {
+      return ((Object[])o).length;
+    }
+    return -1;
+  }
+  
   public static Enumeration getEnumeration(final Object o) {
     if (o instanceof Enumeration) {
       return (Enumeration)o;

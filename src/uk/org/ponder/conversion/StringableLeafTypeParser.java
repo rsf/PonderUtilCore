@@ -1,12 +1,12 @@
 /*
  * Created on Oct 26, 2004
  */
-package uk.org.ponder.saxalizer;
+package uk.org.ponder.conversion;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
-import uk.org.ponder.stringutil.CharWrap;
+import uk.org.ponder.saxalizer.SAXAccessMethod;
 import uk.org.ponder.util.UniversalRuntimeException;
 
 /**
@@ -15,7 +15,7 @@ import uk.org.ponder.util.UniversalRuntimeException;
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
  * 
  */
-public class StringableLeafTypeParser implements SAXLeafTypeParser {
+public class StringableLeafTypeParser implements LeafObjectParser {
   private Constructor stringcons;
   private Method tostring;
   public StringableLeafTypeParser(Constructor stringcons, Method tostring) {
@@ -58,9 +58,9 @@ public class StringableLeafTypeParser implements SAXLeafTypeParser {
     }
   }
 
-  public CharWrap render(Object torender, CharWrap renderinto) {
+  public String render(Object torender) {
     try {
-      return renderinto.append(tostring.invoke(torender, SAXAccessMethod.emptyobj).toString());
+      return tostring.invoke(torender, SAXAccessMethod.emptyobj).toString();
     }
     catch (Throwable t) {
       throw UniversalRuntimeException.accumulate(t, "Error invoking toString method for object of type "+

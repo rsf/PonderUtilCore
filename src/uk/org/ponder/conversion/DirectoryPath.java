@@ -1,4 +1,4 @@
-package uk.org.ponder.saxalizer;
+package uk.org.ponder.conversion;
 
 import uk.org.ponder.util.Logger;
 
@@ -14,9 +14,9 @@ import uk.org.ponder.stringutil.CharWrap;
  * expands to the directory on the <code>CLASSPATH</code> from which the
  * executing code was read.
  */
-public class DirectoryPath implements SAXLeafTypeParser {
+public class DirectoryPath implements LeafObjectParser {
   static {
-    SAXLeafParser.instance().registerParser(DirectoryPath.class, new DirectoryPath());
+    StaticLeafParser.instance().registerParser(DirectoryPath.class, new DirectoryPath());
     }
   public String directoryspec;
   public String path;
@@ -52,8 +52,8 @@ public class DirectoryPath implements SAXLeafTypeParser {
     return togo;
     }
 
-  public CharWrap render(Object torendero, CharWrap renderinto) {
+  public String render(Object torendero) {
     DirectoryPath torender = (DirectoryPath) torendero;
-    return renderinto.append(torender.directoryspec);
+    return torender.directoryspec;
     }
   }

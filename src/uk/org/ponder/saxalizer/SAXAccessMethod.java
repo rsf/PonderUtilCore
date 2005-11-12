@@ -101,6 +101,7 @@ public class SAXAccessMethod implements AccessMethod {
       // TODO: for containers like StringSet we should try to look up
       // container/containee information from DefaultInferrer. Semantics
       // of this are slightly unclear... this is not a "default" mapping, BUT
+      // ERM! byXMLNameSafe appears to try to fill in m.clazz by itself, does this work?
       accessclazz = field.getType();
       clazz = m.clazz == null? accessclazz : m.clazz;
       checkEnumerable(accessclazz);

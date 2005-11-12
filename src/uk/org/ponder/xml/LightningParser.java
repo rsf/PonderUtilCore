@@ -42,7 +42,10 @@ import uk.org.ponder.streamutil.StreamCopyUtil;
  * pre-interning strategy for tag and attribute names, which are
  * frequently repeated, and raised to blistering levels by doing away
  * with <code>DocumentHandler</code> entirely and reporting all names
- * as character array chunks.*/
+ * as character array chunks.
+ * 
+ * <br> Don't try to use this! It was never finished!
+ * */
 
 public class LightningParser {
   private DocumentHandler documenthandler;

@@ -1,7 +1,7 @@
 /*
  * Created on Sep 15, 2005
  */
-package uk.org.ponder.streamutil;
+package uk.org.ponder.streamutil.write;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -10,6 +10,7 @@ import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 
+import uk.org.ponder.streamutil.StreamCloseUtil;
 import uk.org.ponder.util.UniversalRuntimeException;
 
 /**

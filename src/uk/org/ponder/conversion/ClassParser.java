@@ -1,16 +1,15 @@
 /*
  * Created on Sep 22, 2004
  */
-package uk.org.ponder.saxalizer;
+package uk.org.ponder.conversion;
 
-import uk.org.ponder.stringutil.CharWrap;
 import uk.org.ponder.util.UniversalRuntimeException;
 
 /**
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
  * 
  */
-public class ClassParser implements SAXLeafTypeParser {
+public class ClassParser implements LeafObjectParser {
   public Object parse(String toparse) {
     Class togo;
     try {
@@ -22,9 +21,8 @@ public class ClassParser implements SAXLeafTypeParser {
     return togo;
   }
 
-  public CharWrap render(Object torendero, CharWrap renderinto) {
-    Class torender = (Class)torendero;
-    return renderinto.append(torender.getName());
+  public String render(Object torendero) {
+    return ((Class)torendero).getName();
   }
 
 }

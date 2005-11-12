@@ -10,8 +10,6 @@ import java.io.StringReader;
 import uk.org.ponder.saxalizer.mapping.MappableXMLProvider;
 import uk.org.ponder.saxalizer.mapping.SAXalizerMapperEntry;
 import uk.org.ponder.util.UniversalRuntimeException;
-//QQQQQ This should go into saxalizer together with half of
-// ResourceClassTable
 
 /**
  * @author Antranig Basman (antranig@caret.cam.ac.uk)

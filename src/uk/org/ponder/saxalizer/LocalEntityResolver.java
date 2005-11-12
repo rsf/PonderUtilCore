@@ -1,5 +1,7 @@
 package uk.org.ponder.saxalizer;
 
+import uk.org.ponder.conversion.DirectoryPath;
+
 /** The <code>LocalEntityResolver</code> maps a DTD reference
  * onto a locally cached copy. These objects
  * are stored inside an <code>EntityResolverStash</code>.

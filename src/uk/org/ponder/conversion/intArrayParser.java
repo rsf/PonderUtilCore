@@ -1,15 +1,16 @@
 /*
  * Created on Oct 11, 2004
  */
-package uk.org.ponder.saxalizer.leafparsers;
+package uk.org.ponder.conversion;
 
 import java.io.IOException;
 import java.io.StringReader;
 
-import uk.org.ponder.saxalizer.SAXLeafTypeParser;
+import uk.org.ponder.streamutil.read.LexReader;
+import uk.org.ponder.streamutil.read.LexUtil;
+import uk.org.ponder.streamutil.read.PushbackRIS;
+import uk.org.ponder.streamutil.read.StringRIS;
 import uk.org.ponder.stringutil.CharWrap;
-import uk.org.ponder.util.LexReader;
-import uk.org.ponder.util.LexUtil;
 import uk.org.ponder.util.UniversalRuntimeException;
 
 /**
@@ -19,11 +20,11 @@ import uk.org.ponder.util.UniversalRuntimeException;
 
 //QQQQQ diabolically inefficient. Need to replace parse method with reader
 //from CharWrap directly.
-public class intArrayParser implements SAXLeafTypeParser {
+public class intArrayParser implements LeafObjectParser {
   public static intArrayParser instance = new intArrayParser();
   public Object parse(String string) {
     try {
-      LexReader lr = new LexReader(new StringReader(string));
+      PushbackRIS lr = new PushbackRIS(new StringRIS(string));
       int size = LexUtil.readInt(lr);
       int[] togo = new int[size];
       LexUtil.expect(lr, ":");
@@ -42,20 +43,21 @@ public class intArrayParser implements SAXLeafTypeParser {
       LexUtil.expectEmpty(lr);
       return togo;
     }
-    catch (IOException ioe) {
-      throw UniversalRuntimeException.accumulate(ioe,
+    catch (Exception e) {
+      throw UniversalRuntimeException.accumulate(e,
           "Error reading integer vector");
     }
 
   }
 
-  public CharWrap render(Object torendero, CharWrap renderinto) {
+  public String render(Object torendero) {
     int[] torender = (int[]) torendero;
+    CharWrap renderinto = new CharWrap(torender.length * 5);
     renderinto.append(Integer.toString(torender.length) + ": ");
     for (int i = 0; i < torender.length; ++i) {
       renderinto.append(Integer.toString(torender[i]) + " ");
     }
-    return renderinto;
+    return renderinto.toString();
   }
 }
 

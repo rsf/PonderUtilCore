@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 
-import uk.org.ponder.streamutil.OutputStreamPOS;
-import uk.org.ponder.streamutil.PrintOutputStream;
-import uk.org.ponder.streamutil.WriterPOS;
+import uk.org.ponder.streamutil.write.OutputStreamPOS;
+import uk.org.ponder.streamutil.write.PrintOutputStream;
+import uk.org.ponder.streamutil.write.WriterPOS;
 import uk.org.ponder.stringutil.CharWrap;
 import uk.org.ponder.util.Logger;
 

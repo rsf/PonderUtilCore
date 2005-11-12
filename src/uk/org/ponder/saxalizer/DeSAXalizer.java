@@ -78,8 +78,6 @@ public class DeSAXalizer {
     this.mappingcontext = mappingcontext;
   }
 
-  // a convenience buffer for objects to render themselves into
-  private CharWrap buffereddata = new CharWrap();
   private int indentlevel;
 
   public int getIndent() {
@@ -96,7 +94,6 @@ public class DeSAXalizer {
     xmlw = null;
     desaxingobjects.clear();
     forbidder = null;
-    buffereddata.clear();
   }
 
   /**
@@ -151,9 +148,7 @@ public class DeSAXalizer {
     xmlw.writeRaw(" ");
     xmlw.writeRaw(attrname); // attribute names may not contain escapes
     xmlw.writeRaw("=\"");
-    buffereddata.clear();
-    mappingcontext.saxleafparser.render(attrvalue, buffereddata);
-    xmlw.write(buffereddata.storage, buffereddata.offset, buffereddata.size);
+    xmlw.write(mappingcontext.saxleafparser.render(attrvalue));
     xmlw.writeRaw("\"");
   }
 
@@ -217,20 +212,16 @@ public class DeSAXalizer {
       if (closenow) {
         // it is a leaf object
         xmlw.writeRaw(">", 0);
+        // NB - 10/11/05 - final end of support for "Generic" objects. Check SVN should it ever need to come back.
         // use leafparser to render it into text
-        buffereddata.clear();
         if (genericdata == null) {
-          mappingcontext.saxleafparser.render(child, buffereddata);
+          xmlw.write(mappingcontext.saxleafparser.render(child));
         }
-        else
-          buffereddata.append(genericdata);
-        xmlw
-            .write(buffereddata.storage, buffereddata.offset, buffereddata.size);
         // use writeRaw so that < is not deentitised
         xmlw.writeRaw("</" + childtagname + ">\n", 0);
         top = null;
       }
-      else { // it is not a leaf object. writing it will require another pass
+      else { // it is not a leaf object. writing it will require another pass around
         Logger.println("Pushed", Logger.DEBUG_EXTRA_INFO);
         String polynick = mappingcontext.classnamemanager.getClassName(child.getClass());
         if (polynick != null && topgetmethod != null && topgetmethod.ispolymorphic) {
@@ -245,7 +236,7 @@ public class DeSAXalizer {
           //      xmlw.write(renderinto.storage, renderinto.offset, renderinto.size);
         }
 
-        // around.
+     
         //xmlw.writeRaw(">\n", 0);
         desaxingobjects.push(top);
       } // else not a leaf object

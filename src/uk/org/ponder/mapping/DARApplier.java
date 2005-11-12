@@ -79,6 +79,8 @@ public class DARApplier implements BeanModelAlterer {
   private void applyAlteration(Object rootobj, DataAlterationRequest dar,
       TargettedMessageList messages) {
     String totail = PathUtil.getToTailPath(dar.path);
+    // TODO: Pause at any DARReceiver we discover in the model and instead
+    // queue the requests there.
     Object moveobj = BeanUtil.navigate(rootobj, totail, mappingcontext);
     Object convert = dar.data;
     String tail = PathUtil.getTailPath(dar.path);
@@ -152,6 +154,9 @@ public class DARApplier implements BeanModelAlterer {
 
     }
     else { // it is an ADD or SET request.
+      // TODO: unwrap vector values. However, if we got a list of Strings in from
+      // the UI, they may be "cryptic" leaf types without proper packaging. This
+      // implies we MUST know the element type of the collection.
       if (Collection.class.isAssignableFrom(leaftype)) {
         Collection lastobj = (Collection) pa.getProperty(moveobj, tail);
         lastobj.add(convert);

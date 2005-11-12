@@ -1,14 +1,13 @@
-package uk.org.ponder.saxalizer;
+package uk.org.ponder.conversion;
 
 import java.util.Date;
 
 import java.text.ParseException;
 
-import uk.org.ponder.stringutil.CharWrap;
 import uk.org.ponder.stringutil.LocalSDF;
 import uk.org.ponder.util.UniversalRuntimeException;
 
-class DateParser implements SAXLeafTypeParser {
+class DateParser implements LeafObjectParser {
   private LocalSDF format;
   public DateParser() {
     format = LocalSDF.w3cformat;
@@ -21,9 +20,9 @@ class DateParser implements SAXLeafTypeParser {
       throw UniversalRuntimeException.accumulate(pe, "Error parsing date");
       }
     }
-  public CharWrap render(Object torendero, CharWrap renderinto) {
+  public String render(Object torendero) {
     Date torender = (Date)torendero;
     String rendered = format.format(torender);
-    return renderinto.append(rendered);
+    return rendered;
     }
   }

@@ -3,7 +3,7 @@
  */
 package uk.org.ponder.errorutil;
 
-import uk.org.ponder.streamutil.PrintOutputStream;
+import uk.org.ponder.streamutil.write.PrintOutputStream;
 
 /**
  * @author Antranig Basman (antranig@caret.cam.ac.uk)

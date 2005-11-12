@@ -26,6 +26,8 @@ import uk.org.ponder.saxalizer.DeSAXalizer;
  * arbitrary block of XML. The file is encoded in UTF-8, and the final section
  * of the file (with tag &lt;manifestpointer&gt; holds an index to the file which 
  * is stored in a fixed-width format, and so should not be hand-edited to change its length.
+ * Please ignore this class and related ones, being the result of a rather silly
+ * experiment.
  */
 public class XMLAccessFile {
   private static String MANIFEST_TAG = "manifest";

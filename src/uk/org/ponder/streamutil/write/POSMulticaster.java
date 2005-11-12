@@ -1,7 +1,7 @@
 /*
  * Created on Apr 25, 2004
  */
-package uk.org.ponder.streamutil;
+package uk.org.ponder.streamutil.write;
 
 import java.io.PrintStream;
 import java.io.Writer;
