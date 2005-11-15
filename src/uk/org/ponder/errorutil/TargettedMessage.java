@@ -9,34 +9,44 @@ package uk.org.ponder.errorutil;
  */
 public class TargettedMessage {
   public static final String TARGET_NONE = "No specific target";
-  public String message;
+  public String messagecode;
   public Object[] args = null;
   public String targetid = TARGET_NONE;
   public Class exceptionclass;
-  
+
   public static final int SEVERITY_INFO = 0;
   public static final int SEVERITY_ERROR = 1;
   public int severity = 1;
-  
-  public TargettedMessage(String message, String targetid) {
-    this.message = message;
+
+  public TargettedMessage(String messagecode, String targetid) {
+    this.messagecode = messagecode;
     this.targetid = targetid;
   }
-  public TargettedMessage(String message, Object[] args, String targetid) {
-    this.message = message;
+
+  public TargettedMessage(String messagecode, Object[] args, String targetid) {
+    this.messagecode = messagecode;
     this.args = args;
     this.targetid = targetid;
   }
-  public TargettedMessage(String message) {
-    this.message = message;
+
+  public TargettedMessage(String messagecode) {
+    this.messagecode = messagecode;
   }
-  public TargettedMessage(String message, Class exceptionclass) {
-    this.message = message;
+
+  public TargettedMessage(String messagecode, Class exceptionclass) {
+    this.messagecode = messagecode;
     this.exceptionclass = exceptionclass;
   }
-  public TargettedMessage(String message, Class exceptionclass, String targetid) {
-    this.message = message;
+
+  public TargettedMessage(String messagecode, Class exceptionclass,
+      String targetid) {
+    this.messagecode = messagecode;
     this.exceptionclass = exceptionclass;
     this.targetid = targetid;
+  }
+
+  public TargettedMessage(String messagecode, Object[] args) {
+    this.messagecode = messagecode;
+    this.args = args;
   }
 }

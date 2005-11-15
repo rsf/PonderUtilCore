@@ -28,7 +28,8 @@ import uk.org.ponder.saxalizer.SAXAccessMethod;
 public class ReflectiveCache {
   private static Map rootmap;
   private static Class concurrent1mapclass;
-
+// The constructor for the oswego n-concurrent map class - we need to handle
+// this explicitly, since the concurrency level has to be passed in as an argument.
   private static Constructor concurrentnmapcons;
   private static boolean nmapisJSR166 = false;
 

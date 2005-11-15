@@ -1,13 +1,10 @@
 package uk.org.ponder.conversion;
 
-import java.io.IOException;
-import java.io.StringReader;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 
 import uk.org.ponder.arrayutil.ArrayUtil;
-import uk.org.ponder.streamutil.read.LexReader;
 import uk.org.ponder.streamutil.read.LexUtil;
 import uk.org.ponder.streamutil.read.PushbackRIS;
 import uk.org.ponder.streamutil.read.StringRIS;
@@ -139,6 +136,7 @@ public class StaticLeafParser {
     registerParser(Class.class, new ClassParser());
     registerParser(ArrayUtil.intArrayClass, new intArrayParser());
     registerParser(ArrayUtil.doubleArrayClass, new doubleArrayParser());
+    registerParser(ArrayUtil.stringArrayClass, StringArrayParser.instance);
   }
 
   public StaticLeafParser() {

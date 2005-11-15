@@ -2,16 +2,20 @@ package uk.org.ponder.arrayutil;
 
 import java.lang.reflect.Array;
 
+import uk.org.ponder.util.ClassGetter;
+
 /** This class supplies a selection of useful methods to operate on Java arrays. With
  * these methods, arrays can behave very much like Vectors, only with much greater
  * time and space efficiency where the length is short or modifications are infrequent.
  */
 
 public class ArrayUtil {
+  // TODO: Does the [L syntax also work for primitive types?
   private static double[] doubleexemplar = new double[0];
   public static Class doubleArrayClass = doubleexemplar.getClass();
   private static int[] intexemplar = new int[0];
   public static Class intArrayClass = intexemplar.getClass();
+  public static Class stringArrayClass = ClassGetter.forName("[LString;");
   
   /** Concatenates two arrays of the same reference type to return a larger array.
    * @param array1 The first array to be concatenated.

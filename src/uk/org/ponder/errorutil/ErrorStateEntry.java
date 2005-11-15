@@ -4,6 +4,8 @@
 package uk.org.ponder.errorutil;
 
 public class ErrorStateEntry {
-  public String tokenid;
+  /** A unique error ID, for easy location in logs.
+   */
+  public String errorid;
   public TargettedMessageList errors;
 }

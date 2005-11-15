@@ -10,7 +10,8 @@ import uk.org.ponder.stringutil.CharWrap;
 import uk.org.ponder.util.UniversalRuntimeException;
 
 public class StringArrayParser implements LeafObjectParser {
-
+  public static StringArrayParser instance = new StringArrayParser();
+  
   public Object parse(String toparse) {
     PushbackRIS lr = new PushbackRIS(new StringRIS(toparse));
     int size = LexUtil.readInt(lr);

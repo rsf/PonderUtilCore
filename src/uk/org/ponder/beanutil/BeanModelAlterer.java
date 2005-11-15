@@ -35,4 +35,9 @@ public interface BeanModelAlterer {
   public void applyAlterations(Object rootobj, DARList toapply,
       TargettedMessageList messages);
 
+  /** Converts the object currently present at the supplied bean path into the
+   * specified target class, which must be one of the classes handled by the
+   * UIType framework.
+   */
+  public Object getFlattenedValue(String fullpath, BeanLocator rbl, Class targetclazz);
 }

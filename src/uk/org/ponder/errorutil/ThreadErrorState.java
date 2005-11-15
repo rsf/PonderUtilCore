@@ -43,13 +43,13 @@ public class ThreadErrorState {
     beginRequest(idgenerator.generateID());
   }
   
-  public static void beginRequest(String tokenid) {
+  private static void beginRequest(String tokenid) {
     clearState();
-    getErrorState().tokenid = tokenid;
+    getErrorState().errorid = tokenid;
   }
   
   public static void clearState() {
-    getErrorState().tokenid = null;
+    getErrorState().errorid = null;
     getErrorState().errors.clear();
   }
 }

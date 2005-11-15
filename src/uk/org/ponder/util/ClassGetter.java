@@ -15,6 +15,8 @@ public class ClassGetter {
    * @return The Class object corresponding to the classname, or
    *         <code>null</code> if the name cannot be looked up.
    */
+  //TODO: initialise array classes as per this posting:
+  //http://lists.gnu.org/archive/html/classpath/2003-01/msg00022.html
   public static Class forName(String classname) {
     try {
       return Class.forName(classname);
@@ -31,6 +33,7 @@ public class ClassGetter {
    * @param class1
    * @return
    */
+  // TODO: replace with ReflectiveCache implementation.
   public static Object construct(Class clazz) {
     try {
       return clazz.newInstance();

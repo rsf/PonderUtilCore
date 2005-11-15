@@ -12,6 +12,11 @@ import uk.org.ponder.stringutil.StringList;
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
  * 
  */
+// NB - this class is ALMOST identical to the Spring "Errors" interface,
+// which I was put off since the only implementation there is "BindException"
+// which couples to all sorts of other greasy stuff, including the dreaded
+// BeanWrapper. However, it may be worth going back to Errors and Validator
+// at least, which are fairly clean in of themselves.
 public class TargettedMessageList {
   private ArrayList errors = new ArrayList();
   public int size() {
@@ -29,19 +34,22 @@ public class TargettedMessageList {
       addMessage(list.messageAt(i));
     }
   }
-  private StringList pathstack = new StringList();
+  private StringList pathstack;
   
   private String nestedpath = null;
   
-  public void pushNestedPath(String nestedpath) {
-    if (nestedpath == null) {
-		nestedpath = "";
+  public void pushNestedPath(String extrapath) {
+    if (extrapath == null) {
+		extrapath = "";
 	}
-	if (nestedpath.length() > 0 && !nestedpath.endsWith(".")) {
-		nestedpath += '.';
+	if (extrapath.length() > 0 && !extrapath.endsWith(".")) {
+		extrapath += '.';
 	}
-     pathstack.add(nestedpath);
-	this.nestedpath = nestedpath;
+    if (pathstack == null) {
+      pathstack = new StringList();
+    }
+    pathstack.add(extrapath);
+	this.nestedpath = extrapath;
   }
   
   public void popNestedPath() {
@@ -60,8 +68,18 @@ public class TargettedMessageList {
     CharWrap togo = new CharWrap();
     for (int i = 0; i < size(); ++ i) {
       TargettedMessage mess = messageAt(i);
-      togo.append("Target: " + mess.targetid + " message " + mess.message + "\n");
+      togo.append("Target: " + mess.targetid + " message " + mess.messagecode + "\n");
     }
     return togo.toString();
   }
+  
+  public StringList render(MessageLocator locator) {
+    StringList togo = new StringList();
+    for (int i = 0; i < size(); ++ i) {
+      TargettedMessage message = messageAt(i);
+      togo.add(locator.getMessage(message.messagecode, message.args));
+    }
+    return togo;
+  }
+  
 }

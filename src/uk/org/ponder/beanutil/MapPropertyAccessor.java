@@ -34,4 +34,9 @@ public class MapPropertyAccessor implements PropertyAccessor {
   public Class getPropertyType(String name) {
     return Object.class; // no idea!
   }
+
+  public boolean isMultiple(String name) {
+    // TODO Auto-generated method stub. See comment on BeanLocatorPropertyAccessor.
+    return false;
+  }
 }

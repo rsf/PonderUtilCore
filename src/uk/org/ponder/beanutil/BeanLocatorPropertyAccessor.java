@@ -44,4 +44,12 @@ public class BeanLocatorPropertyAccessor implements PropertyAccessor {
     return Object.class; // no idea!
   }
 
+  public boolean isMultiple(String name) {
+    // no idea!
+    // TODO: the only conceivable way to implement this is to
+    // HAVE AN OBJECT HERE ALREADY, and then defer to MethodAnalyser again.
+    // Type system still needs a bit of a kicking, better await some use cases.
+    return false;
+  }
+
 }

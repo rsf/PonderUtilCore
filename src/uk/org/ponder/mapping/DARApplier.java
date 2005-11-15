@@ -12,12 +12,14 @@ import uk.org.ponder.beanutil.BeanUtil;
 import uk.org.ponder.beanutil.PathUtil;
 import uk.org.ponder.beanutil.PropertyAccessor;
 import uk.org.ponder.beanutil.WriteableBeanLocator;
+import uk.org.ponder.conversion.VectorCapableParser;
 import uk.org.ponder.errorutil.CoreMessages;
 import uk.org.ponder.errorutil.PropertyException;
 import uk.org.ponder.errorutil.TargettedMessage;
 import uk.org.ponder.errorutil.TargettedMessageList;
 import uk.org.ponder.errorutil.ThreadErrorState;
 import uk.org.ponder.saxalizer.MethodAnalyser;
+import uk.org.ponder.saxalizer.SAXAccessMethod;
 import uk.org.ponder.saxalizer.SAXalXMLProvider;
 import uk.org.ponder.saxalizer.SAXalizerMappingContext;
 import uk.org.ponder.saxalizer.XMLProvider;
@@ -32,15 +34,34 @@ import uk.org.ponder.util.UniversalRuntimeException;
 public class DARApplier implements BeanModelAlterer {
   private XMLProvider xmlprovider;
   private SAXalizerMappingContext mappingcontext;
+  private VectorCapableParser vcp;
 
   public void setSAXalXMLProvider(SAXalXMLProvider saxal) {
     xmlprovider = saxal;
     mappingcontext = saxal.getMappingContext();
+    vcp = new VectorCapableParser();
+    vcp.setScalarParser(mappingcontext.saxleafparser);
   }
 
   public Object getBeanValue(String fullpath, BeanLocator rbl) {
     Object togo = BeanUtil.navigate(rbl, fullpath, mappingcontext);
     return togo;
+  }
+  
+// Do our best to "guess" the type of the 
+  public Object getFlattenedValue(String fullpath, BeanLocator rbl, Class targetclass) {
+    Object toconvert = getBeanValue(fullpath, rbl);
+    if (targetclass == String.class || targetclass == Boolean.class) {
+      String rendered = mappingcontext.saxleafparser.render(toconvert);
+      return targetclass == String.class? rendered : mappingcontext.saxleafparser.parse(Boolean.class, rendered);
+    }
+    // It MUST be String[], AND the value must be a container.
+    // this had BETTER be a Container otherwise we will fail to update the value
+    // in setBeanValue below.
+    Collection collection = (Collection) toconvert;
+    String[] target = new String[collection.size()];
+    vcp.render(collection, target);
+    return target;
   }
   
   // a convenience method to have the effect of a "set" ValueBinding,
@@ -154,11 +175,18 @@ public class DARApplier implements BeanModelAlterer {
 
     }
     else { // it is an ADD or SET request.
-      // TODO: unwrap vector values. However, if we got a list of Strings in from
+      // If we got a list of Strings in from
       // the UI, they may be "cryptic" leaf types without proper packaging. This
       // implies we MUST know the element type of the collection.
-      if (Collection.class.isAssignableFrom(leaftype)) {
+      if (pa.isMultiple(tail)) {
+        // it had BETTER be a collection otherwise delivery semantics will be
+        // incoherent - we HAVE to be able to clear it.
         Collection lastobj = (Collection) pa.getProperty(moveobj, tail);
+        SAXAccessMethod sam = MethodAnalyser.getMethodAnalyser(moveobj, mappingcontext).getAccessMethod(tail);
+        if (VectorCapableParser.isLOSType(convert)) {
+          lastobj.clear();
+          vcp.parse(convert, lastobj, sam.getAccessedType());
+        }
         lastobj.add(convert);
       }
       else {
@@ -191,4 +219,5 @@ public class DARApplier implements BeanModelAlterer {
       applyAlteration(rootobj, dar, messages);
     }
   }
+
 }

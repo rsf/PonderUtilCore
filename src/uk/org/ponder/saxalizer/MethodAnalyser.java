@@ -107,6 +107,18 @@ public class MethodAnalyser implements PropertyAccessor {
     }
     return accessmethod.clazz;
   }
+
+  public boolean isMultiple(String name) {
+    SAXAccessMethod accessmethod = getAccessMethod(name);
+    if (accessmethod == null) {
+      throw UniversalRuntimeException.accumulate(new PropertyException(), "Property " + name 
+          + " not found"); // too much trouble to determine the class here
+    }
+    return accessmethod.ismultiple;
+  }
+
+  
+  
   //****** End implementation of PropertyAccessor interface.
   /**
    * Given an object to be serialised/deserialised, return a MethodAnalyser
@@ -317,6 +329,5 @@ public class MethodAnalyser implements PropertyAccessor {
     assembleGetters();
   }
 
-  
 
 }
