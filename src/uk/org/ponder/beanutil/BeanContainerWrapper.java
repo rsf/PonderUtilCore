@@ -3,8 +3,8 @@
  */
 package uk.org.ponder.beanutil;
 
-import uk.org.ponder.arrayutil.ArrayUtil;
 import uk.org.ponder.stringutil.StringList;
+import uk.org.ponder.stringutil.StringSet;
 import uk.org.ponder.util.UniversalRuntimeException;
 
 /**
@@ -13,15 +13,16 @@ import uk.org.ponder.util.UniversalRuntimeException;
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
  * 
  */
-public class BeanContainerWrapper implements BeanLocator {
-  private BeanLocator factory;
-  private String[] permittedroots;
+public class BeanContainerWrapper implements WriteableBeanLocator {
+  private WriteableBeanLocator factory;
+  private StringSet permittedroots = new StringSet();
   
-  public void setBeanLocator(BeanLocator beangetter) {
+  public void setBeanLocator(WriteableBeanLocator beangetter) {
     factory = beangetter;
   }
   public void setPermittedBeanRoots(StringList permittedroots) {
-    this.permittedroots = permittedroots.toStringArray();
+    this.permittedroots.addAll(permittedroots);
+    //this.permittedroots = permittedroots.toStringArray();
   }
 
   public Object locateBean(String path) {
@@ -35,10 +36,19 @@ public class BeanContainerWrapper implements BeanLocator {
 
   private void checkRootPath(String rootpath) {
     if (permittedroots == null || 
-        ArrayUtil.indexOf(permittedroots, rootpath) == -1) {
+        !permittedroots.contains(rootpath)) {
       throw UniversalRuntimeException.accumulate(new SecurityException(), 
           "Impermissible bean path " + rootpath);
     }
+  }
+  public boolean remove(String beanname) {
+    checkRootPath(beanname);
+    return factory.remove(beanname);
+  }
+  
+  public void set(String beanname, Object toset) {
+    checkRootPath(beanname);
+    factory.set(beanname, toset);
   }
 
 }
