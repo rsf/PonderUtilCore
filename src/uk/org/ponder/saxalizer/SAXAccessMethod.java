@@ -27,7 +27,7 @@ public class SAXAccessMethod implements AccessMethod {
   Class parentclazz; // The class that this is a method of, for convenience.
   public String tagname;
   boolean ispolymorphic; // Uses the new "tag*" polymorphic nickname scheme
-  boolean ismultiple; // A collection rather than a single object is being addressed
+  public boolean ismultiple; // A collection rather than a single object is being addressed
   boolean isenumeration; // if "ismultiple" is this delivered via an enumeration?
   // Note that enumerations are the only things which are enumerable but not
   // denumerable.
@@ -252,8 +252,11 @@ public class SAXAccessMethod implements AccessMethod {
   public boolean isDenumerable() {
     return ismultiple && !isenumeration;
     }
-  
+  /** The type of subobject that this method deals in **/
   public Class getAccessedType() {
     return clazz;
+  }
+  public Class getDeclaredType() {
+    return accessclazz;
   }
 }

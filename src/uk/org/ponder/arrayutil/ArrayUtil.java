@@ -2,7 +2,7 @@ package uk.org.ponder.arrayutil;
 
 import java.lang.reflect.Array;
 
-import uk.org.ponder.util.ClassGetter;
+import uk.org.ponder.reflect.ClassGetter;
 
 /** This class supplies a selection of useful methods to operate on Java arrays. With
  * these methods, arrays can behave very much like Vectors, only with much greater

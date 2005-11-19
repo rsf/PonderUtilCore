@@ -100,11 +100,11 @@ public class EnumerationConverter {
     }
     // NB this array functionality will probably never be used - better to
     // make leaf parsers for Arrays storing exactly length up front.
-    else if (collo instanceof Array) {
+    else if (collo.getClass().isArray()) {
+      final Object[] coll = (Object[]) collo;
       return new Denumeration() {
         int index = 0;
         public void add(Object o) {
-          Object[] coll = (Object[]) collo;
           coll[index++] = o;
         }
         public boolean remove(Object o) {

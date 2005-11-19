@@ -11,8 +11,8 @@ import uk.org.ponder.beanutil.BeanLocatorPropertyAccessor;
 import uk.org.ponder.beanutil.MapPropertyAccessor;
 import uk.org.ponder.beanutil.PropertyAccessor;
 import uk.org.ponder.errorutil.PropertyException;
+import uk.org.ponder.reflect.ClassGetter;
 import uk.org.ponder.saxalizer.mapping.SAXalizerMapperEntry;
-import uk.org.ponder.util.ClassGetter;
 import uk.org.ponder.util.Logger;
 import uk.org.ponder.util.UniversalRuntimeException;
 

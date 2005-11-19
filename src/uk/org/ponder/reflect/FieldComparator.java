@@ -1,10 +1,14 @@
 /*
  * Created on Oct 15, 2004
  */
-package uk.org.ponder.saxalizer;
+package uk.org.ponder.reflect;
 
 import java.util.Comparator;
 
+import uk.org.ponder.saxalizer.AccessMethod;
+import uk.org.ponder.saxalizer.MethodAnalyser;
+import uk.org.ponder.saxalizer.SAXAccessMethod;
+import uk.org.ponder.saxalizer.SAXalizerMappingContext;
 import uk.org.ponder.util.UniversalRuntimeException;
 
 /**

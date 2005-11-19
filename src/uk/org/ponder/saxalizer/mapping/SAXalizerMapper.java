@@ -3,7 +3,7 @@
  */
 package uk.org.ponder.saxalizer.mapping;
 
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Holds details of dynamic mappings between Java classes and
@@ -11,8 +11,11 @@ import java.util.HashMap;
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
  */
 public class SAXalizerMapper {
+  public SAXalizerMapper(Map concurrentmap) {
+    this.handlermap = concurrentmap;
+  }
   // This is a hashmap of java classes to SAXalizerMapperEntries.
-  private HashMap handlermap = new HashMap();
+  private Map handlermap;
   public void addEntry(SAXalizerMapperEntry entry) {
     handlermap.put(entry.targetclass, entry);
   }

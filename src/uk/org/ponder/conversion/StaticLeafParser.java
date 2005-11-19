@@ -123,8 +123,7 @@ public class StaticLeafParser {
   // in UTF-8, would appear as a-hat (unassigned) (unassigned) e29789. 11100010
   // 10010111 10001001
   //  public static final char solidus = '\u25a9';
-
-  private static String NULL_STRING = "\u25a9null\u25a9";
+  //private static String NULL_STRING = "\u25a9null\u25a9";
 
   private void registerDefaultParsers() {
     registerParser(Boolean.class, new BooleanParser());
@@ -214,8 +213,9 @@ public class StaticLeafParser {
    */
 
   public Object parse(Class returntype, String bulk) {
-    if (bulk.equals(NULL_STRING))
-      return null;
+    if (returntype.isPrimitive()) {
+      returntype = wrapClass(returntype);
+    }
     LeafObjectParser parser = (LeafObjectParser) parseabletypes
         .get(returntype);
     return parser.parse(bulk);
@@ -233,10 +233,7 @@ public class StaticLeafParser {
    *          its rendering.
    * @return a CharWrap object containing the rendered text.
    */
-  // QQQQQ Is this ever called for null objects? It should not be.
   public String render(Object torender) {
-    if (torender == null)
-      return (NULL_STRING);
     Class objtype = torender.getClass();
     LeafObjectParser parser = (LeafObjectParser) parseabletypes.get(objtype);
     if (parser == null) {

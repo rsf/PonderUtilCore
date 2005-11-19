@@ -6,16 +6,16 @@ package uk.org.ponder.saxalizer;
 import java.util.Map;
 
 import uk.org.ponder.conversion.StaticLeafParser;
+import uk.org.ponder.reflect.ReflectiveCache;
 import uk.org.ponder.saxalizer.mapping.ClassNameManager;
 import uk.org.ponder.saxalizer.mapping.DefaultMapperInferrer;
 import uk.org.ponder.saxalizer.mapping.SAXalizerMapper;
 import uk.org.ponder.saxalizer.mapping.SAXalizerMapperInferrer;
-import uk.org.ponder.util.ReflectiveCache;
 
 /**
  * The complete context for serialisation and deserialisation of objects
  * to and from XML using the SAXalizer and DeSAXalizer.
- * It includes a
+ * It includes a mapping context
  * <ol>
  * <li>
  * <code>SAXalizerMapperInferrer</code> has been 
@@ -29,9 +29,17 @@ public class SAXalizerMappingContext {
   public SAXalizerMapperInferrer inferrer = new DefaultMapperInferrer();
   public StaticLeafParser saxleafparser = StaticLeafParser.instance();
   public ClassNameManager classnamemanager = ClassNameManager.instance();
-  public SAXalizerMapper mapper = new SAXalizerMapper();
+  private ReflectiveCache reflectivecache;
+
+  public void setReflectiveCache(ReflectiveCache reflectivecache) {
+    this.reflectivecache = reflectivecache;
+    mapper = new SAXalizerMapper(reflectivecache.getConcurrentMap(1));
+    methodanalysers = reflectivecache.getConcurrentMap(1);
+  }
+  
+  public SAXalizerMapper mapper;
 // this is a Hashtable of Classes to MethodAnalysers
-  private Map methodanalysers = ReflectiveCache.getConcurrentMap(1);
+  private Map methodanalysers; 
   public MethodAnalyser getAnalyser(Class clazz) {
     return (MethodAnalyser) methodanalysers.get(clazz); 
   }

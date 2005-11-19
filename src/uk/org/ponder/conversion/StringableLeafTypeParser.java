@@ -13,8 +13,9 @@ import uk.org.ponder.util.UniversalRuntimeException;
  * A default SAXLeafTypeParser capable of dealing with any object declaring
  * a toString() method and a constructor accepting a single String argument.
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
- * 
  */
+// TODO: Is this ancient and inefficient piece of cruft used anywhere?
+// Why precisely did we invent it?
 public class StringableLeafTypeParser implements LeafObjectParser {
   private Constructor stringcons;
   private Method tostring;

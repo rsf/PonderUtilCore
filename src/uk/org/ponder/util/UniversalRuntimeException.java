@@ -8,6 +8,8 @@ import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
+import uk.org.ponder.stringutil.CharWrap;
+
 /**
  * The root of unchecked runtime exceptions thrown by the libraries. There is a
  * general movement to make most exceptions runtime exceptions (by not only
@@ -124,11 +126,28 @@ public class UniversalRuntimeException extends RuntimeException implements
     else {
       togo = new UniversalRuntimeException(t);
     }
-    togo.message = fullmsg;
+    // InvokationTargetException wrapping randomly trashes the message. Guard
+    // against this with this generally well-motivated hack:
+    if (fullmsg != null && !fullmsg.equals("")) {
+      togo.message = fullmsg;
+    }
     togo.category = category;
     return togo;
   }
 
+  public String getStackHead() {
+    CharWrap togo = new CharWrap();
+    if (targetexception != null) {
+      togo.append("Target " + targetexception.getClass());
+    }
+    else if (category != null) {
+      togo.append("Category " + category);
+      
+    }
+    togo.append(getMessage());
+    return togo.toString();
+  }
+  
   /**
    * Accumulates the message supplied message onto the beginning of any existing
    * exception message, and wraps supplied exception as the target exception of
@@ -164,7 +183,7 @@ public class UniversalRuntimeException extends RuntimeException implements
   // QQQQQ move these three methods to static utility for all WrappingExceptions
   public void printStackTrace() {
     if (targetexception != null) {
-      System.err.println(getMessage());
+      System.err.println(getStackHead());
       targetexception.printStackTrace();
     }
     else
@@ -173,7 +192,7 @@ public class UniversalRuntimeException extends RuntimeException implements
 
   public void printStackTrace(PrintWriter pw) {
     if (targetexception != null) {
-      pw.print(getMessage());
+      pw.print(getStackHead());
       targetexception.printStackTrace(pw);
     }
     else
@@ -182,7 +201,7 @@ public class UniversalRuntimeException extends RuntimeException implements
 
   public void printStackTrace(PrintStream ps) {
     if (targetexception != null) {
-      ps.print(getMessage());
+      ps.print(getStackHead());
       targetexception.printStackTrace(ps);
     }
     else

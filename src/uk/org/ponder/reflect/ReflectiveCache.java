@@ -1,13 +1,14 @@
 /*
  * Created on Sep 29, 2005
  */
-package uk.org.ponder.util;
+package uk.org.ponder.reflect;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.util.Map;
 
 import uk.org.ponder.saxalizer.SAXAccessMethod;
+import uk.org.ponder.util.Logger;
+import uk.org.ponder.util.UniversalRuntimeException;
 
 /**
  * A cache for simple no-arg methods and constructors, of the sort that are
@@ -25,8 +26,13 @@ import uk.org.ponder.saxalizer.SAXAccessMethod;
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
  * 
  */
-public class ReflectiveCache {
-  private static Map rootmap;
+public abstract class ReflectiveCache {
+  /** The globality of a ReflectiveCache is expected to be ClassLoader wide.
+   * This instance will be set by any constructor that executes, through Spring
+   * configuration or otherwise.
+   */
+  public static ReflectiveCache instance;
+  private Map rootmap;
   private static Class concurrent1mapclass;
 // The constructor for the oswego n-concurrent map class - we need to handle
 // this explicitly, since the concurrency level has to be passed in as an argument.
@@ -63,12 +69,12 @@ public class ReflectiveCache {
             .forName("java.util.concurrent.ConcurrentHashMap");
         if (mapclass != null) {
           nmapisJSR166 = true;
-          return mapclass.getConstructor(SAXAccessMethod.emptyclazz);
+          return mapclass.getConstructor(new Class[] { Integer.TYPE, Float.TYPE,
+              Integer.TYPE });  
         }
       }
       else {
-        return mapclass.getConstructor(new Class[] { Integer.TYPE, Float.TYPE,
-            Integer.TYPE });
+        return mapclass.getConstructor(SAXAccessMethod.emptyclazz);
       }
       if (mapclass == null) {
         Logger.log
@@ -93,49 +99,27 @@ public class ReflectiveCache {
     return togo;
   }
 
-  /** Invokes the supplied no-arg constructor to create a new object */
-  public static Object invokeConstructor(Constructor cons) {
-    Object togo = null;
-    try {
-      togo = cons.newInstance(SAXAccessMethod.emptyobj);
-    }
-    catch (Exception e) {
-      throw UniversalRuntimeException.accumulate(e,
-          "Error constructing instance of " + cons.getDeclaringClass());
-    }
-    return togo;
-  }
-
-  public static Object invokeConstructor(Constructor cons, Object[] args) {
-    Object togo = null;
-    try {
-      togo = cons.newInstance(args);
-    }
-    catch (Exception e) {
-      throw UniversalRuntimeException.accumulate(e,
-          "Error constructing instance of " + cons.getDeclaringClass());
-    }
-    return togo;
-  }
 
   
-  /** Invokes the supplied no-arg Method object on the supplied target */
-  private static Object invokeMethod(Method method, Object target) {
-    try {
-      return method.invoke(target, SAXAccessMethod.emptyobj);
-    }
-    catch (Exception e) {
-      throw UniversalRuntimeException.accumulate(e);
-    }
-  }
-
-  private static Map getClassMap(Class target) {
+  protected Map getClassMap(Class target) {
     Map classmap = (Map) rootmap.get(target);
     if (classmap == null) {
       classmap = getConcurrentMap(1);
       rootmap.put(target, classmap);
     }
     return classmap;
+  }
+
+  public abstract Object construct(Class clazz);
+  public abstract Object invokeMethod(Object bean, String method);
+  public abstract Object invokeMethod(Object target, String name, Class[] infer, Object[] args);
+
+  public Object invokeMethod(Object target, String name, Object[] args) {
+    Class[] infer = new Class[args.length];
+    for (int i = 0; i < args.length; ++ i) {
+      infer[i] = args[i].getClass();
+    }
+    return invokeMethod(target, name, infer, args);
   }
 
   /**
@@ -149,7 +133,7 @@ public class ReflectiveCache {
    * defaults)
    */
   public static final int INIT_MAP_SIZE = 1024;
-
+  
   /**
    * Returns a new concurrent map object with the desired level of concurrency.
    * If the oswego package is available, any concurrency level other than 1 will
@@ -158,19 +142,19 @@ public class ReflectiveCache {
    * e.g. for internal use of this class, to be either the root map or the map
    * for the default constructors of a particular class.
    */
-  public static Map getConcurrentMap(int concurrency) {
+  public Map getConcurrentMap(int concurrency) {
     // if map class is null, this is the first call for the entire system,
     // perhaps
     // from getClassMap. Initialise the root table, and put the constructor for
     // the concurrent map itself in it as its first entry, manually.
     // Uninteresting race condition here.
-
+    // TODO: try to remove downcall to JDKReflector
     if (concurrency == 1) {
       if (concurrent1mapclass == null) {
         concurrent1mapclass = getConcurrent1MapClass();
         Constructor cons = getConstructor(concurrent1mapclass);
-        rootmap = (Map) invokeConstructor(cons);
-        Map classmap = (Map) invokeConstructor(cons);
+        rootmap = (Map) JDKReflectiveCache.invokeConstructor(cons);
+        Map classmap = (Map) JDKReflectiveCache.invokeConstructor(cons);
         classmap.put(CONSTRUCTOR_KEY, cons);
         rootmap.put(concurrent1mapclass, classmap);
       }
@@ -182,46 +166,16 @@ public class ReflectiveCache {
       }
       Object togo = null;
       if (nmapisJSR166) {
-        togo = invokeConstructor(concurrentnmapcons, new Object[] {
+        togo = JDKReflectiveCache.invokeConstructor(concurrentnmapcons, new Object[] {
             new Integer(INIT_MAP_SIZE), new Float(0.75f),
             new Integer(concurrency) });
       }
       else {
-        togo = invokeConstructor(concurrentnmapcons);
+        togo = JDKReflectiveCache.invokeConstructor(concurrentnmapcons);
       }
       return (Map) togo;
     }
 
   }
 
-  public static Object construct(Class clazz) {
-    Map classmap = getClassMap(clazz);
-    Constructor cons = (Constructor) classmap.get(CONSTRUCTOR_KEY);
-    if (cons == null) {
-      cons = getConstructor(clazz);
-      classmap.put(CONSTRUCTOR_KEY, cons);
-    }
-    return invokeConstructor(cons);
-  }
-
-  public static Object invokeMethod(Object target, String name) {
-    Class clazz = target.getClass();
-    Map classmap = getClassMap(clazz.getClass());
-    Method method = (Method) classmap.get(name);
-    if (method == null) {
-      method = getMethod(clazz, name);
-      classmap.put(name, method);
-    }
-    return invokeMethod(method, target);
-  }
-
-  private static Method getMethod(Class clazz, String name) {
-    try {
-      return clazz.getMethod(name, SAXAccessMethod.emptyclazz);
-    }
-    catch (Exception e) {
-      throw UniversalRuntimeException.accumulate(e,
-          "Error reflecting for method " + name + " of " + clazz);
-    }
-  }
 }

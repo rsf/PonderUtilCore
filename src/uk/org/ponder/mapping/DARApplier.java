@@ -12,19 +12,19 @@ import uk.org.ponder.beanutil.BeanUtil;
 import uk.org.ponder.beanutil.PathUtil;
 import uk.org.ponder.beanutil.PropertyAccessor;
 import uk.org.ponder.beanutil.WriteableBeanLocator;
+import uk.org.ponder.conversion.ConvertUtil;
 import uk.org.ponder.conversion.VectorCapableParser;
 import uk.org.ponder.errorutil.CoreMessages;
 import uk.org.ponder.errorutil.PropertyException;
 import uk.org.ponder.errorutil.TargettedMessage;
 import uk.org.ponder.errorutil.TargettedMessageList;
 import uk.org.ponder.errorutil.ThreadErrorState;
+import uk.org.ponder.reflect.ReflectiveCache;
 import uk.org.ponder.saxalizer.MethodAnalyser;
 import uk.org.ponder.saxalizer.SAXAccessMethod;
 import uk.org.ponder.saxalizer.SAXalXMLProvider;
 import uk.org.ponder.saxalizer.SAXalizerMappingContext;
-import uk.org.ponder.saxalizer.XMLProvider;
 import uk.org.ponder.util.Logger;
-import uk.org.ponder.util.ReflectiveCache;
 import uk.org.ponder.util.UniversalRuntimeException;
 
 /**
@@ -32,9 +32,10 @@ import uk.org.ponder.util.UniversalRuntimeException;
  * 
  */
 public class DARApplier implements BeanModelAlterer {
-  private XMLProvider xmlprovider;
+  private SAXalXMLProvider xmlprovider;
   private SAXalizerMappingContext mappingcontext;
   private VectorCapableParser vcp;
+  private ReflectiveCache reflectivecache;
 
   public void setSAXalXMLProvider(SAXalXMLProvider saxal) {
     xmlprovider = saxal;
@@ -42,13 +43,16 @@ public class DARApplier implements BeanModelAlterer {
     vcp = new VectorCapableParser();
     vcp.setScalarParser(mappingcontext.saxleafparser);
   }
+  
+  public void setReflectiveCache(ReflectiveCache reflectivecache) {
+    this.reflectivecache = reflectivecache;
+  }
 
   public Object getBeanValue(String fullpath, BeanLocator rbl) {
     Object togo = BeanUtil.navigate(rbl, fullpath, mappingcontext);
     return togo;
   }
   
-// Do our best to "guess" the type of the 
   public Object getFlattenedValue(String fullpath, BeanLocator rbl, Class targetclass) {
     Object toconvert = getBeanValue(fullpath, rbl);
     if (targetclass == String.class || targetclass == Boolean.class) {
@@ -89,7 +93,7 @@ public class DARApplier implements BeanModelAlterer {
     String method = PathUtil.getTailPath(fullpath);
     try {
       Object bean = BeanUtil.navigate(rbl, totail, mappingcontext);
-      return ReflectiveCache.invokeMethod(bean, method);
+      return reflectivecache.invokeMethod(bean, method);
     }
     catch (Exception e) {
       throw UniversalRuntimeException.accumulate(e, "Error invoking method "
@@ -108,26 +112,13 @@ public class DARApplier implements BeanModelAlterer {
     PropertyAccessor pa = MethodAnalyser.getPropertyAccessor(moveobj,
         mappingcontext);
     Class leaftype = pa.getPropertyType(tail);
-    // Step 1 - attempt to convert the dar value if it is still a String by one
-    // of the three methods.
+    // Step 1 - attempt to convert the dar value if it is still a String, using
+    // our now knowledge of the target leaf type.
     if (convert instanceof String) {
       String string = (String) convert;
       try {
         messages.pushNestedPath(totail);
-
-        if (mappingcontext.saxleafparser.isLeafType(leaftype)) {
-          convert = mappingcontext.saxleafparser.parse(leaftype, string);
-        }
-        else {
-          String el = BeanUtil.stripEL(string);
-          if (el == null) {
-            convert = BeanUtil.navigate(rootobj, el, mappingcontext);
-          }
-          else {
-            // TODO: catch conversion errors by putting messages into TES.
-            convert = xmlprovider.fromString(string);
-          }
-        }
+        ConvertUtil.parse(string, xmlprovider, leaftype);
       }
       finally {
         messages.popNestedPath();

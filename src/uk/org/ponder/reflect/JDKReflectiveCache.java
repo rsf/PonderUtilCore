@@ -1,0 +1,103 @@
+/*
+ * Created on Nov 18, 2005
+ */
+package uk.org.ponder.reflect;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.util.Map;
+
+import uk.org.ponder.saxalizer.SAXAccessMethod;
+import uk.org.ponder.util.UniversalRuntimeException;
+
+public class JDKReflectiveCache extends ReflectiveCache {
+
+  public JDKReflectiveCache() {
+    ReflectiveCache.instance = this;
+  }
+  
+  private static Method getMethod(Class clazz, String name) {
+   return getMethod(clazz, name, SAXAccessMethod.emptyclazz);
+  }
+  
+  private static Method getMethod(Class clazz, String name, Class[] argtypes) {
+    try {
+      return clazz.getMethod(name, argtypes);
+    }
+    catch (Exception e) {
+      throw UniversalRuntimeException.accumulate(e,
+          "Error reflecting for method " + name + " of " + clazz);
+    } 
+  }
+  
+  /** Invokes the supplied no-arg Method object on the supplied target */
+  private static Object invokeMethod(Method method, Object target) {
+    return invokeMethod(method, target, SAXAccessMethod.emptyobj);
+  }
+  
+  /** Invokes the supplied no-arg Method object on the supplied target */
+  private static Object invokeMethod(Method method, Object target, Object[] args) {
+    try {
+      return method.invoke(target, args);
+    }
+    catch (Exception e) {
+      throw UniversalRuntimeException.accumulate(e);
+    }
+  }
+  
+
+  /** Invokes the supplied no-arg constructor to create a new object */
+  public static Object invokeConstructor(Constructor cons) {
+    Object togo = null;
+    try {
+      togo = cons.newInstance(SAXAccessMethod.emptyobj);
+    }
+    catch (Exception e) {
+      throw UniversalRuntimeException.accumulate(e,
+          "Error constructing instance of " + cons.getDeclaringClass());
+    }
+    return togo;
+  }
+
+  public static Object invokeConstructor(Constructor cons, Object[] args) {
+    Object togo = null;
+    try {
+      togo = cons.newInstance(args);
+    }
+    catch (Exception e) {
+      throw UniversalRuntimeException.accumulate(e,
+          "Error constructing instance of " + cons.getDeclaringClass());
+    }
+    return togo;
+  }
+  
+  public Object construct(Class clazz) {
+    Map classmap = getClassMap(clazz);
+    Constructor cons = (Constructor) classmap.get(CONSTRUCTOR_KEY);
+    if (cons == null) {
+      cons = getConstructor(clazz);
+      classmap.put(CONSTRUCTOR_KEY, cons);
+    }
+    return invokeConstructor(cons);
+  }
+
+  public Object invokeMethod(Object target, String name) {
+    Class clazz = target.getClass();
+    Map classmap = getClassMap(clazz);
+    Method method = (Method) classmap.get(name);
+    if (method == null) {
+      method = getMethod(clazz, name);
+      classmap.put(name, method);
+    }
+    return invokeMethod(method, target);
+  }
+  
+  // Implement some caching for this if it looks conceivably worthwhile.
+  public Object invokeMethod(Object target, String name, Class[] argtypes, Object[] args) {
+    Class clazz = target.getClass();
+    Method toinvoke = getMethod(clazz, name, argtypes);
+    return invokeMethod(toinvoke, target, args);
+  }
+  
+  
+}

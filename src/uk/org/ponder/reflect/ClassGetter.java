@@ -1,4 +1,6 @@
-package uk.org.ponder.util;
+package uk.org.ponder.reflect;
+
+import uk.org.ponder.util.UniversalRuntimeException;
 
 /**
  * Owing to a peculiar bug/inconsistency in certain JVMs, this class is

@@ -44,4 +44,6 @@ public interface AccessMethod {
    */
   public Class getAccessedType();
 
+  public Class getDeclaredType();
+  
 }

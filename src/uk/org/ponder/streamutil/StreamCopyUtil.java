@@ -1,5 +1,6 @@
 package uk.org.ponder.streamutil;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
@@ -11,7 +12,9 @@ import java.io.IOException;
 
 import uk.org.ponder.stringutil.CharWrap;
 import uk.org.ponder.stringutil.CharWrapVector;
+import uk.org.ponder.stringutil.StringList;
 import uk.org.ponder.util.UniversalRuntimeException;
+import uk.org.ponder.xml.XMLWriter;
 
 /**
  * This class contains static utility methods for operating on streams.
@@ -159,6 +162,30 @@ public class StreamCopyUtil {
     return build.toString();
   }
 
+  /** Return \n-delimited data from a reader and return as a list of Strings.
+   * The supplied reader WILL be closed!
+   */
+  public static final StringList readerToStringList(Reader source) {
+    BufferedReader br = new BufferedReader(source);
+    StringList togo = new StringList();
+    try {
+      while (true) {
+        String line = br.readLine();
+        if (line == null)
+          break;
+        togo.add(line);
+      }
+    }
+    catch (Exception t) {
+      throw UniversalRuntimeException.accumulate(t,
+          "Error rendering text as stringlist");
+    }
+    finally {
+      StreamCloseUtil.closeReader(source);
+    }
+    return togo;
+  }
+  
   /**
    * Writes the contents of the supplied CharWrapVector to the specified writer,
    * closing the writer on completion or error.

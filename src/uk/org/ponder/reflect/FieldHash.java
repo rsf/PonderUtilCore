@@ -1,7 +1,7 @@
 /*
  * Created on Oct 25, 2004
  */
-package uk.org.ponder.util;
+package uk.org.ponder.reflect;
 
 import java.lang.reflect.Field;
 import java.util.Iterator;
@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import uk.org.ponder.stringutil.StringList;
+import uk.org.ponder.util.UniversalRuntimeException;
 
 /**
  * Automates the process of reflecting a value type full of Strings to and from
