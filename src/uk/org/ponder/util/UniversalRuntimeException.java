@@ -90,10 +90,52 @@ public class UniversalRuntimeException extends RuntimeException implements
     return targetexception;
   }
 
+  private static String computeMessage(String extradetail, String orig) {
+    CharWrap accumulate = new CharWrap();
+    accumulate.append(extradetail);
+    
+    if (orig != null && orig.length() > 0) {
+      accumulate.append("\n").append(orig);
+    }
+    return accumulate.toString();
+  }
+  
+  /**
+   * Accumulates the message supplied message onto the beginning of any existing
+   * exception message, and wraps supplied exception as the target exception of
+   * the returned UniversalRuntimeException.
+   * <p>
+   * If the supplied exception is already a UniversalRuntimeException, the same
+   * object is returned.
+   * <p>
+   * If the supplied exception is a wrapping exception of one of the recognised
+   * kinds (InvocationTargetException, or if registered, ServletException &c), 
+   * it is unwrapped and its target exception becomes the wrapped exception.
+   * 
+   * @param t
+   *          An encountered exception, to be wrapped.
+   * @param fullmsg
+   *          The message to be added to the exceptions information.
+   * @return
+   */
+  public static UniversalRuntimeException accumulate(Throwable t,
+      String extradetail) {
+    String message = computeMessage(extradetail, t.getMessage());
+    UniversalRuntimeException togo = accumulateMsg(t, t.getClass(), message);
+    return togo;
+  }
+
+  /** Used to "pass-through" an exception leaving its message unchanged */
+  public static UniversalRuntimeException accumulate(Throwable t) {
+    UniversalRuntimeException togo = accumulateMsg(t, t.getClass(), t
+        .getMessage());
+    return togo;
+  }
+  
   public static UniversalRuntimeException accumulate(Throwable t,
       Class category, String extradetail) {
-    UniversalRuntimeException togo = accumulateMsg(t, category, extradetail
-        + "\n" + t.getMessage() + "\n");
+    String message = computeMessage(extradetail, t.getMessage());
+    UniversalRuntimeException togo = accumulateMsg(t, category, message);
     return togo;
   }
 
@@ -141,44 +183,13 @@ public class UniversalRuntimeException extends RuntimeException implements
       togo.append("Target " + targetexception.getClass());
     }
     else if (category != null) {
-      togo.append("Category " + category);
+      togo.append(" Category " + category);
       
     }
-    togo.append(getMessage());
+    togo.append("\n").append(getMessage());
     return togo.toString();
   }
-  
-  /**
-   * Accumulates the message supplied message onto the beginning of any existing
-   * exception message, and wraps supplied exception as the target exception of
-   * the returned UniversalRuntimeException.
-   * <p>
-   * If the supplied exception is already a UniversalRuntimeException, the same
-   * object is returned.
-   * <p>
-   * If the supplied exception is a wrapping exception of one of the recognised
-   * kinds (InvocationTargetException, or if registered, ServletException &c), 
-   * it is unwrapped and its target exception becomes the wrapped exception.
-   * 
-   * @param t
-   *          An encountered exception, to be wrapped.
-   * @param fullmsg
-   *          The message to be added to the exceptions information.
-   * @return
-   */
-  public static UniversalRuntimeException accumulate(Throwable t,
-      String extradetail) {
-    UniversalRuntimeException togo = accumulateMsg(t, t.getClass(), extradetail
-        + "\n" + t.getMessage() + "\n");
-    return togo;
-  }
 
-  /** Used to "pass-through" an exception leaving its message unchanged */
-  public static UniversalRuntimeException accumulate(Throwable t) {
-    UniversalRuntimeException togo = accumulateMsg(t, t.getClass(), t
-        .getMessage());
-    return togo;
-  }
 
   // QQQQQ move these three methods to static utility for all WrappingExceptions
   public void printStackTrace() {
