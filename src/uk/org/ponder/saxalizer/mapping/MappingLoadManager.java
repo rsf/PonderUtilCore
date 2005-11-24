@@ -22,10 +22,6 @@ public class MappingLoadManager {
     this.xmlprovider = xmlprovider;
   }
 
-  public MappableXMLProvider getMappableXMLProvider() {
-    return xmlprovider;
-  }
-
   public void setSAXalizerMappingContext(SAXalizerMappingContext mappingcontext) {
     this.mappingcontext = mappingcontext;
   }
@@ -47,6 +43,10 @@ public class MappingLoadManager {
   }
   
   public XMLProvider getXMLProvider() {
+    return xmlprovider;
+  }
+  
+  public MappableXMLProvider getMappableXMLProvider() {
     return xmlprovider;
   }
 

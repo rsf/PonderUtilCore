@@ -82,6 +82,9 @@ public class JDKReflectiveCache extends ReflectiveCache {
   }
 
   public Object invokeMethod(Object target, String name) {
+    if (target instanceof MethodInvokingProxy) {
+      return ((MethodInvokingProxy)target).invokeMethod(name, null);
+    }
     Class clazz = target.getClass();
     Map classmap = getClassMap(clazz);
     Method method = (Method) classmap.get(name);
@@ -93,7 +96,7 @@ public class JDKReflectiveCache extends ReflectiveCache {
   }
   
   // Implement some caching for this if it looks conceivably worthwhile.
-  public Object invokeMethod(Object target, String name, Class[] argtypes, Object[] args) {
+  protected Object invokeMethod(Object target, String name, Class[] argtypes, Object[] args) {
     Class clazz = target.getClass();
     Method toinvoke = getMethod(clazz, name, argtypes);
     return invokeMethod(toinvoke, target, args);

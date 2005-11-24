@@ -12,6 +12,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import uk.org.ponder.conversion.StaticLeafParser;
+import uk.org.ponder.reflect.ClassGetter;
 import uk.org.ponder.saxalizer.mapping.ClassNameManager;
 import uk.org.ponder.stringutil.CharWrap;
 import uk.org.ponder.util.AssertionException;
@@ -351,20 +352,13 @@ public class SAXalizer extends HandlerBase {
     if (am == null) { // if we failed to find a registered method for this tag
       // name
       //      System.err.println("Did NOT find a suitable parent method");
-      //      long time = System.currentTimeMillis();
       try { // attempt to look up the class name now so that the forthcoming if
-        // statement can
-        // be nicely ordered
+        // statement can be nicely ordered
         if (tagname.indexOf(':') == -1 && tagname.indexOf('.') != -1)
           newobjclass = Class.forName(tagname);
-        if (Logger.passDebugLevel(Logger.DEBUG_EXTRA_INFO)) {
-          Logger.println("ELEMENT CLASS direct lookup is " + newobjclass);
-        }
       }
       catch (Exception e) {
       } // exception simply indicates that the tag name is not a class
-      //      System.out.println("forName took "+ (System.currentTimeMillis() -
-      // time));
       if (tagmethods.get("*") != null && newobjclass != null) {
         // if the parent is polymorphic, and class name lookup succeeded, do
         // nothing.
@@ -380,18 +374,20 @@ public class SAXalizer extends HandlerBase {
             + tagname
             + "' found while parsing child of"
             + (beingparsed.object == null ? " null object" : " object of "
-                + beingparsed.object.getClass()) + " which is not generic.",
-            locator);
+                + beingparsed.object.getClass()), locator);
       }
     } // end if no registered method
     else {
       String typeattrname = ClassNameManager.TYPE_ATTRIBUTE_NAME; // QQQQQ genericise this somehow.
-      if (am.ispolymorphic) {
-        String attrvalue = attrlist.getValue(typeattrname);
-        newobjclass = mappingcontext.classnamemanager.findClazz(attrvalue);
+      String typeattrvalue = attrlist.getValue(typeattrname);
+      if (am.ispolymorphic && typeattrvalue != null) {
+        newobjclass = mappingcontext.classnamemanager.findClazz(typeattrvalue);
+        if (newobjclass == null) {
+          newobjclass = ClassGetter.forName(typeattrvalue);
+        }
         if (newobjclass == null) {
           throw new SAXParseException("Polymorphic tag " + tagname
-              + " does not have type specified using \"type\" attribute",
+              + " has \"type\" attribute with value " + typeattrvalue + " which cannot be resolved to a class ",
               locator);
         }
       }
@@ -410,8 +406,10 @@ public class SAXalizer extends HandlerBase {
     Object oldobj = null;
     // enumerations and non-getters are out - we could never write to them.
     // if it is a leaf type it is out, UNLESS it is a multiple in which case it 
-    // is denumerable.
-    if (am.canGet() && !am.isenumeration && (am.ismultiple || !leafparser.isLeafType(am.clazz)) ) {
+    // is denumerable. It is ALSO out if it is "exact" since the class author
+    // presumably has provided a precise "add" method he wants us to use.
+    if (am.canGet() && !am.isenumeration && (am.ismultiple || !leafparser.isLeafType(am.clazz)) 
+        && !am.isexactsetter) {
       oldobj = am.getChildObject(beingparsed.object);
       if (oldobj != null) {
 //        Logger.println("Acquired old object " + oldobj + " from parent "
@@ -495,6 +493,9 @@ public class SAXalizer extends HandlerBase {
       String body = beingparsed.textsofar.toString();
       Object newchild = leafparser.parse(bodymethod.clazz, body);
       bodymethod.setChildObject(beingparsed.object, newchild);
+    }
+    if (beingparsed.denumerationmap != null && !beingparsed.denumerationmap.isEmpty()) {
+      // TODO! Enable parsing of array values by prodding CompletableDenumeration here.
     }
     saxingobjects.pop(); // remove the completed object from the stack.
 

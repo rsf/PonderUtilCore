@@ -8,6 +8,7 @@ package uk.org.ponder.saxalizer.mapping;
  * 
  */
 public interface SAXalizerMapperInferrer {
+  public void setChainedInferrer(SAXalizerMapperInferrer target);
   public SAXalizerMapperEntry inferEntry(Class clazz, SAXalizerMapperEntry entry);
   public void setDefaultInferrible(Class clazz);
   public boolean isDefaultInferrible(Class clazz);

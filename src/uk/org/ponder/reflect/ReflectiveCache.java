@@ -94,7 +94,7 @@ public abstract class ReflectiveCache {
       togo = clazz.getConstructor(SAXAccessMethod.emptyclazz);
     }
     catch (Exception e) {
-      throw UniversalRuntimeException.accumulate(e);
+      throw UniversalRuntimeException.accumulate(e, "Error getting constructor for " + clazz);
     }
     return togo;
   }
@@ -112,9 +112,12 @@ public abstract class ReflectiveCache {
 
   public abstract Object construct(Class clazz);
   public abstract Object invokeMethod(Object bean, String method);
-  public abstract Object invokeMethod(Object target, String name, Class[] infer, Object[] args);
+  protected abstract Object invokeMethod(Object target, String name, Class[] infer, Object[] args);
 
   public Object invokeMethod(Object target, String name, Object[] args) {
+    if (target instanceof MethodInvokingProxy) {
+      return ((MethodInvokingProxy)target).invokeMethod(name, args);
+    }
     Class[] infer = new Class[args.length];
     for (int i = 0; i < args.length; ++ i) {
       infer[i] = args[i].getClass();

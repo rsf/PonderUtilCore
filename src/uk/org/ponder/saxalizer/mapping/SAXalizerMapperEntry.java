@@ -47,6 +47,9 @@ SAXalizableAttrs {
   public SAXAccessMethodSpec specAt(int i) {
     return (SAXAccessMethodSpec) subtagentries.get(i);
   }
+  public void remove(int index) {
+    subtagentries.remove(index);
+  }
   public void addNonDuplicate(SAXAccessMethodSpec newspec) {
     for (int i = 0; i < size(); ++i) {
       SAXAccessMethodSpec thisspec = specAt(i);

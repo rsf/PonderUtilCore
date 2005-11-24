@@ -31,6 +31,11 @@ public class SAXalizerMappingContext {
   public ClassNameManager classnamemanager = ClassNameManager.instance();
   private ReflectiveCache reflectivecache;
 
+  public void setChainedInferrer(SAXalizerMapperInferrer inferrer) {
+    inferrer.setChainedInferrer(this.inferrer);
+    this.inferrer = inferrer;
+  }
+  
   public void setReflectiveCache(ReflectiveCache reflectivecache) {
     this.reflectivecache = reflectivecache;
     mapper = new SAXalizerMapper(reflectivecache.getConcurrentMap(1));

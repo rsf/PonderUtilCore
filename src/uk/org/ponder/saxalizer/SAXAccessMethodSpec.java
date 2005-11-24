@@ -25,6 +25,7 @@ public class SAXAccessMethodSpec implements SAXalizable, SAXalizableAttrs {
   public static final int FIELD_METHOD = 2;
   public static final String ACCESS_METHOD = "method";
   public static final String ACCESS_FIELD = "field";
+  public static final String ACCESS_IGNORE = "ignore";
   public static final String XML_TAG = "tag";
   public static final String XML_ATTRIBUTE = "attribute";
   public static final String XML_BODY = "body";
@@ -63,7 +64,7 @@ public class SAXAccessMethodSpec implements SAXalizable, SAXalizableAttrs {
     if (accesstype.equals(ACCESS_METHOD)) {
       this.getmethodname = methodorfieldname;
     }
-    else {
+    else if (accesstype.equals(ACCESS_FIELD)) {
       this.fieldname = methodorfieldname;
     }
     this.clazz = clazz;

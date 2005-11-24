@@ -22,7 +22,7 @@ import uk.org.ponder.util.Logger;
  * 
  */
 public class ReflectUtils {
-  
+
   public static boolean isPublicStatic(int modifiers) {
     return Modifier.isPublic(modifiers) && Modifier.isStatic(modifiers);
   }

@@ -18,17 +18,26 @@ public class SAXAccessMethod implements AccessMethod {
   public static final Class[] emptyclazz = {};
   public static final Object[] emptyobj = {};
 
-  Field field; // The Field object corresponding to the child field, if there is
+  Field field; // The Field object corresponding to the child field, if there
+                // is
   // one.
   Method getmethod; // The actual Method object to be invoked
   Method setmethod;
-  Class clazz; // The type of subobject (or superclass thereof) handled by this method
-  Class accessclazz; // The actual (declared) return or field type in code (may be container)
+  Class clazz; // The type of subobject (or superclass thereof) handled by this
+                // method
+  Class accessclazz; // The actual (declared) return or field type in code (may
+                      // be container)
   Class parentclazz; // The class that this is a method of, for convenience.
   public String tagname;
   boolean ispolymorphic; // Uses the new "tag*" polymorphic nickname scheme
-  public boolean ismultiple; // A collection rather than a single object is being addressed
-  boolean isenumeration; // if "ismultiple" is this delivered via an enumeration?
+  public boolean ismultiple; // A collection rather than a single object is
+                              // being addressed
+  public boolean isexactsetter; // A more specific set method has been supplied
+                                // than get method.
+  boolean isenumeration; // if "ismultiple" is this delivered via an
+                          // enumeration?
+  boolean isdevnull; // if this is a "black hole" setter for ignoring properties
+
   // Note that enumerations are the only things which are enumerable but not
   // denumerable.
 
@@ -101,9 +110,11 @@ public class SAXAccessMethod implements AccessMethod {
       // TODO: for containers like StringSet we should try to look up
       // container/containee information from DefaultInferrer. Semantics
       // of this are slightly unclear... this is not a "default" mapping, BUT
-      // ERM! byXMLNameSafe appears to try to fill in m.clazz by itself, does this work?
+      // ERM! byXMLNameSafe appears to try to fill in m.clazz by itself, does
+      // this work?
       accessclazz = field.getType();
-      clazz = m.clazz == null? accessclazz : m.clazz;
+      clazz = m.clazz == null ? accessclazz
+          : m.clazz;
       checkEnumerable(accessclazz);
     }
     else {
@@ -117,8 +128,8 @@ public class SAXAccessMethod implements AccessMethod {
                   + " in class " + parentclazz);
         }
         accessclazz = getmethod.getReturnType();
-        if (!checkEnumerable(accessclazz) && m.clazz != null 
-         && !m.clazz.isAssignableFrom(accessclazz)) {
+        if (!checkEnumerable(accessclazz) && m.clazz != null
+            && !m.clazz.isAssignableFrom(accessclazz)) {
           throw new AssertionException("Actual return type of get method \""
               + getmethod + "\" is not assignable to advertised type of "
               + m.clazz);
@@ -143,10 +154,15 @@ public class SAXAccessMethod implements AccessMethod {
                 new Class[] { m.clazz });
           }
           catch (Throwable t) {
-            throw (UniversalRuntimeException.accumulate(t,
-                "Unable to find SET method with name " + m.setmethodname
-                    + " accepting argument " + m.clazz + " in class "
-                    + parentclazz));
+            setmethod = findSetMethod(parentclazz, m.setmethodname);
+            // if it didn't have exactly the right type, last-ditch search for a compatible setter.
+            if (setmethod == null
+                || !setmethod.getParameterTypes()[0].isAssignableFrom(m.clazz)) {
+              throw (UniversalRuntimeException.accumulate(t,
+                  "Unable to find SET method with name " + m.setmethodname
+                      + " accepting argument " + m.clazz + " in class "
+                      + parentclazz));
+            }
           }
         }
         clazz = m.clazz;
@@ -155,19 +171,29 @@ public class SAXAccessMethod implements AccessMethod {
           accessclazz = clazz;
         }
       } // end if there is a set method
+      if (m.accesstype.equals(SAXAccessMethodSpec.ACCESS_IGNORE)) {
+        isdevnull = true;
+      }
       // if there is only a get method (as for maps) the actual type will not
       // be determined yet
     } // end if not a fieldname
+    if (setmethod != null && getmethod != null) {
+      isexactsetter = !setmethod.getParameterTypes()[0].equals(getmethod.getReturnType());
+    }
+    // TODO: some weird code here for "default" tags - what on earth does this do?
     if (tagname != null && tagname.equals("")) {
       if (!canGet()) {
-        throw new UniversalRuntimeException("No GET scheme supplied for mapped default tag");
+        throw new UniversalRuntimeException(
+            "No GET scheme supplied for mapped default tag");
       }
       if (!EnumerationConverter.isMappable(accessclazz)) {
-        throw new UniversalRuntimeException("Default mapped type does not map onto a mappable type");
+        throw new UniversalRuntimeException(
+            "Default mapped type does not map onto a mappable type");
       }
       // unless specified by now, remain mapped values as strings.
       // QQQQQ make sure defaultinferring happens before now.
-      clazz = m.clazz == null? String.class : m.clazz;
+      clazz = m.clazz == null ? String.class
+          : m.clazz;
     }
   }
 
@@ -175,13 +201,14 @@ public class SAXAccessMethod implements AccessMethod {
    * Determines whether the supplied class, the actualtype of a field or a get
    * method, is enumerable. If it is, the ismultiple field is set, and the
    * isenumeration field is conditionally set.
+   * 
    * @param clazz2
    */
   private boolean checkEnumerable(Class clazz) {
     ismultiple = EnumerationConverter.isEnumerable(clazz);
     if (ismultiple) {
       isenumeration = !EnumerationConverter.isDenumerable(clazz);
-    } 
+    }
     return ismultiple;
   }
 
@@ -200,7 +227,8 @@ public class SAXAccessMethod implements AccessMethod {
     }
     catch (Throwable t) {
       throw UniversalRuntimeException.accumulate(t,
-          "Error acquiring child object of object " + parent + " " + parent.getClass());
+          "Error acquiring child object of object " + parent + " "
+              + parent.getClass());
     }
   }
 
@@ -209,7 +237,7 @@ public class SAXAccessMethod implements AccessMethod {
       if (field != null) {
         field.set(parent, newchild);
       }
-      else {
+      else if (setmethod != null) {
         setmethod.invoke(parent, new Object[] { newchild });
       }
     }
@@ -234,28 +262,32 @@ public class SAXAccessMethod implements AccessMethod {
    * @return
    */
   public boolean canSet() {
-    return (field != null || setmethod != null);
+    return (field != null || setmethod != null || isdevnull);
   }
-  
-  /** Determines whether the return type of this method is assignable
-   * to Enumeration, which is interpreted as indicating a non-settable
-   * multiple value, in the case that there is no individual set method.
+
+  /**
+   * Determines whether the return type of this method is assignable to
+   * Enumeration, which is interpreted as indicating a non-settable multiple
+   * value, in the case that there is no individual set method.
    */
   public boolean isEnumeration() {
     return isenumeration;
   }
-  
-  /** Determines whether this set method may be used for the delivery
-   * of multiple subobjects. If it is, the object delivered by Get
-   * may be converted into a receiver by EnumerationConverter.getDenumeration(oldinstance).
+
+  /**
+   * Determines whether this GET method result may be used for the delivery of multiple
+   * subobjects. If it is, the object delivered by Get may be converted into a
+   * receiver by EnumerationConverter.getDenumeration(oldinstance).
    */
   public boolean isDenumerable() {
-    return ismultiple && !isenumeration;
-    }
-  /** The type of subobject that this method deals in **/
+    return ismultiple && !isenumeration && !isexactsetter;
+  }
+
+  /** The type of subobject that this method deals in * */
   public Class getAccessedType() {
     return clazz;
   }
+
   public Class getDeclaredType() {
     return accessclazz;
   }

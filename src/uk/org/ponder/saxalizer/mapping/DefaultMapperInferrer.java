@@ -14,6 +14,7 @@ import uk.org.ponder.saxalizer.SAMSList;
 import uk.org.ponder.saxalizer.SAXAccessMethodSpec;
 import uk.org.ponder.stringutil.StringList;
 import uk.org.ponder.stringutil.StringSet;
+import uk.org.ponder.util.EnumerationConverter;
 import uk.org.ponder.util.Logger;
 
 /**
@@ -21,7 +22,11 @@ import uk.org.ponder.util.Logger;
  *  
  */
 public class DefaultMapperInferrer implements SAXalizerMapperInferrer {
-
+  public void setChainedInferrer(SAXalizerMapperInferrer target) {
+    throw new UnsupportedOperationException("Cannot chain from default inferrer");
+    // We expect to be the head of the chain
+  }
+  
   private HashMap collectionmap = new HashMap();
   private HashSet defaultiblemap = new HashSet();
   
@@ -71,15 +76,28 @@ public class DefaultMapperInferrer implements SAXalizerMapperInferrer {
         + methodname.substring(4);
   }
 
+  public static final String dePluralize(String accessname, Class returntype) {
+    String togo = accessname;
+    if (EnumerationConverter.isEnumerable(returntype)) {
+      if (accessname.endsWith("s")) {
+        togo = accessname.substring(0, accessname.length() - 1);
+      }
+    }  
+    return togo;
+  }
+  
   /** Returns an new SAMS object with the given name.
    * @param tagname
+   * @param clazz The *return* type of the method, hence empty for a set method.
    * @return
    */
   private SAXAccessMethodSpec byXMLNameSafe(SAMSList samslist, String tagname, Class clazz) {
     // must not fuse get and set at this point! Otherwise there will be
     // duplicate.
     SAXAccessMethodSpec spec = new SAXAccessMethodSpec();
-    spec.xmlname = tagname;
+    // depluralise if it is a get method 
+    spec.xmlname = dePluralize(tagname, clazz);
+  
     Class containeetype = getContaineeType(clazz);
     if (containeetype != null) {
       spec.clazz = containeetype;
@@ -121,6 +139,7 @@ public class DefaultMapperInferrer implements SAXalizerMapperInferrer {
         if (Logger.log.isDebugEnabled()) {
           Logger.log.debug("Method gave access method " + spec);
         }
+        spec.xmlname += "*"; // better make everything polymorphic
         togo.addNonDuplicate(spec);
       }
     }
@@ -131,14 +150,17 @@ public class DefaultMapperInferrer implements SAXalizerMapperInferrer {
       int modifiers = fields[i].getModifiers();
       if (!isPublicNonStatic(modifiers)) continue;
       SAXAccessMethodSpec spec = byXMLNameSafe(sams, fieldname, fields[i].getType());
+      spec.accesstype = SAXAccessMethodSpec.ACCESS_FIELD;
       spec.fieldname = fieldname;
       if (Logger.log.isDebugEnabled()) {
         Logger.log.debug("Field gave access method " + spec);
       }
+      spec.xmlname += "*"; // better make everything polymorphic
       togo.addNonDuplicate(spec);
     }
     
     return togo;
   }
+
 
 }
