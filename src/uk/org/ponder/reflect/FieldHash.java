@@ -13,7 +13,8 @@ import uk.org.ponder.util.UniversalRuntimeException;
 
 /**
  * Automates the process of reflecting a value type full of Strings to and from
- * a Map of Strings. Useful for HTTP requests and the like.
+ * a Map of Strings. Useful for HTTP requests and the like. Old-fashioned code,
+ * shortly to be destroyed.
  * 
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
  *  
@@ -42,8 +43,11 @@ public class FieldHash {
     fieldmap.put(fieldname, f);
   }
 
+  /** Select those fields from the supplied map which match keys stored in
+   * this fieldhash, and set them in the supplied target object. Can deal with 
+   * either String[]-valued parameters or String-valued ones.
+   */
   public void fromMap(Map from, Object targetobj) {
-
     for (Iterator keys = from.keySet().iterator(); keys.hasNext();) {
       String fieldname = (String) keys.next();
       Field field = (Field) fieldmap.get(fieldname);

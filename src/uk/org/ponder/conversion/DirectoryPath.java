@@ -56,4 +56,7 @@ public class DirectoryPath implements LeafObjectParser {
     DirectoryPath torender = (DirectoryPath) torendero;
     return torender.directoryspec;
     }
+  public Object copy(Object tocopy) {
+    return tocopy;
+    }
   }

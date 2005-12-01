@@ -18,4 +18,12 @@ public interface LeafObjectParser {
    * @return A String holding the rendered text.
    */
   String render(Object torender);
+  /** Clones an object by returning an equivalent object which shares no
+   * state with the original. For most leaf objects simply returns the original
+   * if they are known to be immutable.
+   * <p>This method is useful since the JDK Object.clone() method is not only
+   * vastly inefficient (costing around a microsecond per throw) but also
+   * greatly intrusive.
+   */
+  public Object copy(Object tocopy);
   }

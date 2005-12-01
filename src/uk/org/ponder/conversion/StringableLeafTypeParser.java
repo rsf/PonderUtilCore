@@ -68,5 +68,10 @@ public class StringableLeafTypeParser implements LeafObjectParser {
           tostring.getDeclaringClass());
     }
   }
+  
+  //NB - probably wrong.
+  public Object copy(Object tocopy) {
+    return tocopy;
+  }
 
 }

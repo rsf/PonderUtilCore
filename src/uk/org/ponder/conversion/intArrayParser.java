@@ -11,13 +11,14 @@ import uk.org.ponder.util.UniversalRuntimeException;
 
 /**
  * @author Antranig Basman (amb26@ponder.org.uk)
- *  
+ * 
  */
 
-//QQQQQ diabolically inefficient. Need to replace parse method with reader
-//from CharWrap directly.
+// QQQQQ diabolically inefficient. Need to replace parse method with reader
+// from CharWrap directly.
 public class intArrayParser implements LeafObjectParser {
   public static intArrayParser instance = new intArrayParser();
+
   public Object parse(String string) {
     try {
       PushbackRIS lr = new PushbackRIS(new StringRIS(string));
@@ -55,5 +56,11 @@ public class intArrayParser implements LeafObjectParser {
     }
     return renderinto.toString();
   }
-}
 
+  public Object copy(Object tocopyo) {
+    int[] tocopy = (int[]) tocopyo;
+    int[] copy = new int[tocopy.length];
+    System.arraycopy(tocopy, 0, copy, 0, tocopy.length);
+    return copy;
+  }
+}

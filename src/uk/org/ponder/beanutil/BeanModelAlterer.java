@@ -10,7 +10,7 @@ import uk.org.ponder.mapping.DARList;
 
 public interface BeanModelAlterer {
 
-  public Object getBeanValue(String fullpath, BeanLocator rbl);
+  public Object getBeanValue(String fullpath, Object rbl);
 
   public void setBeanValue(String fullpath, BeanLocator rbl, Object value);
 

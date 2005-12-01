@@ -6,6 +6,11 @@ package uk.org.ponder.conversion;
 import uk.org.ponder.saxalizer.SAXalXMLProvider;
 
 /**
+ * Converts objects to and from strings, using an XML format for composite objects,
+ * but a simple String rendering for leaf objects. In the latter case, type
+ * information must be maintained separately after serialization if you expect
+ * to be able to reconstruct the object.
+ * <p>
  * This class is a slight kludge until we think of some sensible reform of the
  * serialization morass. The point is we are really disinclined to construct XML
  * parsers just to parse, for example, String objects. We also note that the

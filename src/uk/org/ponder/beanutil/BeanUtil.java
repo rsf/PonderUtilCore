@@ -3,6 +3,8 @@
  */
 package uk.org.ponder.beanutil;
 
+import java.util.List;
+
 import uk.org.ponder.saxalizer.MethodAnalyser;
 import uk.org.ponder.saxalizer.SAXalizerMappingContext;
 import uk.org.ponder.stringutil.CharWrap;
@@ -35,7 +37,7 @@ public class BeanUtil {
   }
   
   public static String getContainingPath(String path) {
-    int dotpos = path.lastIndexOf(path);
+    int dotpos = path.lastIndexOf(".");
     return dotpos == -1? null : path.substring(0, dotpos);
   }
   
@@ -56,6 +58,16 @@ public class BeanUtil {
     String[] components = splitEL(path); 
     Object moveobj = rootobj;
     for (int comp = 0; comp < components.length; ++comp) {
+      if (moveobj instanceof List) {
+        List movelist = (List) moveobj;
+        int index = Integer.valueOf(components[comp]).intValue();
+        moveobj = movelist.get(index);
+      }
+      else if (moveobj.getClass().isArray()) {
+        Object[] movearr = (Object[]) moveobj;
+        int index = Integer.valueOf(components[comp]).intValue();
+        moveobj = movearr[index];
+      }
       PropertyAccessor pa = MethodAnalyser.getPropertyAccessor(moveobj, mappingcontext);
       moveobj = pa.getProperty(moveobj, components[comp]);
       //AccessMethod am = DARApplier.getAMExpected(moveobj, components[comp], mappingcontext);

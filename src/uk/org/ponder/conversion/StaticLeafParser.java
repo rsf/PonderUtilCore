@@ -5,12 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import uk.org.ponder.arrayutil.ArrayUtil;
-import uk.org.ponder.streamutil.read.LexUtil;
-import uk.org.ponder.streamutil.read.PushbackRIS;
-import uk.org.ponder.streamutil.read.StringRIS;
-import uk.org.ponder.stringutil.CharWrap;
 import uk.org.ponder.util.AssertionException;
-import uk.org.ponder.util.UniversalRuntimeException;
 
 class BooleanParser implements LeafObjectParser {
   public Object parse(String string) {
@@ -21,46 +16,9 @@ class BooleanParser implements LeafObjectParser {
   public String render(Object torender) {
     return torender.toString();
   }
-}
 
-// QQQQQ diabolically inefficient. Need to replace parse method with reader
-// from CharWrap directly.
-class doubleArrayParser implements LeafObjectParser {
-  public Object parse(String string) {
-    try {
-      PushbackRIS lr = new PushbackRIS(new StringRIS(string));
-      int size = LexUtil.readInt(lr);
-      double[] togo = new double[size];
-      LexUtil.expect(lr, ":");
-      for (int i = 0; i < size; ++i) {
-        LexUtil.skipWhite(lr);
-        try {
-          togo[i] = LexUtil.readDouble(lr);
-        }
-        catch (Exception e) {
-          UniversalRuntimeException.accumulate(e,
-              "Error reading double vector at position " + i + " of expected "
-                  + size);
-        }
-      }
-      LexUtil.skipWhite(lr);
-      LexUtil.expectEmpty(lr);
-      return togo;
-    }
-    catch (Exception e) {
-      throw UniversalRuntimeException.accumulate(e,
-          "Error reading double vector");
-    }
-  }
-
-  public String render(Object torendero) {
-    double[] torender = (double[]) torendero;
-    CharWrap renderinto = new CharWrap(torender.length * 15);
-    renderinto.append(Integer.toString(torender.length) + ": ");
-    for (int i = 0; i < torender.length; ++i) {
-      renderinto.append(Double.toString(torender[i]) + " ");
-    }
-    return renderinto.toString();
+  public Object copy(Object tocopy) {
+    return tocopy;
   }
 }
 
@@ -72,6 +30,10 @@ class DoubleParser implements LeafObjectParser {
   public String render(Object torender) {
     return torender.toString();
   }
+
+  public Object copy(Object tocopy) {
+    return tocopy;
+  }
 }
 
 class IntegerParser implements LeafObjectParser {
@@ -82,6 +44,10 @@ class IntegerParser implements LeafObjectParser {
   public String render(Object torender) {
     return torender.toString();
   }
+
+  public Object copy(Object tocopy) {
+    return tocopy;
+  }
 }
 
 class LongParser implements LeafObjectParser {
@@ -91,6 +57,10 @@ class LongParser implements LeafObjectParser {
 
   public String render(Object torender) {
     return torender.toString();
+  }
+
+  public Object copy(Object tocopy) {
+    return tocopy;
   }
 }
 
@@ -118,12 +88,13 @@ public class StaticLeafParser {
   HashMap parseabletypes = new HashMap();
 
   private static StaticLeafParser instance = new StaticLeafParser();
+
   // cross-hatched square character in Unicode, should be entirely unused
   // in UTF-16, would appear as percent-sign copyright-symbol. 0010010111001001
   // in UTF-8, would appear as a-hat (unassigned) (unassigned) e29789. 11100010
   // 10010111 10001001
-  //  public static final char solidus = '\u25a9';
-  //private static String NULL_STRING = "\u25a9null\u25a9";
+  // public static final char solidus = '\u25a9';
+  // private static String NULL_STRING = "\u25a9null\u25a9";
 
   private void registerDefaultParsers() {
     registerParser(Boolean.class, new BooleanParser());
@@ -216,8 +187,7 @@ public class StaticLeafParser {
     if (returntype.isPrimitive()) {
       returntype = wrapClass(returntype);
     }
-    LeafObjectParser parser = (LeafObjectParser) parseabletypes
-        .get(returntype);
+    LeafObjectParser parser = (LeafObjectParser) parseabletypes.get(returntype);
     return parser.parse(bulk);
   }
 
@@ -242,6 +212,16 @@ public class StaticLeafParser {
     }
     return parser.render(torender);
   }
+
+  public Object copy(Object tocopy) {
+    Class objtype = tocopy.getClass();
+    LeafObjectParser parser = (LeafObjectParser) parseabletypes.get(objtype);
+    if (parser == null) {
+      throw new AssertionException("LeafParser asked to render object of type "
+          + objtype.getName() + " which has no registered parser");
+    }
+    return parser.copy(tocopy);
+  }
 }
 
 class StringParser implements LeafObjectParser {
@@ -251,5 +231,9 @@ class StringParser implements LeafObjectParser {
 
   public String render(Object torender) {
     return (String) torender;
+  }
+
+  public Object copy(Object tocopy) {
+    return tocopy;
   }
 }

@@ -22,6 +22,11 @@ public class ClassNameManager {
     return instance;
   }
   public void registerClass(String nickname, Class clazz) {
+    Class previous = (Class) forwardnick.get(nickname);
+    if (previous != null && !previous.equals(clazz)) {
+      throw new IllegalArgumentException("Nickname " + nickname + 
+          " is already registered to class " + forwardnick.get(nickname));
+    }
     forwardnick.put(nickname, clazz);
     backwardnick.put(clazz, nickname);
   }

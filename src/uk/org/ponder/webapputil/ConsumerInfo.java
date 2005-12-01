@@ -9,10 +9,14 @@ package uk.org.ponder.webapputil;
  * 
  */
 public class ConsumerInfo {
-  public String consumerid; // also "consumerprefix"
+  public String consumerid; // also called "consumerprefix"
   public String consumername;
   /** The FULL URL for requests made to the consumer's Information Servlet */
   public String informationbase;
+  /** A string identifying the type of consumer. Supported currently are
+   * "coursework" and "sakai". If this field is left null, it is assumed there
+   * is no consumer.
+   */
   public String consumertype;
   // NB - urlbase, extraparameters and externalURL may vary between resources
   // for the same consumer. We expect everything else to be consumer-static.

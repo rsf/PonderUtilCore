@@ -130,7 +130,7 @@ public class SAXAccessMethodSpec implements SAXalizable, SAXalizableAttrs {
     return new SAXAccessMethodSpec[] {
         new SAXAccessMethodSpec("xmlname", "xmlname", String.class,
             ACCESS_FIELD),
-        new SAXAccessMethodSpec("accesstype", "accesstype", String.class,
+        new SAXAccessMethodSpec("access-type", "accesstype", String.class,
             ACCESS_FIELD),
         new SAXAccessMethodSpec("xml-form", "xmlform", String.class,
             ACCESS_FIELD) };

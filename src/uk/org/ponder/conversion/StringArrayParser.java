@@ -54,4 +54,8 @@ public class StringArrayParser implements LeafObjectParser {
     return togo.toString();
   }
 
+  public Object copy(Object tocopy) {
+    return tocopy;
+  }
+  
 }

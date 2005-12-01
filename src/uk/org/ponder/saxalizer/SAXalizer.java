@@ -240,17 +240,14 @@ public class SAXalizer extends HandlerBase {
       if (attrname.equals(ClassNameManager.TYPE_ATTRIBUTE_NAME) &&
           waspolymorphic) continue;
       SAXAccessMethod setattrmethod = attrmethods.get(attrname);
-      if (setattrmethod != null) { // if the attribute name is mapped to an
-        // access method
-        // parse the attribute
-        //	  System.out.println("Discovered a method capable of accepting
-        // attribute" + attrlist.getName(i));
-        //	  attributebuffer.clear().append(attrlist.getValue(i));
-        Object newchild = leafparser.parse(setattrmethod.clazz, attrvalue);
+      if (setattrmethod != null) {
+        if (!setattrmethod.isdevnull) {
+          Object newchild = leafparser.parse(setattrmethod.clazz, attrvalue);
 
-        setattrmethod.setChildObject(obj, newchild); // invoke iiiiiit!
-        if (takesextras)
-          expended[i] = true;
+          setattrmethod.setChildObject(obj, newchild); // invoke iiiiiit!
+          if (takesextras)
+            expended[i] = true;
+        }
       }
       else if (takesextras) { // if not mapped, and it takes extras,
         extras.put(attrname, attrvalue);

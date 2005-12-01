@@ -25,4 +25,8 @@ public class ClassParser implements LeafObjectParser {
     return ((Class)torendero).getName();
   }
 
+  public Object copy(Object tocopy) {
+    return tocopy;
+  }
+
 }

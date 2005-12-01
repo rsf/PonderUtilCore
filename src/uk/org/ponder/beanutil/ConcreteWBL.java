@@ -18,5 +18,8 @@ public class ConcreteWBL implements WriteableBeanLocator {
   public Object locateBean(String path) {
     return beans.get(path);
   }
-
+  
+  public void clear() {
+    beans.clear();
+  }
 }

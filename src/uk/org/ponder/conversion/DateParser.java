@@ -25,4 +25,7 @@ class DateParser implements LeafObjectParser {
     String rendered = format.format(torender);
     return rendered;
     }
+  public Object copy(Object tocopy) {
+    return new Date(((Date) tocopy).getTime());
   }
+}

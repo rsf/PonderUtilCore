@@ -219,9 +219,9 @@ public class MethodAnalyser implements PropertyAccessor {
     condenseMethods(attrMethods, new ArrayEnumeration(setmethods),
         SAXAccessMethodSpec.XML_ATTRIBUTE);
     if (setmethods != null) {
-    for (int i = 0; i < setmethods.length; ++ i) {
-      checkBodyMethodSpec(setmethods[i]);
-    }
+      for (int i = 0; i < setmethods.length; ++i) {
+        checkBodyMethodSpec(setmethods[i]);
+      }
     }
   }
 

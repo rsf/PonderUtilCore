@@ -43,31 +43,40 @@ public class DARApplier implements BeanModelAlterer {
     vcp = new VectorCapableParser();
     vcp.setScalarParser(mappingcontext.saxleafparser);
   }
-  
+
+  public SAXalizerMappingContext getMappingContext() {
+    return mappingcontext;
+  }
+
   public void setReflectiveCache(ReflectiveCache reflectivecache) {
     this.reflectivecache = reflectivecache;
   }
 
-  public Object getBeanValue(String fullpath, BeanLocator rbl) {
+  public Object getBeanValue(String fullpath, Object rbl) {
     Object togo = BeanUtil.navigate(rbl, fullpath, mappingcontext);
     return togo;
   }
-  
-  public Object getFlattenedValue(String fullpath, BeanLocator rbl, Class targetclass) {
+
+  public Object getFlattenedValue(String fullpath, BeanLocator rbl,
+      Class targetclass) {
     Object toconvert = getBeanValue(fullpath, rbl);
     if (targetclass == String.class || targetclass == Boolean.class) {
       String rendered = mappingcontext.saxleafparser.render(toconvert);
-      return targetclass == String.class? rendered : mappingcontext.saxleafparser.parse(Boolean.class, rendered);
+      return targetclass == String.class ? rendered
+          : mappingcontext.saxleafparser.parse(Boolean.class, rendered);
     }
-    // It MUST be String[], AND the value must be a container.
-    // this had BETTER be a Container otherwise we will fail to update the value
-    // in setBeanValue below.
-    Collection collection = (Collection) toconvert;
-    String[] target = new String[collection.size()];
-    vcp.render(collection, target);
-    return target;
+    else {
+      // It MUST be String[], AND the value must be a container.
+      // this had BETTER be a Container otherwise we will fail to update the
+      // value
+      // in setBeanValue below.
+      Collection collection = (Collection) toconvert;
+      String[] target = new String[collection.size()];
+      vcp.render(collection, target);
+      return target;
+    }
   }
-  
+
   // a convenience method to have the effect of a "set" ValueBinding,
   // constructs a mini-DAR just for setting. Errors will be accumulated
   // into ThreadErrorState
@@ -80,12 +89,12 @@ public class DARApplier implements BeanModelAlterer {
     DataAlterationRequest dar = new DataAlterationRequest(fullpath, value);
     TargettedMessageList messages = ThreadErrorState.getErrorState().errors;
     // messages.pushNestedPath(headpath);
-    try {
+//    try {
       applyAlteration(rbl, dar, messages);
-    }
-    finally {
-      messages.popNestedPath();
-    }
+//    }
+//    finally {
+//      messages.popNestedPath();
+//    }
   }
 
   public Object invokeBeanMethod(String fullpath, BeanLocator rbl) {
@@ -103,6 +112,8 @@ public class DARApplier implements BeanModelAlterer {
 
   private void applyAlteration(Object rootobj, DataAlterationRequest dar,
       TargettedMessageList messages) {
+    Logger.log.info("Applying DAR " + dar.type + " to path " + dar.path + ": " + 
+        dar.data);
     String totail = PathUtil.getToTailPath(dar.path);
     // TODO: Pause at any DARReceiver we discover in the model and instead
     // queue the requests there.
@@ -112,22 +123,46 @@ public class DARApplier implements BeanModelAlterer {
     PropertyAccessor pa = MethodAnalyser.getPropertyAccessor(moveobj,
         mappingcontext);
     Class leaftype = pa.getPropertyType(tail);
-    // Step 1 - attempt to convert the dar value if it is still a String, using
-    // our now knowledge of the target leaf type.
-    if (convert instanceof String) {
-      String string = (String) convert;
-      try {
-        messages.pushNestedPath(totail);
-        ConvertUtil.parse(string, xmlprovider, leaftype);
+    if (dar.type.equals(DataAlterationRequest.ADD)) {
+      // If we got a list of Strings in from
+      // the UI, they may be "cryptic" leaf types without proper packaging. This
+      // implies we MUST know the element type of the collection.
+      if (pa.isMultiple(tail)) {
+        // it had BETTER be a collection otherwise delivery semantics will be
+        // incoherent - we HAVE to be able to clear it.
+        Collection lastobj = (Collection) pa.getProperty(moveobj, tail);
+        SAXAccessMethod sam = MethodAnalyser.getMethodAnalyser(moveobj,
+            mappingcontext).getAccessMethod(tail);
+        if (VectorCapableParser.isLOSType(convert)) {
+          lastobj.clear();
+          vcp.parse(convert, lastobj, sam.getAccessedType());
+        }
+        lastobj.add(convert);
       }
-      finally {
-        messages.popNestedPath();
+      else { // a scalar type
+        if (convert instanceof String[]) {
+          convert = ((String[]) convert)[0];
+        }
+        // Step 1 - attempt to convert the dar value if it is still a String,
+        // using our now knowledge of the target leaf type.
+        if (convert instanceof String) {
+          String string = (String) convert;
+          try {
+            messages.pushNestedPath(totail);
+            convert = ConvertUtil.parse(string, xmlprovider, leaftype);
+          }
+          finally {
+            messages.popNestedPath();
+          }
+        }
+        // this case also deals with Maps and WBLs.
+        pa.setProperty(moveobj, tail, convert);
       }
     }
     // at this point, moveobj contains the object BEFORE the final path
     // section.
 
-    if (dar.type.equals(DataAlterationRequest.DELETE)) {
+    else if (dar.type.equals(DataAlterationRequest.DELETE)) {
       try {
         boolean removed = false;
         // if we have data, we can try to remove it by value
@@ -162,27 +197,6 @@ public class DARApplier implements BeanModelAlterer {
         messages.addMessage(message);
         Logger.log.warn("Couldn't remove object " + convert + " from path "
             + dar.path);
-      }
-
-    }
-    else { // it is an ADD or SET request.
-      // If we got a list of Strings in from
-      // the UI, they may be "cryptic" leaf types without proper packaging. This
-      // implies we MUST know the element type of the collection.
-      if (pa.isMultiple(tail)) {
-        // it had BETTER be a collection otherwise delivery semantics will be
-        // incoherent - we HAVE to be able to clear it.
-        Collection lastobj = (Collection) pa.getProperty(moveobj, tail);
-        SAXAccessMethod sam = MethodAnalyser.getMethodAnalyser(moveobj, mappingcontext).getAccessMethod(tail);
-        if (VectorCapableParser.isLOSType(convert)) {
-          lastobj.clear();
-          vcp.parse(convert, lastobj, sam.getAccessedType());
-        }
-        lastobj.add(convert);
-      }
-      else {
-        // this case also deals with Maps and WBLs.
-        pa.setProperty(moveobj, tail, convert);
       }
     }
   }

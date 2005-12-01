@@ -28,6 +28,9 @@ public class ReflectUtils {
   }
   
   public static final int UNKNOWN_SIZE = -1;
+  /** Instantiates a "default" type of container conforming to a given interface
+   * and of a given size.
+   */
   public static Object instantiateContainer(Class declaredtype, int size, ReflectiveCache cache) {
     // only missing case is if someone madly declares an argument of type
     // "AbstractList" or similar...
