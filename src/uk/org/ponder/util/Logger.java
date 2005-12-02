@@ -1,17 +1,13 @@
 package uk.org.ponder.util;
 
-import java.io.PrintStream;
 import java.io.FileOutputStream;
-
-import java.io.StringWriter;
+import java.io.PrintStream;
 import java.io.PrintWriter;
-
-import uk.org.ponder.byteutil.ByteWrap;
-
-import uk.org.ponder.intutil.intVector;
-import uk.org.ponder.stringutil.CharWrap;
+import java.io.StringWriter;
 
 import uk.org.ponder.arrayutil.ArrayUtil;
+import uk.org.ponder.intutil.intVector;
+import uk.org.ponder.stringutil.CharWrap;
 
 /** A useful logging class that <ul>
  * <li> Compactly annotates the output from different threads
