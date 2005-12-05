@@ -20,13 +20,13 @@ public class TargettedMessage {
 
   public TargettedMessage(String messagecode, String targetid) {
     this.messagecode = messagecode;
-    this.targetid = targetid;
+    this.targetid = targetid == null? TARGET_NONE : targetid;
   }
 
   public TargettedMessage(String messagecode, Object[] args, String targetid) {
     this.messagecode = messagecode;
     this.args = args;
-    this.targetid = targetid;
+    this.targetid = targetid == null? TARGET_NONE : targetid;
   }
 
   public TargettedMessage(String messagecode) {
@@ -42,7 +42,7 @@ public class TargettedMessage {
       String targetid) {
     this.messagecode = messagecode;
     this.exceptionclass = exceptionclass;
-    this.targetid = targetid;
+    this.targetid = targetid == null? TARGET_NONE : targetid;
   }
 
   public TargettedMessage(String messagecode, Object[] args) {

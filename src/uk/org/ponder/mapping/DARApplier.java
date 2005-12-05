@@ -60,6 +60,7 @@ public class DARApplier implements BeanModelAlterer {
   public Object getFlattenedValue(String fullpath, BeanLocator rbl,
       Class targetclass) {
     Object toconvert = getBeanValue(fullpath, rbl);
+    if (toconvert == null) return null;
     if (targetclass == String.class || targetclass == Boolean.class) {
       String rendered = mappingcontext.saxleafparser.render(toconvert);
       return targetclass == String.class ? rendered

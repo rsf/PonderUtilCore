@@ -36,20 +36,25 @@ public class ThreadErrorState {
   // Idea is that during POST processing, this will be full of messages
   // keyed by field path, but during GET processing, keyed by component ID. 
   public static void addError(TargettedMessage message) {
+    ErrorStateEntry ese = getErrorState();
+    if (ese.errorid == null) {
+      ese.errorid = idgenerator.generateID();
+    }
     getErrorState().errors.addMessage(message);
   }
   
   public static void beginRequest() {
-    beginRequest(idgenerator.generateID());
+    errormap.set(new ErrorStateEntry());
   }
+//  
+//  private static void beginRequest(String tokenid) {
+//    beginRequest();
+//    getErrorState().errorid = tokenid;
+//  }
   
-  private static void beginRequest(String tokenid) {
-    clearState();
-    getErrorState().errorid = tokenid;
-  }
-  
-  public static void clearState() {
-    getErrorState().errorid = null;
-    getErrorState().errors.clear();
+  public static void endRequest() {
+    errormap.set(null);
+//    getErrorState().errorid = null;
+//    getErrorState().errors.clear();
   }
 }

@@ -68,8 +68,10 @@ public class BeanUtil {
         int index = Integer.valueOf(components[comp]).intValue();
         moveobj = movearr[index];
       }
-      PropertyAccessor pa = MethodAnalyser.getPropertyAccessor(moveobj, mappingcontext);
-      moveobj = pa.getProperty(moveobj, components[comp]);
+      else {
+        PropertyAccessor pa = MethodAnalyser.getPropertyAccessor(moveobj, mappingcontext);
+        moveobj = pa.getProperty(moveobj, components[comp]);
+      }
       //AccessMethod am = DARApplier.getAMExpected(moveobj, components[comp], mappingcontext);
       //moveobj = am.getChildObject(moveobj);
     }

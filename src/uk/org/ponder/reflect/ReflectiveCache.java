@@ -153,7 +153,8 @@ public abstract class ReflectiveCache {
     // Uninteresting race condition here.
     // TODO: try to remove downcall to JDKReflector
     if (concurrency == 1) {
-      if (concurrent1mapclass == null) {
+      // check both of these because of possible race condition.
+      if (concurrent1mapclass == null || rootmap == null) {
         concurrent1mapclass = getConcurrent1MapClass();
         Constructor cons = getConstructor(concurrent1mapclass);
         rootmap = (Map) JDKReflectiveCache.invokeConstructor(cons);
