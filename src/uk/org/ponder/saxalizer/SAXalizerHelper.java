@@ -16,7 +16,6 @@ import uk.org.ponder.util.UniversalRuntimeException;
 // QQQQQ interface to be supplied in the CORRECT direction!
 
 import java.io.InputStream;
-import java.io.IOException;
 import java.io.Reader;
 
 /** This useful helper class can be used if the XML

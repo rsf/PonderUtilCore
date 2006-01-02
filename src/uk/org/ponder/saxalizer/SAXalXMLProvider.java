@@ -17,13 +17,21 @@ import uk.org.ponder.util.UniversalRuntimeException;
  */
 public class SAXalXMLProvider implements MappableXMLProvider {
   private SAXalizerMappingContext mappingcontext;
+  private EntityResolverStash entityresolverstash;
+  
+  public void setEntityResolverStash(EntityResolverStash entityresolverstash) {
+    this.entityresolverstash = entityresolverstash;
+  }
+  
   public SAXalizerMappingContext getMappingContext() {
     return mappingcontext;
   }
 
   private ThreadLocal saxalizergetter = new ThreadLocal() {
     public Object initialValue() {
-      return new SAXalizerHelper(mappingcontext);
+      SAXalizerHelper togo = new SAXalizerHelper(mappingcontext);
+      togo.setEntityResolverStash(entityresolverstash);
+      return togo;
     }
   };
 
