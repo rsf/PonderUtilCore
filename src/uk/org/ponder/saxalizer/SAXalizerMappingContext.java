@@ -42,6 +42,10 @@ public class SAXalizerMappingContext {
     methodanalysers = reflectivecache.getConcurrentMap(1);
   }
   
+  public ReflectiveCache getReflectiveCache() {
+    return reflectivecache;
+  }
+  
   public SAXalizerMapper mapper;
 // this is a Hashtable of Classes to MethodAnalysers
   private Map methodanalysers; 

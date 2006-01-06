@@ -4,6 +4,7 @@
 package uk.org.ponder.reflect;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.Map;
 
 import uk.org.ponder.saxalizer.SAXAccessMethod;
@@ -99,8 +100,6 @@ public abstract class ReflectiveCache {
     return togo;
   }
 
-
-  
   protected Map getClassMap(Class target) {
     Map classmap = (Map) rootmap.get(target);
     if (classmap == null) {
@@ -110,10 +109,26 @@ public abstract class ReflectiveCache {
     return classmap;
   }
 
+  public static Method getMethod(Class clazz, String name) {
+   return getMethod(clazz, name, SAXAccessMethod.emptyclazz);
+  }
+  
+  public static Method getMethod(Class clazz, String name, Class[] argtypes) {
+    try {
+      return clazz.getMethod(name, argtypes);
+    }
+    catch (Exception e) {
+      throw UniversalRuntimeException.accumulate(e,
+          "Error reflecting for method " + name + " of " + clazz);
+    } 
+  }
+  
+  
   public abstract Object construct(Class clazz);
   public abstract Object invokeMethod(Object bean, String method);
   protected abstract Object invokeMethod(Object target, String name, Class[] infer, Object[] args);
 
+  /** This generic invocation method currently disused */
   public Object invokeMethod(Object target, String name, Object[] args) {
     if (target instanceof MethodInvokingProxy) {
       return ((MethodInvokingProxy)target).invokeMethod(name, args);

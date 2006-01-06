@@ -16,20 +16,6 @@ public class JDKReflectiveCache extends ReflectiveCache {
     ReflectiveCache.instance = this;
   }
   
-  private static Method getMethod(Class clazz, String name) {
-   return getMethod(clazz, name, SAXAccessMethod.emptyclazz);
-  }
-  
-  private static Method getMethod(Class clazz, String name, Class[] argtypes) {
-    try {
-      return clazz.getMethod(name, argtypes);
-    }
-    catch (Exception e) {
-      throw UniversalRuntimeException.accumulate(e,
-          "Error reflecting for method " + name + " of " + clazz);
-    } 
-  }
-  
   /** Invokes the supplied no-arg Method object on the supplied target */
   private static Object invokeMethod(Method method, Object target) {
     return invokeMethod(method, target, SAXAccessMethod.emptyobj);
@@ -89,7 +75,7 @@ public class JDKReflectiveCache extends ReflectiveCache {
     Map classmap = getClassMap(clazz);
     Method method = (Method) classmap.get(name);
     if (method == null) {
-      method = getMethod(clazz, name);
+      method = ReflectiveCache.getMethod(clazz, name);
       classmap.put(name, method);
     }
     return invokeMethod(method, target);
@@ -98,7 +84,7 @@ public class JDKReflectiveCache extends ReflectiveCache {
   // Implement some caching for this if it looks conceivably worthwhile.
   protected Object invokeMethod(Object target, String name, Class[] argtypes, Object[] args) {
     Class clazz = target.getClass();
-    Method toinvoke = getMethod(clazz, name, argtypes);
+    Method toinvoke = ReflectiveCache.getMethod(clazz, name, argtypes);
     return invokeMethod(toinvoke, target, args);
   }
   
