@@ -52,14 +52,9 @@ public class DARApplier implements BeanModelAlterer {
     this.reflectivecache = reflectivecache;
   }
 
-  public Object getBeanValue(String fullpath, Object rbl) {
-    Object togo = BeanUtil.navigate(rbl, fullpath, mappingcontext);
-    return togo;
-  }
-
-  public Object getFlattenedValue(String fullpath, BeanLocator rbl,
+  public Object getFlattenedValue(String fullpath, Object root,
       Class targetclass) {
-    Object toconvert = getBeanValue(fullpath, rbl);
+    Object toconvert = getBeanValue(fullpath, root);
     if (toconvert == null) return null;
     if (targetclass == String.class || targetclass == Boolean.class) {
       String rendered = mappingcontext.saxleafparser.render(toconvert);
@@ -77,13 +72,18 @@ public class DARApplier implements BeanModelAlterer {
       return target;
     }
   }
+  
+  public Object getBeanValue(String fullpath, Object rbl) {
+    Object togo = BeanUtil.navigate(rbl, fullpath, mappingcontext);
+    return togo;
+  }
 
   // a convenience method to have the effect of a "set" ValueBinding,
   // constructs a mini-DAR just for setting. Errors will be accumulated
   // into ThreadErrorState
   // NB there are two calls in the workspace, both from PostHandler.applyValues.
   // Should we really try to do away with the ThreadErrorState?
-  public void setBeanValue(String fullpath, BeanLocator rbl, Object value) {
+  public void setBeanValue(String fullpath, Object root, Object value) {
     // String restpath = PathUtil.getFromHeadPath(fullpath);
     // String headpath = PathUtil.getHeadPath(fullpath);
     // Object rootbean = rbl.locateBean(headpath);
@@ -91,7 +91,7 @@ public class DARApplier implements BeanModelAlterer {
     TargettedMessageList messages = ThreadErrorState.getErrorState().errors;
     // messages.pushNestedPath(headpath);
 //    try {
-      applyAlteration(rbl, dar, messages);
+      applyAlteration(root, dar, messages);
 //    }
 //    finally {
 //      messages.popNestedPath();
@@ -128,6 +128,7 @@ public class DARApplier implements BeanModelAlterer {
       // If we got a list of Strings in from
       // the UI, they may be "cryptic" leaf types without proper packaging. This
       // implies we MUST know the element type of the collection.
+      // For now we must assume collection is of leaf types.
       if (pa.isMultiple(tail)) {
         // it had BETTER be a collection otherwise delivery semantics will be
         // incoherent - we HAVE to be able to clear it.
@@ -140,7 +141,7 @@ public class DARApplier implements BeanModelAlterer {
         }
         lastobj.add(convert);
       }
-      else { // a scalar type
+      else { // property is a scalar type, possibly composite.
         if (convert instanceof String[]) {
           convert = ((String[]) convert)[0];
         }

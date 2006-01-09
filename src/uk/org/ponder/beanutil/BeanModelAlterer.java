@@ -10,9 +10,9 @@ import uk.org.ponder.mapping.DARList;
 
 public interface BeanModelAlterer {
 
-  public Object getBeanValue(String fullpath, Object rbl);
+  public Object getBeanValue(String fullpath, Object root);
 
-  public void setBeanValue(String fullpath, BeanLocator rbl, Object value);
+  public void setBeanValue(String fullpath, Object root, Object value);
 
   public Object invokeBeanMethod(String fullpath, BeanLocator rbl);
 
@@ -39,5 +39,5 @@ public interface BeanModelAlterer {
    * specified target class, which must be one of the classes handled by the
    * UIType framework.
    */
-  public Object getFlattenedValue(String fullpath, BeanLocator rbl, Class targetclazz);
+  public Object getFlattenedValue(String fullpath, Object root, Class targetclazz);
 }

@@ -84,4 +84,19 @@ public class StringList extends ArrayList {
     }
     return togo.toString();
   }
+  
+  /** Construct a StringList from a comma separated list of Strings, trimming
+   * whitespace.
+   * 
+   * @param commasep
+   * @return
+   */
+  public static StringList fromString(String commasep) {
+    String[] strings = commasep.split(",");
+    StringList togo = new StringList();
+    for (int i = 0; i < strings.length; ++ i) {
+      togo.add(strings[i].trim());
+    }
+    return togo;
+  }
 }

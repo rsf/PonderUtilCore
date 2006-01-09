@@ -44,13 +44,13 @@ public class BeanUtil {
     // }
     return path.split("\\.");
   }
-
+  
   public static String getContainingPath(String path) {
     int dotpos = path.lastIndexOf(".");
     return dotpos == -1 ? null
         : path.substring(0, dotpos);
   }
-
+  
   public static String composeEL(StringList tocompose) {
     CharWrap togo = new CharWrap();
     for (int i = 0; i < tocompose.size(); ++i) {

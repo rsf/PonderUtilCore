@@ -32,4 +32,8 @@ public class PathUtil {
     return lastdot == -1? path : path.substring(lastdot + 1);
   }
 
+  public static String composePath(String prefix, String suffix) {
+    return prefix + '.' + suffix;
+  }
+  
 }
