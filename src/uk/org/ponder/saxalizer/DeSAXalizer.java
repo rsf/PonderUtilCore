@@ -1,21 +1,17 @@
 package uk.org.ponder.saxalizer;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Stack;
 
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
-import java.io.IOException;
-
+import uk.org.ponder.saxalizer.mapping.ClassNameManager;
 import uk.org.ponder.util.EnumerationConverter;
 import uk.org.ponder.util.Logger;
 import uk.org.ponder.util.UniversalRuntimeException;
-
-import uk.org.ponder.saxalizer.mapping.ClassNameManager;
-import uk.org.ponder.stringutil.CharWrap;
-
 import uk.org.ponder.xml.XMLWriter;
 
 /**
@@ -39,7 +35,7 @@ public class DeSAXalizer {
     // enumeration for a vector tag, while enum is active, currentgetindex
     // progress
     // is suspended. enum will be set to null when it expires.
-    Enumeration enum;
+    Enumeration enumm;
     // The (original) tag name of the enum in progress
     String enumtagname;
     String stashedclosingtag;
@@ -311,7 +307,7 @@ public class DeSAXalizer {
         if (Logger.passDebugLevel(Logger.DEBUG_EXTRA_INFO)) {
           Logger.println("At top", Logger.DEBUG_EXTRA_INFO);
         }
-        if (top.enum == null && !top.getenum.valid()) {
+        if (top.enumm == null && !top.getenum.valid()) {
           // we have reached the last child node. pop the stack and write
           // closing tag.
           Logger.println("Popped", Logger.DEBUG_EXTRA_INFO);
@@ -336,7 +332,7 @@ public class DeSAXalizer {
 
         //	String childtagname = null;
         // so long as the top object is not in an enum, get the enclosed object
-        if (top.enum == null) {
+        if (top.enumm == null) {
           // TODO: This used to reflect for the GenericSAX getChildEnum method.
           // we can probably handle this better by "automatic mapping", poly*.
           topgetmethod = top.getenum.get();
@@ -351,7 +347,7 @@ public class DeSAXalizer {
           // if we discover it is an enum, begin chewing on it.
           // this may be an enum delivered from GenericSAX getChildEnum().
           if (child != null && topgetmethod.ismultiple) {
-            top.enum = EnumerationConverter.getEnumeration(child);
+            top.enumm = EnumerationConverter.getEnumeration(child);
             top.enumtagname = childtagname;
           }
         }
@@ -359,9 +355,9 @@ public class DeSAXalizer {
             Logger.DEBUG_EXTRA_INFO);
         // if the top object IS within an enum, see whether it has another
         // element
-        if (top.enum != null) {
-          if (top.enum.hasMoreElements()) {
-            child = top.enum.nextElement();
+        if (top.enumm != null) {
+          if (top.enumm.hasMoreElements()) {
+            child = top.enumm.nextElement();
             // if it is a GenericSAX enum, the tagname must be initialised with
             // the value reported by the GenericSAX
             if (child instanceof GenericSAX) {
@@ -382,7 +378,7 @@ public class DeSAXalizer {
           else { // the enum is finished, leave child null so that following
             // branch will pass on
             Logger.println("enum finished", Logger.DEBUG_EXTRA_INFO);
-            top.enum = null;
+            top.enumm = null;
             child = null; // this line deals with the case of 0-element
             // enumerations
           }

@@ -1,7 +1,7 @@
 /*
  * Created on 09-Jan-2006
  */
-package uk.org.ponder.beanutil;
+package uk.org.ponder.beanutil.entity;
 
 import java.io.Serializable;
 

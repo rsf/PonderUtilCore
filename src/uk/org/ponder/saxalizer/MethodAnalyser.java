@@ -37,7 +37,7 @@ public class MethodAnalyser implements PropertyAccessor {
  
   public SAXAccessMethod[] allgetters;
   
-  public void assembleGetters() {
+  private void assembleGetters() {
     ArrayList accumulate = new ArrayList();
     for (SAMIterator tagget = tagmethods.getGetEnumeration(); tagget.valid(); tagget.next()) {
       accumulate.add(tagget.get());
