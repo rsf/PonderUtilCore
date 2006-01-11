@@ -36,6 +36,7 @@ public class SAXAccessMethod implements AccessMethod {
                                 // than get method.
   boolean isenumeration; // if "ismultiple" is this delivered via an
                           // enumeration?
+  boolean ismappable;
   boolean isdevnull; // if this is a "black hole" setter for ignoring properties
 
   // Note that enumerations are the only things which are enumerable but not
@@ -209,6 +210,7 @@ public class SAXAccessMethod implements AccessMethod {
     if (ismultiple) {
       isenumeration = !EnumerationConverter.isDenumerable(clazz);
     }
+    ismappable = EnumerationConverter.isMappable(clazz);
     return ismultiple;
   }
 

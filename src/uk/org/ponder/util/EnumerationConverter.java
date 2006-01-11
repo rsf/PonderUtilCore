@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import uk.org.ponder.arrayutil.ArrayEnumeration;
+import uk.org.ponder.beanutil.BeanLocator;
 
 /**
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
@@ -37,9 +38,7 @@ public class EnumerationConverter {
   }
   
   public static boolean isMappable(Class c) {
-    // other things may be mappable too. In practice we will make
-    // reduced map interface.
-    return Map.class.isAssignableFrom(c);
+     return Map.class.isAssignableFrom(c) || BeanLocator.class.isAssignableFrom(c);
   }
   
   public static Map getMap(Object o) {

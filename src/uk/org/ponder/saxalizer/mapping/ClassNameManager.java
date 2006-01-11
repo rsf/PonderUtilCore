@@ -14,7 +14,6 @@ import java.util.HashMap;
  * @author Bosmon
  */
 public class ClassNameManager {
-  public static final String TYPE_ATTRIBUTE_NAME = "type";
   private HashMap forwardnick = new HashMap();
   private HashMap backwardnick = new HashMap();
   private static ClassNameManager instance = new ClassNameManager();

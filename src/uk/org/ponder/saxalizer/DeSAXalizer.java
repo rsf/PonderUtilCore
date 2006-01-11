@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Stack;
 
-import uk.org.ponder.saxalizer.mapping.ClassNameManager;
 import uk.org.ponder.util.EnumerationConverter;
 import uk.org.ponder.util.Logger;
 import uk.org.ponder.util.UniversalRuntimeException;
@@ -221,7 +220,7 @@ public class DeSAXalizer {
         Logger.println("Pushed", Logger.DEBUG_EXTRA_INFO);
         String polynick = mappingcontext.classnamemanager.getClassName(child.getClass());
         if (polynick != null && topgetmethod != null && topgetmethod.ispolymorphic) {
-          appendAttr(ClassNameManager.TYPE_ATTRIBUTE_NAME, polynick);
+          appendAttr(Constants.TYPE_ATTRIBUTE_NAME, polynick);
         }
         SAMIterator getattrenum = top.ma.attrmethods
             .getGetEnumeration();

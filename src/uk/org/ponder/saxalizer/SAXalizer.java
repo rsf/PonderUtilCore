@@ -11,9 +11,9 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+import uk.org.ponder.beanutil.PropertyAccessor;
 import uk.org.ponder.conversion.StaticLeafParser;
 import uk.org.ponder.reflect.ClassGetter;
-import uk.org.ponder.saxalizer.mapping.ClassNameManager;
 import uk.org.ponder.stringutil.CharWrap;
 import uk.org.ponder.util.AssertionException;
 import uk.org.ponder.util.Denumeration;
@@ -23,10 +23,17 @@ import uk.org.ponder.util.UniversalRuntimeException;
 
 /**
  * The SAXalizer class is used to deserialize a tree of XML tags into a tree of
- * Java objects. Please note that this class is over 5 years old and is due
- * for a very major sandblasting - many comments are extremely out of date,
- * in addition to its using the extremely obsolete SAX1 interface. See wiki
- * for general comments on roadmap for this dinosaur.
+ * Java objects. Please note that this class is over 5 years old and is due for
+ * a very major sandblasting - many comments are extremely out of date, in
+ * addition to its using the extremely obsolete SAX1 interface. See wiki for
+ * general comments on roadmap for this dinosaur.
+ * <p>
+ * Note from January '06 - this code is just getting worse and worse! More than
+ * anything it exemplifies the all-engulphing "ball of wax" pattern where poor
+ * design in one area simply proliferates and sucks more and more neighbouring
+ * infrastructure down with it. Will there EVER be time to fix it... or replace
+ * it with JiBX or comparable mature solution. Will the SAXalizer reach it's 6th
+ * birthday alive??!
  * <p>
  * Every class that wishes to be SAXalized must implement (at least) the
  * interface SAXalizable, which allows the class to report the set methods it
@@ -113,23 +120,29 @@ public class SAXalizer extends HandlerBase {
     MethodAnalyser ma;
     // The SET method in the parent that will be used to deliver this
     // object when it is complete.
-    AccessMethod parentsetter;
+    SAXAccessMethod parentsetter;
     // where the parent is an array or collection, this is used to deliver
     // multiple children. If it is simply an enumeration, a normal setMethod
     // is called multiple times.
-    // QQQQQ economise on this at some point! One hashmap created per collection.
+    // QQQQQ economise on this at some point! One hashmap created per
+    // collection.
+    // TODO: Note that this could just be stashed in the CHILD CONTEXT!!!!! YOU
+    // IDIOT!!!
     HashMap denumerationmap;
     // Is this object using the GenericSAXImpl object lookup scheme
     boolean isgeneric;
     // Is this object using the polymorphic-style "*" object lookup scheme
-    //    boolean ispoly;
+    // boolean ispoly;
     // Is this object a leaf-style object
     boolean isleaf;
     // The character data seen so far
     CharWrap textsofar;
+    // The key name if this is an attribute-keyed map entry
+    String mapkey;
+    Object objectpeer;
 
     ParseContext(Object object, MethodAnalyser ma, boolean isgeneric,
-        boolean isleaf, AccessMethod parentsetter) {
+        boolean isleaf, SAXAccessMethod parentsetter) {
       this.object = object;
       this.ma = ma;
       this.isgeneric = isgeneric;
@@ -137,15 +150,19 @@ public class SAXalizer extends HandlerBase {
       this.parentsetter = parentsetter;
       textsofar = new CharWrap();
     }
+
     public boolean hasDenumeration(String tag) {
       if (denumerationmap == null) {
         denumerationmap = new HashMap();
       }
-      return (denumerationmap.get(tag) != null); 
+      return (denumerationmap.get(tag) != null);
     }
+
     public Denumeration getDenumeration(String tag) {
-      if (denumerationmap == null) return null;
-      else return (Denumeration)denumerationmap.get(tag);
+      if (denumerationmap == null)
+        return null;
+      else
+        return (Denumeration) denumerationmap.get(tag);
     }
   }
 
@@ -154,7 +171,8 @@ public class SAXalizer extends HandlerBase {
 
   // Return the Saxing object at the top of the stack.
   private ParseContext getSaxingObject() {
-    return (ParseContext) (saxingobjects.empty() ? null : saxingobjects.peek());
+    return (ParseContext) (saxingobjects.empty() ? null
+        : saxingobjects.peek());
   }
 
   /**
@@ -179,25 +197,29 @@ public class SAXalizer extends HandlerBase {
     boolean isgeneric = GenericSAX.class.isAssignableFrom(topush);
     boolean isleaf = leafparser.isLeafType(topush);
     // parentsetter is null for the root object only.
-    boolean isdenumerable = parentsetter == null? false : 
-      parentsetter.isDenumerable();
+    boolean isdenumerable = parentsetter == null ? false
+        : parentsetter.isDenumerable();
     // The creation of leaf objects is deferred until all their data has
     // arrived.
     Object newinstance = null;
     try {
-      // TODO: This line here is the general battleground - we would really LIKE to
-      // be able to (in most cases) determine which type of container to create - 
+      // TODO: This line here is the general battleground - we would really LIKE
+      // to
+      // be able to (in most cases) determine which type of container to create
+      // -
       // and in addition use FastClass.
       if (oldinstance == null || isdenumerable)
-        newinstance = isleaf ? topush : topush.newInstance();
-      else newinstance = oldinstance;
+        newinstance = isleaf ? topush
+            : topush.newInstance();
+      else
+        newinstance = oldinstance;
     }
     catch (Throwable t) { // IllegalAccessException, InstantiationException
       throw new AssertionException("Cannot create instance of " + topush
           + " using default constructor: " + t.getClass().getName());
     }
-    MethodAnalyser ma = isleaf ? null : MethodAnalyser.getMethodAnalyser(
-        newinstance, mappingcontext);
+    MethodAnalyser ma = isleaf ? null
+        : MethodAnalyser.getMethodAnalyser(newinstance, mappingcontext);
     // "reach into the past" and note that we are now within a denumeration.
     // For denumerable types, oldinstance will be the previously obtained
     // container class, and newinstance will be of the containee type.
@@ -206,8 +228,9 @@ public class SAXalizer extends HandlerBase {
       if (!beingparsed.hasDenumeration(parentsetter.tagname)) {
         Denumeration den = EnumerationConverter.getDenumeration(oldinstance);
         if (den == null) {
-          throw new UniversalRuntimeException("Child " + oldinstance + " in " + 
-              topush + " cannot be made denumerable via setter with tag name " 
+          throw new UniversalRuntimeException("Child " + oldinstance + " in "
+              + topush
+              + " cannot be made denumerable via setter with tag name "
               + parentsetter.tagname);
         }
         beingparsed.denumerationmap.put(parentsetter.tagname, den);
@@ -217,28 +240,31 @@ public class SAXalizer extends HandlerBase {
         parentsetter));
   }
 
-  //  private CharWrap attributebuffer = new CharWrap();
+  // private CharWrap attributebuffer = new CharWrap();
   // Try to send the attribute list to the object on top of the stack ---
   // if it does not support the SAXalizableAttrs interface,
   // the attributes will be simply thrown away.
   private static void tryBlastAttrs(AttributeList attrlist,
       SAXAccessMethodHash attrmethods, Object obj, StaticLeafParser leafparser,
-      boolean waspolymorphic)
-      throws SAXException {
-    SAXalizableExtraAttrs extraattrs = obj instanceof SAXalizableExtraAttrs?
-        (SAXalizableExtraAttrs)obj : null;
+      boolean waspolymorphic, boolean wasmap) throws SAXException {
+    SAXalizableExtraAttrs extraattrs = obj instanceof SAXalizableExtraAttrs ? (SAXalizableExtraAttrs) obj
+        : null;
     boolean takesextras = extraattrs != null;
     // use up each of the non-"extra" attributes one by one, and send any
-    // remaining 
+    // remaining
     // ones into SAXalizableExtraAttrs
-    Map extras = takesextras? extraattrs.getAttributes() : null; 
-    boolean[] expended = takesextras ? new boolean[attrlist.getLength()] : null;
+    Map extras = takesextras ? extraattrs.getAttributes()
+        : null;
+    boolean[] expended = takesextras ? new boolean[attrlist.getLength()]
+        : null;
 
     for (int i = 0; i < attrlist.getLength(); ++i) {
       String attrname = attrlist.getName(i);
       String attrvalue = attrlist.getValue(i);
-      if (attrname.equals(ClassNameManager.TYPE_ATTRIBUTE_NAME) &&
-          waspolymorphic) continue;
+      if (attrname.equals(Constants.TYPE_ATTRIBUTE_NAME) && waspolymorphic)
+        continue;
+      if (attrname.equals(Constants.KEY_ATTRIBUTE_NAME) && wasmap)
+        continue;
       SAXAccessMethod setattrmethod = attrmethods.get(attrname);
       if (setattrmethod != null) {
         if (!setattrmethod.isdevnull) {
@@ -252,19 +278,21 @@ public class SAXalizer extends HandlerBase {
       else if (takesextras) { // if not mapped, and it takes extras,
         extras.put(attrname, attrvalue);
       }
-      else { // if all else fails, look for a default map member 
+      else { // if all else fails, look for a default map member
         // QQQQQ implement maps for main tags too.
         SAXAccessMethod defaultattrmethod = attrmethods.get("");
         if (defaultattrmethod == null) {
-          throw new UniversalRuntimeException("Couldn't locate handler for attribute "
-               + attrname + " in object " + obj.getClass());
+          throw new UniversalRuntimeException(
+              "Couldn't locate handler for attribute " + attrname
+                  + " in object " + obj.getClass());
         }
         Object newchild = leafparser.parse(defaultattrmethod.clazz, attrvalue);
-        Map defaultmap = EnumerationConverter.getMap(defaultattrmethod.getChildObject(obj));
+        Map defaultmap = EnumerationConverter.getMap(defaultattrmethod
+            .getChildObject(obj));
         defaultmap.put(attrname, newchild);
       }
     } // end for each attribute presented by SAX
-   
+
   } // end tryBlast Attrs
 
   SAXalizerCallback callback;
@@ -300,7 +328,7 @@ public class SAXalizer extends HandlerBase {
     pushObject(rootobj.getClass(), rootobj, null);
     // DARN, which is the correct methodanalyser?
     tryBlastAttrs(attrlist, getSaxingObject().ma.attrmethods, rootobj,
-        leafparser, false);
+        leafparser, false, false);
   }
 
   /** ******* Begin methods for the DocumentHandler interface ******* */
@@ -308,14 +336,14 @@ public class SAXalizer extends HandlerBase {
   public InputSource resolveEntity(String publicID, String systemID) {
     Logger.println("SAXalizer was asked to resolve public ID " + publicID
         + " systemID " + systemID, Logger.DEBUG_INFORMATIONAL);
-    return entityresolverstash == null ? null : entityresolverstash
-        .resolve(publicID);
+    return entityresolverstash == null ? null
+        : entityresolverstash.resolve(publicID);
   }
 
   private Locator locator;
 
   public void setDocumentLocator(Locator locator) {
-    //    System.out.println("Locator received");
+    // System.out.println("Locator received");
     this.locator = locator;
   }
 
@@ -329,10 +357,6 @@ public class SAXalizer extends HandlerBase {
    */
   public void startElement(String tagname, AttributeList attrlist)
       throws SAXException {
-//    if (Logger.passDebugLevel(Logger.DEBUG_EXTRA_INFO)) {
-//      Logger.println("ELEMENT received to SAXALIZER: " + tagname,
-//          Logger.DEBUG_EXTRA_INFO);
-//    }
     // an element has started, and we must start to construct an object to put
     // it in.
     // The object on top of the ParseContex stack represents the parent object
@@ -346,9 +370,8 @@ public class SAXalizer extends HandlerBase {
 
     Class newobjclass = null; // for some reason, idiot compiler cannot analyse
     // that this is set
-    if (am == null) { // if we failed to find a registered method for this tag
-      // name
-      //      System.err.println("Did NOT find a suitable parent method");
+    if (am == null) {
+      // if we failed to find a registered method for this tag name
       try { // attempt to look up the class name now so that the forthcoming if
         // statement can be nicely ordered
         if (tagname.indexOf(':') == -1 && tagname.indexOf('.') != -1)
@@ -367,15 +390,15 @@ public class SAXalizer extends HandlerBase {
         // generic.
       }
       else { // the parent is not generic
-        throw new SAXParseException("Unexpected tag '"
-            + tagname
+        throw new SAXParseException("Unexpected tag '" + tagname
             + "' found while parsing child of"
-            + (beingparsed.object == null ? " null object" : " object of "
-                + beingparsed.object.getClass()), locator);
+            + (beingparsed.object == null ? " null object"
+                : " object of " + beingparsed.object.getClass()), locator);
       }
     } // end if no registered method
     else {
-      String typeattrname = ClassNameManager.TYPE_ATTRIBUTE_NAME; // QQQQQ genericise this somehow.
+      String typeattrname = Constants.TYPE_ATTRIBUTE_NAME; // QQQQQ genericise
+                                                            // this somehow.
       String typeattrvalue = attrlist.getValue(typeattrname);
       if (am.ispolymorphic && typeattrvalue != null) {
         newobjclass = mappingcontext.classnamemanager.findClazz(typeattrvalue);
@@ -384,8 +407,8 @@ public class SAXalizer extends HandlerBase {
         }
         if (newobjclass == null) {
           throw new SAXParseException("Polymorphic tag " + tagname
-              + " has \"type\" attribute with value " + typeattrvalue + " which cannot be resolved to a class ",
-              locator);
+              + " has \"type\" attribute with value " + typeattrvalue
+              + " which cannot be resolved to a class ", locator);
         }
       }
       else {
@@ -402,25 +425,29 @@ public class SAXalizer extends HandlerBase {
     // case the existing object represents the leaf's class.
     Object oldobj = null;
     // enumerations and non-getters are out - we could never write to them.
-    // if it is a leaf type it is out, UNLESS it is a multiple in which case it 
+    // if it is a leaf type it is out, UNLESS it is a multiple in which case it
     // is denumerable. It is ALSO out if it is "exact" since the class author
     // presumably has provided a precise "add" method he wants us to use.
-    if (am.canGet() && !am.isenumeration && (am.ismultiple || !leafparser.isLeafType(am.clazz)) 
+    if (am.canGet() && !am.isenumeration
+        && (am.ismultiple || !leafparser.isLeafType(am.clazz))
         && !am.isexactsetter) {
       oldobj = am.getChildObject(beingparsed.object);
       if (oldobj != null) {
-//        Logger.println("Acquired old object " + oldobj + " from parent "
-//            + beingparsed.object + " of class " + am.clazz,
-//            Logger.DEBUG_EXTRA_INFO);
+        // Logger.println("Acquired old object " + oldobj + " from parent "
+        // + beingparsed.object + " of class " + am.clazz,
+        // Logger.DEBUG_EXTRA_INFO);
       }
     }
-    // QQQQQ Note: the class of objects inside bare collections cannot be 
-    // determined, and must be provided by explicit mapping. PolyManager?
     pushObject(newobjclass, oldobj, am);
-    beingparsed = getSaxingObject();
-    if (!beingparsed.isleaf) {
-      tryBlastAttrs(attrlist, beingparsed.ma.attrmethods, beingparsed.object,
-          leafparser, am.ispolymorphic);
+
+    ParseContext newcontext = getSaxingObject();
+    if (am.ismappable) {
+      newcontext.mapkey = attrlist.getValue(Constants.KEY_ATTRIBUTE_NAME);
+      newcontext.objectpeer = am.getChildObject(beingparsed.object);
+    }
+    if (!newcontext.isleaf) {
+      tryBlastAttrs(attrlist, newcontext.ma.attrmethods, newcontext.object,
+          leafparser, am.ispolymorphic, am.ismappable);
     }
   }
 
@@ -442,7 +469,7 @@ public class SAXalizer extends HandlerBase {
     }
     ParseContext beingparsed = getSaxingObject();
     beingparsed.textsofar.append(ch, start, length);
-    //    System.err.println("CHARACTERS received at SAXALIZER:
+    // System.err.println("CHARACTERS received at SAXALIZER:
     // "+beingparsed.textsofar);
   }
 
@@ -455,8 +482,8 @@ public class SAXalizer extends HandlerBase {
    */
 
   public void endElement(String tagname) throws SAXException {
-//        Logger.println("END ELEMENT received to SAXALIZER: " + tagname,
-//        Logger.DEBUG_EXTRA_INFO);
+    // Logger.println("END ELEMENT received to SAXALIZER: " + tagname,
+    // Logger.DEBUG_EXTRA_INFO);
     if (saxingobjects.empty()) {
       throw new SAXParseException("Unexpected closing tag for " + tagname
           + " seen when there was no active object being parsed", locator);
@@ -464,35 +491,33 @@ public class SAXalizer extends HandlerBase {
     // Our task is now to deliver the object to its parent. Firstly take
     // care of three special cases before finishing up.
     ParseContext beingparsed = getSaxingObject();
-    SAXAccessMethod bodymethod = beingparsed.ma == null? null : beingparsed.ma.bodymethod;
-    
+    SAXAccessMethod bodymethod = beingparsed.ma == null ? null
+        : beingparsed.ma.bodymethod;
+
     AccessMethod parentsetter = beingparsed.parentsetter;
     // Test the special cases first, i) leaf node
     if (beingparsed.isleaf) {
-      // System.err.println("About to parse leaf element with class
-      // "+beingparsed.object.getClass());
       // Leaf node objects are only created at this point
-      //            System.out.println("About to parse leaf");
       beingparsed.object = leafparser.parse((Class) beingparsed.object,
           beingparsed.textsofar.toString());
-      //      System.out.println("Parsed "+beingparsed.textsofar.+" to
-      // "+beingparsed.object);
     }
     else if (beingparsed.isgeneric) {
       // special case ii) generic parent - grab the intermediate text
-      //      System.out.println("About to parse generic");
+      // System.out.println("About to parse generic");
       GenericSAX object = (GenericSAX) beingparsed.object;
       object.setData(beingparsed.textsofar.toString());
       object.setTag(tagname);
     }
     else if (bodymethod != null) {
-      // special case iii) A body method is registered to receive text 
+      // special case iii) A body method is registered to receive text
       String body = beingparsed.textsofar.toString();
       Object newchild = leafparser.parse(bodymethod.clazz, body);
       bodymethod.setChildObject(beingparsed.object, newchild);
     }
-    if (beingparsed.denumerationmap != null && !beingparsed.denumerationmap.isEmpty()) {
-      // TODO! Enable parsing of array values by prodding CompletableDenumeration here.
+    if (beingparsed.denumerationmap != null
+        && !beingparsed.denumerationmap.isEmpty()) {
+      // TODO! Enable parsing of array values by prodding
+      // CompletableDenumeration here.
     }
     saxingobjects.pop(); // remove the completed object from the stack.
 
@@ -506,13 +531,23 @@ public class SAXalizer extends HandlerBase {
     }
 
     ParseContext parentcontext = getSaxingObject();
-//    Logger.println("SAXing object is " + parentcontext.object,
-//        Logger.DEBUG_SUBATOMIC);
+    // Logger.println("SAXing object is " + parentcontext.object,
+    // Logger.DEBUG_SUBATOMIC);
 
     Object parentobject = parentcontext.object;
     Denumeration den = null;
     if ((den = parentcontext.getDenumeration(tagname)) != null) {
       den.add(beingparsed.object);
+    }
+    else if (beingparsed.parentsetter.ismappable) {
+      if (beingparsed.mapkey == null) {
+        throw new SAXException("Mappable type for tag " + tagname
+            + " did not supply a map key");
+      }
+      PropertyAccessor pa = MethodAnalyser.getPropertyAccessor(
+          beingparsed.objectpeer, mappingcontext);
+      pa.setProperty(beingparsed.objectpeer, beingparsed.mapkey,
+          beingparsed.object);
     }
     else {
       parentsetter.setChildObject(parentobject, beingparsed.object);
