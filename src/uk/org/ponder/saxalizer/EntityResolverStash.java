@@ -56,7 +56,7 @@ public class EntityResolverStash {
     }
     try {
       InputStream is = streamresolver.openStream(wer.path);
-      //      System.out.println("Resolved "+publicID+" to "+wer.entityURL);
+      Logger.log.info("Resolved " + publicID + " to " + wer.path);
       Reader r = new InputStreamReader(is);
       InputSource i = new InputSource(r);
       i.setSystemId("Local entity resolver stashed page");

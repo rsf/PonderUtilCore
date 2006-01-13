@@ -23,10 +23,17 @@ public class StringList extends ArrayList {
     append(tocopy);
   }
   
+  public StringList(String[] strings) {
+    ensureCapacity(strings.length);
+    for (int i = 0; i < strings.length; ++ i) {
+      add(strings[i]);
+    }
+  }
+  
   public String stringAt(int i) {
     return (String) get(i);
   }
-
+  
   public boolean add(Object o) {
     if (! (o instanceof String)) {
       throw new UniversalRuntimeException("Object " + o + " of " + o.getClass() + 
