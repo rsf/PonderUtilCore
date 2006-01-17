@@ -12,6 +12,11 @@ import uk.org.ponder.util.UniversalRuntimeException;
  * 
  */
 public class StringSet extends HashSet {
+  public void addAll(String[] array) {
+    for (int i = 0; i < array.length; ++ i) {
+      add(array[i]);
+    }
+  }
   public boolean add(Object o) {
     if (!(o instanceof String)) {
       throw new UniversalRuntimeException("Object " + o + " of " + o.getClass()

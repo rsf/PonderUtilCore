@@ -98,7 +98,10 @@ public class BeanUtil {
    * are not present, return null.
    */
   public static String stripEL(String el) {
-    if (el.startsWith("#{") && el.endsWith("}")) {
+    if (el == null) {
+      return null;
+    }
+    else if (el.startsWith("#{") && el.endsWith("}")) {
       return el.substring(2, el.length() - 1);
     }
     else

@@ -6,6 +6,7 @@ package uk.org.ponder.conversion;
 import java.util.Enumeration;
 
 import uk.org.ponder.arrayutil.ArrayUtil;
+import uk.org.ponder.beanutil.BeanResolver;
 import uk.org.ponder.stringutil.StringList;
 import uk.org.ponder.util.Denumeration;
 import uk.org.ponder.util.EnumerationConverter;
@@ -64,11 +65,11 @@ public class VectorCapableParser {
    * a String[] array (of the correct size!) or a Collection.
    */
   // This code will go into ValueFixer.
-  public void render(Object torenders, Object toreceive) {
+  public void render(Object torenders, Object toreceive, BeanResolver resolver) {
     Denumeration denum = EnumerationConverter.getDenumeration(toreceive);
     for (Enumeration rendenum = EnumerationConverter.getEnumeration(torenders); rendenum.hasMoreElements();) {
       Object torender = rendenum.nextElement();
-      String rendered = scalarparser.render(torender);
+      String rendered = resolver == null? scalarparser.render(torender) : resolver.resolveBean(torender);
       denum.add(rendered);
     }
   }

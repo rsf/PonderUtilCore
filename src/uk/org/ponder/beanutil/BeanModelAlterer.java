@@ -14,7 +14,7 @@ public interface BeanModelAlterer {
 
   public void setBeanValue(String fullpath, Object root, Object value);
 
-  public Object invokeBeanMethod(String fullpath, BeanLocator rbl);
+  public Object invokeBeanMethod(String fullpath, Object root);
 
   /**
    * Apply the alterations mentioned in the enclosed DARList to the supplied
@@ -39,5 +39,6 @@ public interface BeanModelAlterer {
    * specified target class, which must be one of the classes handled by the
    * UIType framework.
    */
-  public Object getFlattenedValue(String fullpath, Object root, Class targetclazz);
+  public Object getFlattenedValue(String fullpath, Object root, Class targetclazz,
+      BeanResolver resolver);
 }

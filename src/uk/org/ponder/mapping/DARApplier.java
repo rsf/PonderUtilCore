@@ -6,8 +6,8 @@ package uk.org.ponder.mapping;
 import java.util.Collection;
 import java.util.Map;
 
-import uk.org.ponder.beanutil.BeanLocator;
 import uk.org.ponder.beanutil.BeanModelAlterer;
+import uk.org.ponder.beanutil.BeanResolver;
 import uk.org.ponder.beanutil.BeanUtil;
 import uk.org.ponder.beanutil.PathUtil;
 import uk.org.ponder.beanutil.PropertyAccessor;
@@ -53,7 +53,7 @@ public class DARApplier implements BeanModelAlterer {
   }
 
   public Object getFlattenedValue(String fullpath, Object root,
-      Class targetclass) {
+      Class targetclass, BeanResolver resolver) {
     Object toconvert = getBeanValue(fullpath, root);
     if (toconvert == null) return null;
     if (targetclass == String.class || targetclass == Boolean.class) {
@@ -68,7 +68,7 @@ public class DARApplier implements BeanModelAlterer {
       // in setBeanValue below.
       Collection collection = (Collection) toconvert;
       String[] target = new String[collection.size()];
-      vcp.render(collection, target);
+      vcp.render(collection, target, resolver);
       return target;
     }
   }
@@ -98,7 +98,7 @@ public class DARApplier implements BeanModelAlterer {
 //    }
   }
 
-  public Object invokeBeanMethod(String fullpath, BeanLocator rbl) {
+  public Object invokeBeanMethod(String fullpath, Object rbl) {
     String totail = PathUtil.getToTailPath(fullpath);
     String method = PathUtil.getTailPath(fullpath);
     try {
