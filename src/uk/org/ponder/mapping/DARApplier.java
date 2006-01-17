@@ -18,7 +18,6 @@ import uk.org.ponder.errorutil.CoreMessages;
 import uk.org.ponder.errorutil.PropertyException;
 import uk.org.ponder.errorutil.TargettedMessage;
 import uk.org.ponder.errorutil.TargettedMessageList;
-import uk.org.ponder.errorutil.ThreadErrorState;
 import uk.org.ponder.reflect.ReflectiveCache;
 import uk.org.ponder.saxalizer.MethodAnalyser;
 import uk.org.ponder.saxalizer.SAXAccessMethod;
@@ -83,12 +82,13 @@ public class DARApplier implements BeanModelAlterer {
   // into ThreadErrorState
   // NB there are two calls in the workspace, both from PostHandler.applyValues.
   // Should we really try to do away with the ThreadErrorState?
-  public void setBeanValue(String fullpath, Object root, Object value) {
-    // String restpath = PathUtil.getFromHeadPath(fullpath);
-    // String headpath = PathUtil.getHeadPath(fullpath);
-    // Object rootbean = rbl.locateBean(headpath);
+  // Yes, we should! Since it has now become an invisible load-time issue.
+  // We are currently making lots of things lazy just so they don't
+  // precipitate an "early" getting of this error state that may be empty.
+  // Also people may have different error contexts for different targets.
+  public void setBeanValue(String fullpath, Object root, Object value,
+      TargettedMessageList messages) {
     DataAlterationRequest dar = new DataAlterationRequest(fullpath, value);
-    TargettedMessageList messages = ThreadErrorState.getErrorState().errors;
     // messages.pushNestedPath(headpath);
 //    try {
       applyAlteration(root, dar, messages);
@@ -150,11 +150,11 @@ public class DARApplier implements BeanModelAlterer {
         if (convert instanceof String) {
           String string = (String) convert;
           try {
-            messages.pushNestedPath(totail);
+            if (messages != null) messages.pushNestedPath(totail);
             convert = ConvertUtil.parse(string, xmlprovider, leaftype);
           }
           finally {
-            messages.popNestedPath();
+            if (messages != null) messages.popNestedPath();
           }
         }
         // this case also deals with Maps and WBLs.
@@ -194,9 +194,11 @@ public class DARApplier implements BeanModelAlterer {
         }
       }
       catch (Exception e) {
-        TargettedMessage message = new TargettedMessage(
+        if (messages != null) {
+          TargettedMessage message = new TargettedMessage(
             CoreMessages.MISSING_DATA_ERROR, dar.path);
-        messages.addMessage(message);
+          messages.addMessage(message);
+        }
         Logger.log.warn("Couldn't remove object " + convert + " from path "
             + dar.path);
       }

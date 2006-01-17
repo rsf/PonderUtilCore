@@ -12,7 +12,7 @@ public interface BeanModelAlterer {
 
   public Object getBeanValue(String fullpath, Object root);
 
-  public void setBeanValue(String fullpath, Object root, Object value);
+  public void setBeanValue(String fullpath, Object root, Object value, TargettedMessageList messages);
 
   public Object invokeBeanMethod(String fullpath, Object root);
 
