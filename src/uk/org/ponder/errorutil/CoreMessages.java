@@ -12,4 +12,5 @@ public class CoreMessages {
   public static final String GENERAL_SHOW_ERROR = "GeneralShowError";
   
   public static final String MISSING_DATA_ERROR = "MissingDataError";
+  public static final String INVALID_DATA_ERROR = "InvalidDataError";
 }
