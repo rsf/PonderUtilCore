@@ -14,7 +14,6 @@ import uk.org.ponder.stringutil.CharWrap;
 import uk.org.ponder.stringutil.CharWrapVector;
 import uk.org.ponder.stringutil.StringList;
 import uk.org.ponder.util.UniversalRuntimeException;
-import uk.org.ponder.xml.XMLWriter;
 
 /**
  * This class contains static utility methods for operating on streams.

@@ -124,7 +124,15 @@ public class CharWrap {
     if (s == null) s = "null";
     int length = s.length();
     ensureCapacity(size + length);
-    s.getChars(0, length, storage, size + offset);
+    int start = size + offset;
+    if (length < 8) { // breakeven point optimised for JDK 1.4.2
+      for (int i = length - 1; i >= 0; --i) {
+        storage[start + i] = s.charAt(i);
+      }
+    }
+    else {
+      s.getChars(0, length, storage, size + offset);
+    }
     size += length;
     return this;
   }
