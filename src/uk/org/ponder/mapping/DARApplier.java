@@ -4,6 +4,7 @@
 package uk.org.ponder.mapping;
 
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.Map;
 
 import uk.org.ponder.beanutil.BeanModelAlterer;
@@ -18,11 +19,15 @@ import uk.org.ponder.errorutil.CoreMessages;
 import uk.org.ponder.errorutil.PropertyException;
 import uk.org.ponder.errorutil.TargettedMessage;
 import uk.org.ponder.errorutil.TargettedMessageList;
+import uk.org.ponder.reflect.ReflectUtils;
 import uk.org.ponder.reflect.ReflectiveCache;
 import uk.org.ponder.saxalizer.MethodAnalyser;
 import uk.org.ponder.saxalizer.SAXAccessMethod;
 import uk.org.ponder.saxalizer.SAXalXMLProvider;
 import uk.org.ponder.saxalizer.SAXalizerMappingContext;
+import uk.org.ponder.stringutil.StringList;
+import uk.org.ponder.util.Denumeration;
+import uk.org.ponder.util.EnumerationConverter;
 import uk.org.ponder.util.Logger;
 import uk.org.ponder.util.UniversalRuntimeException;
 
@@ -54,7 +59,8 @@ public class DARApplier implements BeanModelAlterer {
   public Object getFlattenedValue(String fullpath, Object root,
       Class targetclass, BeanResolver resolver) {
     Object toconvert = getBeanValue(fullpath, root);
-    if (toconvert == null) return null;
+    if (toconvert == null)
+      return null;
     if (targetclass == String.class || targetclass == Boolean.class) {
       String rendered = mappingcontext.saxleafparser.render(toconvert);
       return targetclass == String.class ? rendered
@@ -71,7 +77,7 @@ public class DARApplier implements BeanModelAlterer {
       return target;
     }
   }
-  
+
   public Object getBeanValue(String fullpath, Object rbl) {
     Object togo = BeanUtil.navigate(rbl, fullpath, mappingcontext);
     return togo;
@@ -90,12 +96,12 @@ public class DARApplier implements BeanModelAlterer {
       TargettedMessageList messages) {
     DataAlterationRequest dar = new DataAlterationRequest(fullpath, value);
     // messages.pushNestedPath(headpath);
-//    try {
-      applyAlteration(root, dar, messages);
-//    }
-//    finally {
-//      messages.popNestedPath();
-//    }
+    // try {
+    applyAlteration(root, dar, messages);
+    // }
+    // finally {
+    // messages.popNestedPath();
+    // }
   }
 
   public Object invokeBeanMethod(String fullpath, Object rbl) {
@@ -113,8 +119,8 @@ public class DARApplier implements BeanModelAlterer {
 
   private void applyAlteration(Object rootobj, DataAlterationRequest dar,
       TargettedMessageList messages) {
-    Logger.log.info("Applying DAR " + dar.type + " to path " + dar.path + ": " + 
-        dar.data);
+    Logger.log.info("Applying DAR " + dar.type + " to path " + dar.path + ": "
+        + dar.data);
     String totail = PathUtil.getToTailPath(dar.path);
     // TODO: Pause at any DARReceiver we discover in the model and instead
     // queue the requests there.
@@ -130,16 +136,38 @@ public class DARApplier implements BeanModelAlterer {
       // implies we MUST know the element type of the collection.
       // For now we must assume collection is of leaf types.
       if (pa.isMultiple(tail)) {
-        // it had BETTER be a collection otherwise delivery semantics will be
-        // incoherent - we HAVE to be able to clear it.
-        Collection lastobj = (Collection) pa.getProperty(moveobj, tail);
+        Object lastobj = pa.getProperty(moveobj, tail);
+
         SAXAccessMethod sam = MethodAnalyser.getMethodAnalyser(moveobj,
             mappingcontext).getAccessMethod(tail);
+        if (convert instanceof String) {
+          // deference to Spring "auto-convert from comma-separated list"
+          convert = StringList.fromString((String) convert);
+        }
+        if (lastobj == null) {
+          lastobj = ReflectUtils.instantiateContainer(leaftype,
+              EnumerationConverter.getEnumerableSize(convert), reflectivecache);
+          pa.setProperty(moveobj, tail, lastobj);
+        }
         if (VectorCapableParser.isLOSType(convert)) {
-          lastobj.clear();
+          if (lastobj instanceof Collection) {
+            ((Collection) lastobj).clear();
+          }
           vcp.parse(convert, lastobj, sam.getAccessedType());
         }
-        lastobj.add(convert);
+        else { // must be a single item, or else a collection
+          Denumeration den = EnumerationConverter.getDenumeration(lastobj);
+        
+          if (EnumerationConverter.isEnumerable(convert.getClass())) {
+            for (Enumeration enumm = EnumerationConverter.getEnumeration(convert);
+            enumm.hasMoreElements();) {
+              den.add(enumm.nextElement());
+            }
+          }
+          else {
+            den.add(convert);
+          }
+        }
       }
       else { // property is a scalar type, possibly composite.
         if (convert instanceof String[]) {
@@ -150,11 +178,13 @@ public class DARApplier implements BeanModelAlterer {
         if (convert instanceof String) {
           String string = (String) convert;
           try {
-            if (messages != null) messages.pushNestedPath(totail);
+            if (messages != null)
+              messages.pushNestedPath(totail);
             convert = ConvertUtil.parse(string, xmlprovider, leaftype);
           }
           finally {
-            if (messages != null) messages.popNestedPath();
+            if (messages != null)
+              messages.popNestedPath();
           }
         }
         // this case also deals with Maps and WBLs.
@@ -196,7 +226,7 @@ public class DARApplier implements BeanModelAlterer {
       catch (Exception e) {
         if (messages != null) {
           TargettedMessage message = new TargettedMessage(
-            CoreMessages.MISSING_DATA_ERROR, dar.path);
+              CoreMessages.MISSING_DATA_ERROR, dar.path);
           messages.addMessage(message);
         }
         Logger.log.warn("Couldn't remove object " + convert + " from path "
@@ -211,15 +241,12 @@ public class DARApplier implements BeanModelAlterer {
    * already navigated to the root path referred to by the bean, and that the
    * DARList mentions paths relative to that bean.
    * 
-   * @param rootobj
-   *          The object to which alterations are to be applied
-   * @param toapply
-   *          The list of alterations
-   * @param messages
-   *          The list to which error messages accreted during application are
-   *          to be appended. This is probably the same as that in the
-   *          ThreadErrorState, but is supplied as an argument to reduce costs
-   *          of ThreadLocal gets.
+   * @param rootobj The object to which alterations are to be applied
+   * @param toapply The list of alterations
+   * @param messages The list to which error messages accreted during
+   *          application are to be appended. This is probably the same as that
+   *          in the ThreadErrorState, but is supplied as an argument to reduce
+   *          costs of ThreadLocal gets.
    */
   public void applyAlterations(Object rootobj, DARList toapply,
       TargettedMessageList messages) {
