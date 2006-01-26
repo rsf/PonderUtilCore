@@ -5,6 +5,9 @@ package uk.org.ponder.sortutil;
 
 
 /**
+ * Java.util Sort is incredibly deficient in that it is unable to sort in place.
+ * As well as sorting all sorts of containers by means of a Facade, this sort
+ * is also adequately efficient.
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
  * 
  */

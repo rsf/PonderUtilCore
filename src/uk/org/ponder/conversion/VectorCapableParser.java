@@ -48,7 +48,7 @@ public class VectorCapableParser {
   // If we can't clear an existing collection, we probably can't replace it either.
   // Replacing it will probably make us guess the type wrong. This code will go into
   // DARApplier when it detects a vector-valued property, and a LOS-type argument.
-  public void parse(Object stringlist, Object target, Class elemtype) {
+  public Object parse(Object stringlist, Object target, Class elemtype) {
     //int size = EnumerationConverter.getEnumerableSize(stringlist);
     //Object togo = arraytype == null? new ArrayList(size) : Array.newInstance(arraytype, size);
     Denumeration denum = EnumerationConverter.getDenumeration(target);
@@ -57,7 +57,7 @@ public class VectorCapableParser {
       Object converted = scalarparser.parse(elemtype, elem);
       denum.add(converted);
     }
-    //return target;
+    return target;
   }
   /** Converts some form of multiple objects into some form of multiple Strings.
    * @param torenders Either some form of Object array or a Collection.

@@ -229,7 +229,7 @@ public class SAXAccessMethod implements AccessMethod {
     }
     catch (Throwable t) {
       throw UniversalRuntimeException.accumulate(t,
-          "Error acquiring child object of object " + parent + " "
+          "Error acquiring child object " + tagname + " of object " + parent + " "
               + parent.getClass());
     }
   }
@@ -245,7 +245,7 @@ public class SAXAccessMethod implements AccessMethod {
     }
     catch (Throwable t) {
       throw UniversalRuntimeException.accumulate(t,
-          "Error setting child object " + newchild + " of parent " + parent);
+          "Error setting child " + tagname + " of parent " + parent + " to value " + newchild);
     }
   }
 

@@ -111,8 +111,8 @@ public class DARApplier implements BeanModelAlterer {
       Object bean = BeanUtil.navigate(rbl, totail, mappingcontext);
       return reflectivecache.invokeMethod(bean, method);
     }
-    catch (Exception e) {
-      throw UniversalRuntimeException.accumulate(e, "Error invoking method "
+    catch (Throwable t) { // Need to grab "NoSuchMethodError"
+      throw UniversalRuntimeException.accumulate(t, "Error invoking method "
           + method + " in bean at path " + totail);
     }
   }

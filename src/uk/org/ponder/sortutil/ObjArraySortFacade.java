@@ -15,6 +15,12 @@ public class ObjArraySortFacade implements SortFacade {
   private Object[] array;
   private Comparator comparator;
   private Object temp = null;
+  /** Construct a facade sorting an array of Objects with the supplied comparator.
+   * Assumed to be an array of Comparable if a <code>null</code> Comparator is
+   * supplied. 
+   * @param array
+   * @param comparator
+   */
   public ObjArraySortFacade(Object[] array, Comparator comparator) {
     this.array = array;
     this.comparator = comparator == null? DefaultComparator.instance : comparator;
