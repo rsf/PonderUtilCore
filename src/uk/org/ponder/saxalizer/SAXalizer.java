@@ -96,7 +96,8 @@ public class SAXalizer extends HandlerBase {
    * Sets the EntityResolverStash this SAXalizer will use to resolve entities
    * referred to by the XML document to be parsed.
    * 
-   * @param entityresolverstash The required EntityResolverStash object.
+   * @param entityresolverstash
+   *          The required EntityResolverStash object.
    */
 
   public void setEntityResolverStash(EntityResolverStash entityresolverstash) {
@@ -307,15 +308,18 @@ public class SAXalizer extends HandlerBase {
    * stream will be directed at this object until the matching
    * <code>endElement</code> event.
    * 
-   * @param clazz Produce an object of this type.
-   * @param attrlist The attribute list that was attached to the
+   * @param clazz
+   *          Produce an object of this type.
+   * @param attrlist
+   *          The attribute list that was attached to the
    *          <code>startElement</code> tag that we just saw.
-   * @param callback The caller of this method, who will receive the produced
-   *          object on seeing of the <code>endElement</code> tag. At this
-   *          point, he should stop forwarding <code>DocumentHandler</code>
-   *          events to this object. This parameter may be <code>null</code>.
-   * @exception SAXException If an error occured while parsing the supplied
-   *              input source.
+   * @param callback
+   *          The caller of this method, who will receive the produced object on
+   *          seeing of the <code>endElement</code> tag. At this point, he
+   *          should stop forwarding <code>DocumentHandler</code> events to
+   *          this object. This parameter may be <code>null</code>.
+   * @exception SAXException
+   *              If an error occured while parsing the supplied input source.
    */
   public void produceSubtree(Object rootobj, AttributeList attrlist,
       SAXalizerCallback callback) throws SAXException {
@@ -347,118 +351,149 @@ public class SAXalizer extends HandlerBase {
     this.locator = locator;
   }
 
+  public static String renderLocator(Locator torender) {
+    return "column " + torender.getColumnNumber() + " line " + torender.getLineNumber();
+  }
+  
   /**
    * Implements the DocumentHandler interface.
    * 
-   * @param tagname The tag name for the element just seen in the SAX stream.
-   * @param attrlist The attribute list of the tag just seen in the SAX stream.
-   * @exception SAXException If any exception requires to be propagated from
-   *              this interface.
+   * @param tagname
+   *          The tag name for the element just seen in the SAX stream.
+   * @param attrlist
+   *          The attribute list of the tag just seen in the SAX stream.
+   * @exception SAXException
+   *              If any exception requires to be propagated from this
+   *              interface.
    */
   public void startElement(String tagname, AttributeList attrlist)
       throws SAXException {
-    // an element has started, and we must start to construct an object to put
-    // it in.
-    // The object on top of the ParseContex stack represents the parent object
-    // of this object.
-    ParseContext beingparsed = getSaxingObject();
-    SAXAccessMethodHash tagmethods = beingparsed.ma.tagmethods;
-    // Firstly we will look into its AccessMethodHash to see if the tagname we
-    // have just seen
-    // has been registered by the class of the parent object.
-    SAXAccessMethod am = tagmethods.get(tagname);
+    try {
+      // an element has started, and we must start to construct an object to put
+      // it in.
+      // The object on top of the ParseContex stack represents the parent object
+      // of this object.
+      ParseContext beingparsed = getSaxingObject();
+      SAXAccessMethodHash tagmethods = beingparsed.ma.tagmethods;
+      // Firstly we will look into its AccessMethodHash to see if the tagname we
+      // have just seen
+      // has been registered by the class of the parent object.
+      SAXAccessMethod am = tagmethods.get(tagname);
 
-    Class newobjclass = null; // for some reason, idiot compiler cannot analyse
-    // that this is set
-    if (am == null) {
-      // if we failed to find a registered method for this tag name
-      try { // attempt to look up the class name now so that the forthcoming if
-        // statement can be nicely ordered
-        if (tagname.indexOf(':') == -1 && tagname.indexOf('.') != -1)
-          newobjclass = Class.forName(tagname);
-      }
-      catch (Exception e) {
-      } // exception simply indicates that the tag name is not a class
-      if (tagmethods.get("*") != null && newobjclass != null) {
-        // if the parent is polymorphic, and class name lookup succeeded, do
-        // nothing.
-        // Note, this is REALLY blank! newobjtype will be set in the try above.
-      }
-      else if (beingparsed.object instanceof GenericSAX) { // but the parent is
-        // generic
-        newobjclass = GenericSAXImpl.class; // Child of generic will always be
-        // generic.
-      }
-      else { // the parent is not generic
-        throw new SAXParseException("Unexpected tag '" + tagname
-            + "' found while parsing child of"
-            + (beingparsed.object == null ? " null object"
-                : " object of " + beingparsed.object.getClass()), locator);
-      }
-    } // end if no registered method
-    else {
-      String typeattrname = Constants.TYPE_ATTRIBUTE_NAME; // QQQQQ genericise
-                                                            // this somehow.
-      String typeattrvalue = attrlist.getValue(typeattrname);
-      if (am.ispolymorphic && typeattrvalue != null) {
-        newobjclass = mappingcontext.classnamemanager.findClazz(typeattrvalue);
-        if (newobjclass == null) {
-          newobjclass = ClassGetter.forName(typeattrvalue);
+      Class newobjclass = null; // for some reason, idiot compiler cannot
+                                // analyse
+      // that this is set
+      if (am == null) {
+        // if we failed to find a registered method for this tag name
+        try { // attempt to look up the class name now so that the forthcoming
+              // if
+          // statement can be nicely ordered
+          if (tagname.indexOf(':') == -1 && tagname.indexOf('.') != -1)
+            newobjclass = Class.forName(tagname);
         }
-        if (newobjclass == null) {
-          throw new SAXParseException("Polymorphic tag " + tagname
-              + " has \"type\" attribute with value " + typeattrvalue
-              + " which cannot be resolved to a class ", locator);
+        catch (Exception e) {
+        } // exception simply indicates that the tag name is not a class
+        if (tagmethods.get("*") != null && newobjclass != null) {
+          // if the parent is polymorphic, and class name lookup succeeded, do
+          // nothing.
+          // Note, this is REALLY blank! newobjtype will be set in the try
+          // above.
         }
+        else if (beingparsed.object instanceof GenericSAX) { // but the parent
+                                                              // is
+          // generic
+          newobjclass = GenericSAXImpl.class; // Child of generic will always be
+          // generic.
+        }
+        else { // the parent is not generic
+          throw new SAXParseException("Unexpected tag '" + tagname
+              + "' found while parsing child of"
+              + (beingparsed.object == null ? " null object"
+                  : " object of " + beingparsed.object.getClass()), locator);
+        }
+      } // end if no registered method
+      else {
+        String typeattrname = Constants.TYPE_ATTRIBUTE_NAME; // QQQQQ
+                                                              // genericise
+        // this somehow.
+        String typeattrvalue = attrlist.getValue(typeattrname);
+        if (am.ispolymorphic && typeattrvalue != null) {
+          newobjclass = mappingcontext.classnamemanager
+              .findClazz(typeattrvalue);
+          if (newobjclass == null) {
+            newobjclass = ClassGetter.forName(typeattrvalue);
+          }
+          if (newobjclass == null) {
+            throw new SAXParseException("Polymorphic tag " + tagname
+                + " has \"type\" attribute with value " + typeattrvalue
+                + " which cannot be resolved to a class ", locator);
+          }
+        }
+        else {
+          newobjclass = am.clazz;
+        }
+      }
+      if (Logger.passDebugLevel(Logger.DEBUG_EXTRA_INFO)) {
+        Logger.println("ELEMENT CLASS determined to be " + newobjclass);
+      }
+
+      // if the parent is DeSAXalizable and we can find a unique non-null object
+      // already present at this position, use it rather than creating a new
+      // one.
+      // do not do this for leaves, since they will be replaced anyway, and in
+      // any
+      // case the existing object represents the leaf's class.
+      Object oldobj = null;
+      // enumerations and non-getters are out - we could never write to them.
+      // if it is a leaf type it is out, UNLESS it is a multiple in which case
+      // it
+      // is denumerable. It is ALSO out if it is "exact" since the class author
+      // presumably has provided a precise "add" method he wants us to use.
+      if (am.canGet() && !am.isenumeration
+          && (am.ismultiple || !leafparser.isLeafType(am.clazz))
+          && !am.isexactsetter) {
+        oldobj = am.getChildObject(beingparsed.object);
+        if (oldobj != null) {
+          // Logger.println("Acquired old object " + oldobj + " from parent "
+          // + beingparsed.object + " of class " + am.clazz,
+          // Logger.DEBUG_EXTRA_INFO);
+        }
+      }
+      pushObject(newobjclass, oldobj, am);
+
+      ParseContext newcontext = getSaxingObject();
+      if (am.ismappable) {
+        newcontext.mapkey = attrlist.getValue(Constants.KEY_ATTRIBUTE_NAME);
+        newcontext.objectpeer = am.getChildObject(beingparsed.object);
+      }
+      if (!newcontext.isleaf) {
+        tryBlastAttrs(attrlist, newcontext.ma.attrmethods, newcontext.object,
+            leafparser, am.ispolymorphic, am.ismappable);
+      }
+    }
+    catch (Exception e) {
+      if (e instanceof SAXParseException) {
+        throw ((SAXParseException)e);
       }
       else {
-        newobjclass = am.clazz;
+        throw UniversalRuntimeException.accumulate(e, "Error parsing at "
+          + renderLocator(locator));
       }
-    }
-    if (Logger.passDebugLevel(Logger.DEBUG_EXTRA_INFO)) {
-      Logger.println("ELEMENT CLASS determined to be " + newobjclass);
-    }
-
-    // if the parent is DeSAXalizable and we can find a unique non-null object
-    // already present at this position, use it rather than creating a new one.
-    // do not do this for leaves, since they will be replaced anyway, and in any
-    // case the existing object represents the leaf's class.
-    Object oldobj = null;
-    // enumerations and non-getters are out - we could never write to them.
-    // if it is a leaf type it is out, UNLESS it is a multiple in which case it
-    // is denumerable. It is ALSO out if it is "exact" since the class author
-    // presumably has provided a precise "add" method he wants us to use.
-    if (am.canGet() && !am.isenumeration
-        && (am.ismultiple || !leafparser.isLeafType(am.clazz))
-        && !am.isexactsetter) {
-      oldobj = am.getChildObject(beingparsed.object);
-      if (oldobj != null) {
-        // Logger.println("Acquired old object " + oldobj + " from parent "
-        // + beingparsed.object + " of class " + am.clazz,
-        // Logger.DEBUG_EXTRA_INFO);
-      }
-    }
-    pushObject(newobjclass, oldobj, am);
-
-    ParseContext newcontext = getSaxingObject();
-    if (am.ismappable) {
-      newcontext.mapkey = attrlist.getValue(Constants.KEY_ATTRIBUTE_NAME);
-      newcontext.objectpeer = am.getChildObject(beingparsed.object);
-    }
-    if (!newcontext.isleaf) {
-      tryBlastAttrs(attrlist, newcontext.ma.attrmethods, newcontext.object,
-          leafparser, am.ispolymorphic, am.ismappable);
     }
   }
 
   /**
    * Implements the DocumentHandler interface.
    * 
-   * @param ch An array holding the character data seen in the SAX stream.
-   * @param start The index of the character data within the supplied array.
-   * @param length The length of the character data within the supplied array.
-   * @exception SAXException If any exception requires to be propagated from
-   *              this interface.
+   * @param ch
+   *          An array holding the character data seen in the SAX stream.
+   * @param start
+   *          The index of the character data within the supplied array.
+   * @param length
+   *          The length of the character data within the supplied array.
+   * @exception SAXException
+   *              If any exception requires to be propagated from this
+   *              interface.
    */
 
   public void characters(char[] ch, int start, int length) throws SAXException {
@@ -476,9 +511,11 @@ public class SAXalizer extends HandlerBase {
   /**
    * Implements the DocumentHandler interface.
    * 
-   * @param tagname The tag name for the element just closed in the SAX stream.
-   * @exception SAXException If any exception requires to be propagated from
-   *              this interface.
+   * @param tagname
+   *          The tag name for the element just closed in the SAX stream.
+   * @exception SAXException
+   *              If any exception requires to be propagated from this
+   *              interface.
    */
 
   public void endElement(String tagname) throws SAXException {
