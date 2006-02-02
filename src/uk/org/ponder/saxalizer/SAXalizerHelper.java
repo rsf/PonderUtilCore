@@ -98,36 +98,14 @@ public class SAXalizerHelper extends HandlerBase {
       parserstash.parse(i); // begin to parse at this point, asynchronous events arrive
     }
     catch (SAXParseException spe) {
-      Logger.println(
-        "SaxParseException occured at line "
+      throw UniversalRuntimeException.accumulate(spe, "SaxParseException occured at "
           + spe.getLineNumber()
           + " column number "
-          + spe.getColumnNumber(),
-        Logger.DEBUG_SEVERE);
-      Logger.println(spe.getMessage(), Logger.DEBUG_SEVERE);
-      Exception e = spe.getException();
-      if (e != null) {
-        Logger.println("Embedded exception was: ", Logger.DEBUG_SEVERE);
-        Logger.printStackTrace(e, Logger.DEBUG_SEVERE);
-      }
-      throw spe;
+          + spe.getColumnNumber());
     }
-    catch (SAXException se) {
-      Logger.println("SAXException received");
-      Exception e = se.getException();
-      if (e != null) {
-        Logger.println("Embedded exception was: ", Logger.DEBUG_SEVERE);
-        Logger.printStackTrace(e, Logger.DEBUG_SEVERE);
-      }
-      else {
-        Logger.println("No embedded exception", Logger.DEBUG_SEVERE);
-      }
-      throw se;
-    }
+   
     catch (Exception e) {
-      // This branch should never be reached
-      Logger.printStackTrace(e, Logger.DEBUG_SEVERE);
-      throw new SAXException(e.toString());
+     throw UniversalRuntimeException.accumulate(e, "Error parsing XML document");
     }
     finally {
       saxer.blastState();

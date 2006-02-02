@@ -3,8 +3,6 @@
  */
 package uk.org.ponder.beanutil.entity;
 
-import java.io.Serializable;
-
 /** Represents the locator for an "entity", probably provided by some ORM
  * mapping solution. The ID field represents the ID of a particular INSTANCE
  * of this Entity class, and entityname represents the nickname (entity name,
@@ -15,5 +13,6 @@ import java.io.Serializable;
 
 public class EntityID {
   public String entityname;
-  public Serializable ID;
+  // Will be parsed into correct class by BeanLocator
+  public String ID;
 }

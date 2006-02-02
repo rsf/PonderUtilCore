@@ -8,6 +8,8 @@ import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
+import org.xml.sax.SAXException;
+
 import uk.org.ponder.stringutil.CharWrap;
 
 /**
@@ -142,6 +144,9 @@ public class UniversalRuntimeException extends RuntimeException implements
   public static Throwable unwrapException(Throwable tounwrap) {
     if (tounwrap instanceof InvocationTargetException) {
       return ((InvocationTargetException)tounwrap).getTargetException();
+    }
+    if (tounwrap instanceof SAXException) {
+      return ((SAXException)tounwrap).getException();
     }
     for (int i = 0; i < unwrappers.size(); ++ i) {
       Throwable unwrapped = ((ExceptionUnwrapper)unwrappers.get(i)).unwrapException(tounwrap);
