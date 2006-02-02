@@ -1,8 +1,9 @@
 package uk.org.ponder.saxalizer;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 import org.xml.sax.AttributeList;
 import org.xml.sax.HandlerBase;
@@ -11,9 +12,12 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+import uk.org.ponder.arrayutil.ListUtil;
 import uk.org.ponder.beanutil.PropertyAccessor;
 import uk.org.ponder.conversion.StaticLeafParser;
 import uk.org.ponder.reflect.ClassGetter;
+import uk.org.ponder.reflect.ReflectUtils;
+import uk.org.ponder.reflect.ReflectiveCache;
 import uk.org.ponder.stringutil.CharWrap;
 import uk.org.ponder.util.AssertionException;
 import uk.org.ponder.util.Denumeration;
@@ -168,12 +172,11 @@ public class SAXalizer extends HandlerBase {
   }
 
   // A stack of ParseContexts
-  private Stack saxingobjects = new Stack();
+  private List saxingobjects = new ArrayList();
 
   // Return the Saxing object at the top of the stack.
   private ParseContext getSaxingObject() {
-    return (ParseContext) (saxingobjects.empty() ? null
-        : saxingobjects.peek());
+    return (ParseContext) ListUtil.peek(saxingobjects);
   }
 
   /**
@@ -181,7 +184,7 @@ public class SAXalizer extends HandlerBase {
    * ready to start a fresh parse.
    */
   public void blastState() {
-    saxingobjects.removeAllElements();
+    saxingobjects.clear();
   }
 
   // Given a Class object, push a ParseContect object for that type onto the
@@ -200,32 +203,30 @@ public class SAXalizer extends HandlerBase {
     // parentsetter is null for the root object only.
     boolean isdenumerable = parentsetter == null ? false
         : parentsetter.isDenumerable();
+    ParseContext beingparsed = getSaxingObject();
     // The creation of leaf objects is deferred until all their data has
     // arrived.
     Object newinstance = null;
-    try {
-      // TODO: This line here is the general battleground - we would really LIKE
-      // to
-      // be able to (in most cases) determine which type of container to create
-      // -
-      // and in addition use FastClass.
-      if (oldinstance == null || isdenumerable)
-        newinstance = isleaf ? topush
-            : topush.newInstance();
-      else
-        newinstance = oldinstance;
+    ReflectiveCache reflectivecache = mappingcontext.getReflectiveCache();
+    if (oldinstance == null || isdenumerable) {
+      if (isdenumerable) {
+        oldinstance = ReflectUtils.instantiateContainer(
+            parentsetter.accessclazz, ReflectUtils.UNKNOWN_SIZE,
+            reflectivecache);
+        parentsetter.setChildObject(beingparsed.object, oldinstance);
+      }
+      newinstance = isleaf ? topush
+          : reflectivecache.construct(topush);
     }
-    catch (Throwable t) { // IllegalAccessException, InstantiationException
-      throw new AssertionException("Cannot create instance of " + topush
-          + " using default constructor: " + t.getClass().getName());
-    }
+    else
+      newinstance = oldinstance;
     MethodAnalyser ma = isleaf ? null
         : MethodAnalyser.getMethodAnalyser(newinstance, mappingcontext);
     // "reach into the past" and note that we are now within a denumeration.
     // For denumerable types, oldinstance will be the previously obtained
     // container class, and newinstance will be of the containee type.
     if (isdenumerable) {
-      ParseContext beingparsed = getSaxingObject();
+
       if (!beingparsed.hasDenumeration(parentsetter.tagname)) {
         Denumeration den = EnumerationConverter.getDenumeration(oldinstance);
         if (den == null) {
@@ -237,7 +238,7 @@ public class SAXalizer extends HandlerBase {
         beingparsed.denumerationmap.put(parentsetter.tagname, den);
       }
     }
-    saxingobjects.push(new ParseContext(newinstance, ma, isgeneric, isleaf,
+    saxingobjects.add(new ParseContext(newinstance, ma, isgeneric, isleaf,
         parentsetter));
   }
 
@@ -323,7 +324,7 @@ public class SAXalizer extends HandlerBase {
    */
   public void produceSubtree(Object rootobj, AttributeList attrlist,
       SAXalizerCallback callback) throws SAXException {
-    if (!saxingobjects.empty()) {
+    if (!saxingobjects.isEmpty()) {
       throw new AssertionException(
           "Attempt to produce new Subtree whilst another"
               + " parse was in progress");
@@ -352,9 +353,10 @@ public class SAXalizer extends HandlerBase {
   }
 
   public static String renderLocator(Locator torender) {
-    return "column " + torender.getColumnNumber() + " line " + torender.getLineNumber();
+    return " line " + torender.getLineNumber() + "column "
+        + torender.getColumnNumber();
   }
-  
+
   /**
    * Implements the DocumentHandler interface.
    * 
@@ -381,13 +383,11 @@ public class SAXalizer extends HandlerBase {
       SAXAccessMethod am = tagmethods.get(tagname);
 
       Class newobjclass = null; // for some reason, idiot compiler cannot
-                                // analyse
-      // that this is set
+      // analyse that this is set
       if (am == null) {
         // if we failed to find a registered method for this tag name
         try { // attempt to look up the class name now so that the forthcoming
-              // if
-          // statement can be nicely ordered
+          // if statement can be nicely ordered
           if (tagname.indexOf(':') == -1 && tagname.indexOf('.') != -1)
             newobjclass = Class.forName(tagname);
         }
@@ -399,9 +399,8 @@ public class SAXalizer extends HandlerBase {
           // Note, this is REALLY blank! newobjtype will be set in the try
           // above.
         }
-        else if (beingparsed.object instanceof GenericSAX) { // but the parent
-                                                              // is
-          // generic
+        else if (beingparsed.object instanceof GenericSAX) { 
+          // but the parent is generic
           newobjclass = GenericSAXImpl.class; // Child of generic will always be
           // generic.
         }
@@ -413,9 +412,8 @@ public class SAXalizer extends HandlerBase {
         }
       } // end if no registered method
       else {
-        String typeattrname = Constants.TYPE_ATTRIBUTE_NAME; // QQQQQ
-                                                              // genericise
-        // this somehow.
+        String typeattrname = Constants.TYPE_ATTRIBUTE_NAME;
+        // QQQQQ genericise this somehow.
         String typeattrvalue = attrlist.getValue(typeattrname);
         if (am.ispolymorphic && typeattrvalue != null) {
           newobjclass = mappingcontext.classnamemanager
@@ -473,11 +471,11 @@ public class SAXalizer extends HandlerBase {
     }
     catch (Exception e) {
       if (e instanceof SAXParseException) {
-        throw ((SAXParseException)e);
+        throw ((SAXParseException) e);
       }
       else {
         throw UniversalRuntimeException.accumulate(e, "Error parsing at "
-          + renderLocator(locator));
+            + renderLocator(locator));
       }
     }
   }
@@ -497,7 +495,7 @@ public class SAXalizer extends HandlerBase {
    */
 
   public void characters(char[] ch, int start, int length) throws SAXException {
-    if (saxingobjects.empty()) {
+    if (saxingobjects.isEmpty()) {
       throw new SAXParseException("Unexpected character data "
           + new String(ch, start, length) + " seen when there"
           + " was no active object being parsed", locator);
@@ -521,7 +519,7 @@ public class SAXalizer extends HandlerBase {
   public void endElement(String tagname) throws SAXException {
     // Logger.println("END ELEMENT received to SAXALIZER: " + tagname,
     // Logger.DEBUG_EXTRA_INFO);
-    if (saxingobjects.empty()) {
+    if (saxingobjects.isEmpty()) {
       throw new SAXParseException("Unexpected closing tag for " + tagname
           + " seen when there was no active object being parsed", locator);
     }
@@ -556,12 +554,12 @@ public class SAXalizer extends HandlerBase {
       // TODO! Enable parsing of array values by prodding
       // CompletableDenumeration here.
     }
-    saxingobjects.pop(); // remove the completed object from the stack.
+    ListUtil.pop(saxingobjects); // remove the completed object from the stack.
 
     // Now we must try to deliver the completed object to the parent object.
     // if nothing left on the stack, provide the root object to our caller and
     // return.
-    if (saxingobjects.empty()) {
+    if (saxingobjects.isEmpty()) {
       if (callback != null)
         callback.productionComplete(beingparsed.object);
       return;

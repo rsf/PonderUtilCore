@@ -3,7 +3,6 @@
  */
 package uk.org.ponder.util;
 
-import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -14,6 +13,9 @@ import uk.org.ponder.arrayutil.ArrayEnumeration;
 import uk.org.ponder.beanutil.BeanLocator;
 
 /**
+ * Utilities for converting Java multiple-valued types (arrays, collections,
+ * Maps) into readable (Enumeration) and writeable (Denumeration) iterators
+ * over their contents.
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
  * 
  */
@@ -59,6 +61,11 @@ public class EnumerationConverter {
     return -1;
   }
   
+  /** Return an enumeration of the contents of the argument o, which may itself
+   * be already either an Enumeration or Iterator, Collection or Array type. If
+   * a Map, return an enumeration of its values, and in the default case, return an 
+   * enumeration consisting of just the single argument.
+   */
   public static Enumeration getEnumeration(final Object o) {
     if (o instanceof Enumeration) {
       return (Enumeration)o;
@@ -83,8 +90,7 @@ public class EnumerationConverter {
     else if (o.getClass().isArray()) {
       return new ArrayEnumeration((Object[])o);
     }
-    else throw new AssertionException("getEnumeration called for unenumerable type "+
-        o.getClass());
+    else return new SingleEnumeration(o);
   }
   
   public static Denumeration getDenumeration(final Object collo) {

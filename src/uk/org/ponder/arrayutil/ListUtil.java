@@ -74,4 +74,8 @@ public class ListUtil {
       return togo;
     }
   }
+  
+  public static Object peek(List list) {
+    return list.size() == 0 ? null : list.get(list.size() - 1);
+  }
 }

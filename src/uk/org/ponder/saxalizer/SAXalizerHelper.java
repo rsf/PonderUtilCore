@@ -98,7 +98,7 @@ public class SAXalizerHelper extends HandlerBase {
       parserstash.parse(i); // begin to parse at this point, asynchronous events arrive
     }
     catch (SAXParseException spe) {
-      throw UniversalRuntimeException.accumulate(spe, "SaxParseException occured at "
+      throw UniversalRuntimeException.accumulate(spe, "SaxParseException occured at line "
           + spe.getLineNumber()
           + " column number "
           + spe.getColumnNumber());

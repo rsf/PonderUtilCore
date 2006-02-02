@@ -17,27 +17,34 @@ import uk.org.ponder.util.UniversalRuntimeException;
 public class SAXAccessMethod implements AccessMethod {
   public static final Class[] emptyclazz = {};
   public static final Object[] emptyobj = {};
-
-  Field field; // The Field object corresponding to the child field, if there
-                // is
-  // one.
+  /** The Field object corresponding to the child field, if there is
+  one. */
+  Field field; 
   Method getmethod; // The actual Method object to be invoked
   Method setmethod;
-  Class clazz; // The type of subobject (or superclass thereof) handled by this
-                // method
-  Class accessclazz; // The actual (declared) return or field type in code (may
-                      // be container)
-  Class parentclazz; // The class that this is a method of, for convenience.
+  /** The type of subobject (or superclass thereof) handled by this
+   method */
+  Class clazz; 
+  /** The actual (declared) return or field type in code (may
+                       be container) */
+  Class accessclazz; 
+  /**  The class that this is a method of, for convenience. */
+  Class parentclazz; 
   public String tagname;
-  boolean ispolymorphic; // Uses the new "tag*" polymorphic nickname scheme
-  public boolean ismultiple; // A collection rather than a single object is
-                              // being addressed
-  public boolean isexactsetter; // A more specific set method has been supplied
-                                // than get method.
-  boolean isenumeration; // if "ismultiple" is this delivered via an
-                          // enumeration?
+  /** Uses the new "tag*" polymorphic nickname scheme */
+  boolean ispolymorphic; 
+ /** A collection rather than a single object is
+  being addressed */
+  public boolean ismultiple; 
+ /** A more specific set method has been supplied
+   than get method. */
+  public boolean isexactsetter;
+  /** if "ismultiple" is this delivered via an
+   enumeration? */
+  boolean isenumeration;
   boolean ismappable;
-  boolean isdevnull; // if this is a "black hole" setter for ignoring properties
+ /** if this is a "black hole" setter for ignoring properties */
+  boolean isdevnull; 
 
   // Note that enumerations are the only things which are enumerable but not
   // denumerable.
