@@ -19,26 +19,15 @@ import uk.org.ponder.util.UniversalRuntimeException;
  */
 
 public class DMYTransit {
-
   public Calendar calendar = new GregorianCalendar();
-  private String month;
-  private String year;
-  private String day;
+  // UI-exposed fields of transit beans need to be read/write since they may
+  // be re-fetched by fixup before rendering.
+  public String month = "01";
+  public String year;
+  public String day = "01";
 
   public void setCalendar(Calendar calendar) {
-
-  }
-
-  public void setMonth(String month) {
-    this.month = month;
-  }
-
-  public void setYear(String year) {
-    this.year = year;
-  }
-
-  public void setDay(String day) {
-    this.day = day;
+    this.calendar = calendar;
   }
 
   public Date getDate() {

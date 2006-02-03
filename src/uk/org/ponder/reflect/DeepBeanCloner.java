@@ -44,6 +44,10 @@ public class DeepBeanCloner {
   public void setReflectiveCache(ReflectiveCache reflectivecache) {
     this.reflectivecache = reflectivecache;
   }
+  
+  public ReflectiveCache getReflectiveCache() {
+    return reflectivecache;
+  }
 
   /** Simply produce another object of the same type as the argument * */
   public Object emptyClone(Object toclone) {
