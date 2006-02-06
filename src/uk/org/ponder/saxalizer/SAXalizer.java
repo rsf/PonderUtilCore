@@ -196,7 +196,7 @@ public class SAXalizer extends HandlerBase {
   private void pushObject(Class topush, Object oldinstance,
       SAXAccessMethod parentsetter) {
     if (topush.isPrimitive()) {
-      topush = leafparser.wrapClass(topush);
+      topush = StaticLeafParser.wrapClass(topush);
     }
     boolean isgeneric = GenericSAX.class.isAssignableFrom(topush);
     boolean isleaf = leafparser.isLeafType(topush);
@@ -209,19 +209,18 @@ public class SAXalizer extends HandlerBase {
     Object newinstance = null;
     ReflectiveCache reflectivecache = mappingcontext.getReflectiveCache();
     if (oldinstance == null || isdenumerable) {
-      if (isdenumerable) {
+      if (isdenumerable && oldinstance == null) {
         oldinstance = ReflectUtils.instantiateContainer(
             parentsetter.accessclazz, ReflectUtils.UNKNOWN_SIZE,
             reflectivecache);
         parentsetter.setChildObject(beingparsed.object, oldinstance);
       }
-      newinstance = isleaf ? topush
-          : reflectivecache.construct(topush);
+      newinstance = isleaf ? topush : reflectivecache.construct(topush);
     }
     else
       newinstance = oldinstance;
     MethodAnalyser ma = isleaf ? null
-        : MethodAnalyser.getMethodAnalyser(newinstance, mappingcontext);
+        : mappingcontext.getAnalyser(newinstance.getClass());
     // "reach into the past" and note that we are now within a denumeration.
     // For denumerable types, oldinstance will be the previously obtained
     // container class, and newinstance will be of the containee type.

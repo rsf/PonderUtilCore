@@ -4,8 +4,10 @@
 package uk.org.ponder.fileutil;
 
 import java.io.File;
+import java.io.IOException;
 
 import uk.org.ponder.stringutil.StringList;
+import uk.org.ponder.util.UniversalRuntimeException;
 
 public class FileUtil {
   public static int FILE_MASK = 1;
@@ -34,5 +36,15 @@ public class FileUtil {
     }
     //Collections.sort(result);
     return result;
+  }
+  
+  public static final String getCanonicalPath(String path) {    
+    File f = new File(path);
+    try {
+      return f.getCanonicalPath();
+    }
+    catch (IOException e) {
+      throw UniversalRuntimeException.accumulate(e, "Unable to convert " + path + " to a canonical path");
+    }
   }
 }

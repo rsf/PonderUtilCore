@@ -43,11 +43,14 @@ public class DARApplier implements BeanModelAlterer {
 
   public void setSAXalXMLProvider(SAXalXMLProvider saxal) {
     xmlprovider = saxal;
-    mappingcontext = saxal.getMappingContext();
+  }
+
+  public void setMappingContext(SAXalizerMappingContext mappingcontext) {
+    this.mappingcontext = mappingcontext;
     vcp = new VectorCapableParser();
     vcp.setScalarParser(mappingcontext.saxleafparser);
   }
-
+  
   public SAXalizerMappingContext getMappingContext() {
     return mappingcontext;
   }
@@ -138,8 +141,8 @@ public class DARApplier implements BeanModelAlterer {
       if (pa.isMultiple(tail)) {
         Object lastobj = pa.getProperty(moveobj, tail);
 
-        SAXAccessMethod sam = MethodAnalyser.getMethodAnalyser(moveobj,
-            mappingcontext).getAccessMethod(tail);
+        SAXAccessMethod sam = mappingcontext.getAnalyser(moveobj.getClass())
+            .getAccessMethod(tail);
         if (convert instanceof String) {
           // deference to Spring "auto-convert from comma-separated list"
           convert = StringList.fromString((String) convert);

@@ -13,12 +13,9 @@ import uk.org.ponder.saxalizer.mapping.SAXalizerMapper;
 import uk.org.ponder.saxalizer.mapping.SAXalizerMapperInferrer;
 
 /**
- * The complete context for serialisation and deserialisation of objects
- * to and from XML using the SAXalizer and DeSAXalizer.
- * It includes a mapping context
- * <ol>
- * <li>
- * <code>SAXalizerMapperInferrer</code> has been 
+ * A reflective mapping context used to infer mappings of Java objects
+ * to and from serial representations, for example to XML or EL expressions.
+ * <p>If a <code>SAXalizerMapperInferrer</code> has been 
  * provided, it will be asked to synthesize a "default" mapping
  * based on reflection of the class.
  * </ol>
@@ -27,10 +24,18 @@ import uk.org.ponder.saxalizer.mapping.SAXalizerMapperInferrer;
  */
 public class SAXalizerMappingContext {
   public SAXalizerMapperInferrer inferrer = new DefaultMapperInferrer();
-  public StaticLeafParser saxleafparser = StaticLeafParser.instance();
+  public StaticLeafParser saxleafparser;
   public ClassNameManager classnamemanager = ClassNameManager.instance();
   private ReflectiveCache reflectivecache;
 
+  public void setStaticLeafParser(StaticLeafParser saxleafparser) {
+    this.saxleafparser = saxleafparser;
+  }
+  
+  public void setDefaultInferrer(SAXalizerMapperInferrer inferrer) {
+    this.inferrer = inferrer;
+  }
+  
   public void setChainedInferrer(SAXalizerMapperInferrer inferrer) {
     inferrer.setChainedInferrer(this.inferrer);
     this.inferrer = inferrer;
@@ -50,9 +55,14 @@ public class SAXalizerMappingContext {
 // this is a Hashtable of Classes to MethodAnalysers
   private Map methodanalysers; 
   public MethodAnalyser getAnalyser(Class clazz) {
-    return (MethodAnalyser) methodanalysers.get(clazz); 
+    MethodAnalyser togo = (MethodAnalyser) methodanalysers.get(clazz);
+    if (togo == null) {
+      togo = MethodAnalyser.constructMethodAnalyser(clazz, this);
+      methodanalysers.put(clazz, togo);
+    }
+    return togo;
   }
-  public void putAnalyser(Class clazz, MethodAnalyser analyser) {
+  private void putAnalyser(Class clazz, MethodAnalyser analyser) {
     methodanalysers.put(clazz, analyser);
   }
   private SAXalizerMappingContext(boolean systemwide) {

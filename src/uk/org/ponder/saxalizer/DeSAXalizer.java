@@ -42,7 +42,7 @@ public class DeSAXalizer {
 
     SerialContext(Object object, SAXalizerMappingContext mappingcontext) {
       this.object = object;
-      this.ma = MethodAnalyser.getMethodAnalyser(object, mappingcontext);
+      this.ma = mappingcontext.getAnalyser(object.getClass());
       // for generic objects, currentgetindex has an honorary value of -1
       // representing
       // getChildEnum()

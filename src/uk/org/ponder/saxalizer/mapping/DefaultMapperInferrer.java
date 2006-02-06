@@ -26,7 +26,10 @@ public class DefaultMapperInferrer implements SAXalizerMapperInferrer {
     throw new UnsupportedOperationException("Cannot chain from default inferrer");
     // We expect to be the head of the chain
   }
-  
+  private boolean depluralize = true;
+  public void setDepluralize(boolean depluralize) {
+    this.depluralize = depluralize;
+  }
   private HashMap collectionmap = new HashMap();
   private HashSet defaultiblemap = new HashSet();
   
@@ -96,7 +99,7 @@ public class DefaultMapperInferrer implements SAXalizerMapperInferrer {
     // duplicate.
     SAXAccessMethodSpec spec = new SAXAccessMethodSpec();
     // depluralise if it is a get method 
-    spec.xmlname = dePluralize(tagname, clazz);
+    spec.xmlname = depluralize? dePluralize(tagname, clazz) : tagname;
   
     Class containeetype = getContaineeType(clazz);
     if (containeetype != null) {

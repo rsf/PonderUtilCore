@@ -22,7 +22,7 @@ public class FieldComparator implements Comparator {
 
   public static AccessMethod findSingleGetter(Class objclass,
       SAXalizerMappingContext context, String tagname) {
-    MethodAnalyser ma = MethodAnalyser.getMethodAnalyser(objclass, context);
+    MethodAnalyser ma = context.getAnalyser(objclass);
     SAXAccessMethod method = ma.getAccessMethod(tagname);
     if (!method.canGet() || method.ismultiple) {
       throw new UniversalRuntimeException(
