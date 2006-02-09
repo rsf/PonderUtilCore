@@ -3,6 +3,7 @@
  */
 package uk.org.ponder.dateutil;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -30,7 +31,18 @@ public class DMYTransit {
     this.calendar = calendar;
   }
 
-  public Date getDate() {
+  private Date date = new Date();
+  
+  public DMYTransit() {
+    render();
+  }
+  
+  public void setDate(Date date) {
+    this.date = date;
+    render();
+  }  
+  
+  public void parse() {
     try {
       int yearint = Integer.parseInt(year);
       int monthint = Integer.parseInt(month);
@@ -41,7 +53,20 @@ public class DMYTransit {
       throw UniversalRuntimeException.accumulate(e, PropertyException.class,
           "Invalid date format");
     }
-    return calendar.getTime();
+    date = calendar.getTime();
+  }
+  
+  public void render() {
+    SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy");
+    String formatted = sdf.format(date);
+    day = formatted.substring(0, 2);
+    month = formatted.substring(2, 4);
+    year = formatted.substring(4);
+  }
+  
+  public Date getDate() {
+    parse();
+    return date;
   }
 
 }
