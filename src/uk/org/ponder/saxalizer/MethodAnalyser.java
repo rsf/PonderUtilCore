@@ -37,7 +37,10 @@ public class MethodAnalyser implements PropertyAccessor {
   public SAXAccessMethodHash tagmethods;
   public SAXAccessMethodHash attrmethods;
   public SAXAccessMethod bodymethod;
-
+  /** A flat array of ALL accessors for the target class. This will be the most
+   * efficient means of using introspection information, and is populated on
+   * construction of this MethodAnalyser.
+   */
   public SAXAccessMethod[] allgetters;
 
   private void assembleGetters() {

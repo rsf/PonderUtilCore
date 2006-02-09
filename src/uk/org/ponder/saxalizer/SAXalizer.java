@@ -352,7 +352,7 @@ public class SAXalizer extends HandlerBase {
   }
 
   public static String renderLocator(Locator torender) {
-    return " line " + torender.getLineNumber() + "column "
+    return "line " + torender.getLineNumber() + " column "
         + torender.getColumnNumber();
   }
 
