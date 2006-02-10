@@ -103,6 +103,7 @@ public class StaticLeafParser {
     registerParser(Double.class, new DoubleParser());
     registerParser(Long.class, new LongParser());
     registerParser(Date.class, new DateParser());
+    registerParser(java.sql.Date.class, new DateParser());
     registerParser(Class.class, new ClassParser());
     registerParser(ArrayUtil.intArrayClass, new intArrayParser());
     registerParser(ArrayUtil.doubleArrayClass, new doubleArrayParser());
