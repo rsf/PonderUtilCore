@@ -172,13 +172,13 @@ public class UniversalRuntimeException extends RuntimeException implements
     }
     else {
       togo = new UniversalRuntimeException(t);
+      togo.category = category;
     }
     // InvokationTargetException wrapping randomly trashes the message. Guard
     // against this with this generally well-motivated hack:
     if (fullmsg != null && !fullmsg.equals("")) {
       togo.message = fullmsg;
     }
-    togo.category = category;
     return togo;
   }
 

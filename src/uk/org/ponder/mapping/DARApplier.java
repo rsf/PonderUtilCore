@@ -122,7 +122,7 @@ public class DARApplier implements BeanModelAlterer {
 
   private void applyAlteration(Object rootobj, DataAlterationRequest dar,
       TargettedMessageList messages) {
-    Logger.log.info("Applying DAR " + dar.type + " to path " + dar.path + ": "
+    Logger.log.debug("Applying DAR " + dar.type + " to path " + dar.path + ": "
         + dar.data);
     String totail = PathUtil.getToTailPath(dar.path);
     // TODO: Pause at any DARReceiver we discover in the model and instead
