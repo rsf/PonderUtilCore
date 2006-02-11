@@ -65,7 +65,8 @@ public class DARApplier implements BeanModelAlterer {
     if (toconvert == null)
       return null;
     if (targetclass == String.class || targetclass == Boolean.class) {
-      String rendered = mappingcontext.saxleafparser.render(toconvert);
+      String rendered = resolver == null ? mappingcontext.saxleafparser.render(toconvert):
+        resolver.resolveBean(toconvert);
       return targetclass == String.class ? rendered
           : mappingcontext.saxleafparser.parse(Boolean.class, rendered);
     }

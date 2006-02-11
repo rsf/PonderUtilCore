@@ -13,6 +13,9 @@ import uk.org.ponder.util.UniversalRuntimeException;
 /**
  * A thread-local SimpleDateFormat wrapper. If the default constructor is
  * used, supplies a W3C standard date format with millisecond resolution.
+ * This class is somewhat useful since construction of a SimpleDateFormat runs
+ * at around 13µs (2Ghz A64), with ThreadLocal gets around 300 times faster at
+ * 40ns or so. NB, GregorianCalendar runs at about 2µs.
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
  * 
  */
