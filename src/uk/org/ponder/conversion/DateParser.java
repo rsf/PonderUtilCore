@@ -5,7 +5,7 @@ import java.util.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import uk.org.ponder.stringutil.LocalSDF;
+import uk.org.ponder.dateutil.LocalSDF;
 import uk.org.ponder.util.UniversalRuntimeException;
 
 public class DateParser implements LeafObjectParser {

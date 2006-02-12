@@ -1,7 +1,7 @@
 /*
  * Created on 12-Feb-2006
  */
-package uk.org.ponder.saxalizer.mapping;
+package uk.org.ponder.stringutil;
 
 /** A standalone Pluralizer that deals with most names that might arise
  * as entity names.

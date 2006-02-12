@@ -12,6 +12,7 @@ import java.util.HashSet;
 import uk.org.ponder.saxalizer.DefaultInferrible;
 import uk.org.ponder.saxalizer.SAMSList;
 import uk.org.ponder.saxalizer.SAXAccessMethodSpec;
+import uk.org.ponder.stringutil.Pluralizer;
 import uk.org.ponder.stringutil.StringList;
 import uk.org.ponder.stringutil.StringSet;
 import uk.org.ponder.util.EnumerationConverter;

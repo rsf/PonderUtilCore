@@ -1,7 +1,7 @@
 /*
  * Created on Apr 1, 2005
  */
-package uk.org.ponder.stringutil;
+package uk.org.ponder.dateutil;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
