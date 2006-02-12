@@ -82,9 +82,7 @@ public class DefaultMapperInferrer implements SAXalizerMapperInferrer {
   public static final String dePluralize(String accessname, Class returntype) {
     String togo = accessname;
     if (EnumerationConverter.isEnumerable(returntype)) {
-      if (accessname.endsWith("s")) {
-        togo = accessname.substring(0, accessname.length() - 1);
-      }
+      return Pluralizer.singularize(accessname);
     }  
     return togo;
   }
