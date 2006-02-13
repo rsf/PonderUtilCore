@@ -372,9 +372,14 @@ public class SAXalizer extends HandlerBase {
     try {
       // an element has started, and we must start to construct an object to put
       // it in.
-      // The object on top of the ParseContex stack represents the parent object
+      // The object on top of the ParseContext stack represents the parent object
       // of this object.
       ParseContext beingparsed = getSaxingObject();
+      if (beingparsed.isleaf) {
+        throw new SAXParseException("Received open tag " + 
+            tagname + " for leaf tag " + beingparsed.parentsetter.tagname, 
+            locator);
+      }
       SAXAccessMethodHash tagmethods = beingparsed.ma.tagmethods;
       // Firstly we will look into its AccessMethodHash to see if the tagname we
       // have just seen

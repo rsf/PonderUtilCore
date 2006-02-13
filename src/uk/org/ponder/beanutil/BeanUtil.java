@@ -9,6 +9,7 @@ import uk.org.ponder.saxalizer.MethodAnalyser;
 import uk.org.ponder.saxalizer.SAXalizerMappingContext;
 import uk.org.ponder.stringutil.CharWrap;
 import uk.org.ponder.stringutil.StringList;
+import uk.org.ponder.util.UniversalRuntimeException;
 
 /**
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
@@ -70,6 +71,10 @@ public class BeanUtil {
     String[] components = splitEL(path);
     Object moveobj = rootobj;
     for (int comp = 0; comp < components.length; ++comp) {
+      if (moveobj == null) {
+        throw UniversalRuntimeException.accumulate(new IllegalArgumentException(),
+            "Null value encounted in bean path at component " + components[comp - 1]);
+      }
       if (moveobj instanceof List) {
         List movelist = (List) moveobj;
         int index = Integer.valueOf(components[comp]).intValue();

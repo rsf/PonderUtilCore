@@ -83,8 +83,13 @@ public class DARApplier implements BeanModelAlterer {
   }
 
   public Object getBeanValue(String fullpath, Object rbl) {
-    Object togo = BeanUtil.navigate(rbl, fullpath, mappingcontext);
-    return togo;
+    try {
+      Object togo = BeanUtil.navigate(rbl, fullpath, mappingcontext);
+      return togo;
+    }
+    catch (Exception e) {
+      throw UniversalRuntimeException.accumulate(e, "Error getting bean value for path " + fullpath);
+    }
   }
 
   // a convenience method to have the effect of a "set" ValueBinding,
