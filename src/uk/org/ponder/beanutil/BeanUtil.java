@@ -52,6 +52,15 @@ public class BeanUtil {
         : path.substring(0, dotpos);
   }
   
+  public static String getTail(String path) {
+    int dotpos = path.lastIndexOf(".");
+    return dotpos == -1 ? path : path.substring(dotpos + 1);
+  }
+  
+  public static String composeEL(String head, String tail) {
+    return head + '.' + tail;
+  }
+  
   public static String composeEL(StringList tocompose) {
     CharWrap togo = new CharWrap();
     for (int i = 0; i < tocompose.size(); ++i) {
@@ -65,8 +74,9 @@ public class BeanUtil {
 
   public static Object navigate(Object rootobj, String path,
       SAXalizerMappingContext mappingcontext) {
-    if (path == null)
+    if (path == null || path.equals("")) {
       return rootobj;
+    }
 
     String[] components = splitEL(path);
     Object moveobj = rootobj;
