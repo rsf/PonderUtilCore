@@ -24,7 +24,7 @@ public class LexUtil {
   }
 
   public static void skipWhite(PushbackRIS lr) {
-    while (true) {
+    while (!lr.EOF()) {
       char c = lr.get();
       if (!Character.isWhitespace(c)) {
         lr.unread(c);

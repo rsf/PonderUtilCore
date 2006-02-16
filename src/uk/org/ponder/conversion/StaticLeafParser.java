@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import uk.org.ponder.arrayutil.ArrayUtil;
+import uk.org.ponder.matrix.Matrix;
+import uk.org.ponder.matrix.MatrixParser;
 import uk.org.ponder.util.AssertionException;
 
 class BooleanParser implements LeafObjectParser {
@@ -109,6 +111,7 @@ public class StaticLeafParser {
     registerParser(ArrayUtil.intArrayClass, new intArrayParser());
     registerParser(ArrayUtil.doubleArrayClass, new doubleArrayParser());
     registerParser(ArrayUtil.stringArrayClass, StringArrayParser.instance);
+    registerParser(Matrix.class, new MatrixParser());
   }
 
   public StaticLeafParser() {
