@@ -85,7 +85,7 @@ public class SAXAccessMethodSpec implements SAXalizable, SAXalizableAttrs {
   }
   /**
    * This is a utility method, currently called by MethodAnalyser, for SAMS
-   * returned from getSAXSetQqqMethod() in order to swap the name supplied for
+   * returned from getSAXQqqMethod() in order to swap the name supplied for
    * "methodname" which defaults to referring to a get method into a set method.
    * 
    * @param toconvert

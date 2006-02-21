@@ -1,22 +1,19 @@
 package uk.org.ponder.saxalizer;
 
-import org.xml.sax.HandlerBase;
-import org.xml.sax.SAXException;
-import org.xml.sax.Locator;
-import org.xml.sax.InputSource;
+import java.io.InputStream;
+import java.io.Reader;
+
 import org.xml.sax.AttributeList;
-import org.xml.sax.SAXParseException;
+import org.xml.sax.HandlerBase;
+import org.xml.sax.InputSource;
+import org.xml.sax.Locator;
 import org.xml.sax.Parser;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 import uk.org.ponder.saxalizer.mapping.ClassNameManager;
 import uk.org.ponder.streamutil.StreamCloseUtil;
-import uk.org.ponder.util.Logger;
 import uk.org.ponder.util.UniversalRuntimeException;
-
-// QQQQQ interface to be supplied in the CORRECT direction!
-
-import java.io.InputStream;
-import java.io.Reader;
 
 /** This useful helper class can be used if the XML
  * root tag itself is required to be the root of the deserialised

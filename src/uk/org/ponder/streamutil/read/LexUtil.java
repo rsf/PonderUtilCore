@@ -33,6 +33,19 @@ public class LexUtil {
     }
   }
 
+  public static String readString(PushbackRIS pbr, String delimiters) {
+    CharWrap togo = new CharWrap();
+    while (!pbr.EOF()) {
+      char c = pbr.get();
+      if (delimiters.indexOf(c) != -1) {
+        pbr.unread(c);
+        break;
+      }
+      togo.append(c);
+    }
+    return togo.toString();
+  }
+
   public static int readInt(PushbackRIS pbr) {
     StringBuffer sb = new StringBuffer();
     char c = pbr.get();

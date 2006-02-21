@@ -80,7 +80,7 @@ public class DARApplier implements BeanModelAlterer {
       // in setBeanValue below.
       Collection collection = (Collection) toconvert;
       String[] target = new String[collection.size()];
-      vcp.render(collection, target, resolver);
+      vcp.render(collection, target, resolver, reflectivecache);
       return target;
     }
   }
@@ -165,10 +165,10 @@ public class DARApplier implements BeanModelAlterer {
           if (lastobj instanceof Collection) {
             ((Collection) lastobj).clear();
           }
-          vcp.parse(convert, lastobj, sam.getAccessedType());
+          vcp.parse(convert, lastobj, sam.getAccessedType(), reflectivecache);
         }
         else { // must be a single item, or else a collection
-          Denumeration den = EnumerationConverter.getDenumeration(lastobj);
+          Denumeration den = EnumerationConverter.getDenumeration(lastobj, reflectivecache);
         
           if (EnumerationConverter.isEnumerable(convert.getClass())) {
             for (Enumeration enumm = EnumerationConverter.getEnumeration(convert);

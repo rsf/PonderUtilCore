@@ -29,7 +29,8 @@ public class ReflectUtils {
   
   public static final int UNKNOWN_SIZE = -1;
   /** Instantiates a "default" type of container conforming to a given interface
-   * and of a given size.
+   * and of a given size. If asked to create an array of unknown size, will return
+   * an zero-element array instead, signalling a "placeholder".
    */
   public static Object instantiateContainer(Class declaredtype, int size, ReflectiveCache cache) {
     // only missing case is if someone madly declares an argument of type
@@ -44,6 +45,7 @@ public class ReflectUtils {
       return size == UNKNOWN_SIZE? new HashMap() : new HashMap(size);
     }
     else if (declaredtype.isArray()) {
+      size = 0;
       // erm, this is a native method! How long does it take exactly!
       Class component = declaredtype.getComponentType();
       if (component == Object.class) {

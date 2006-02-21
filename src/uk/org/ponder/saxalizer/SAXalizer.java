@@ -2,6 +2,7 @@ package uk.org.ponder.saxalizer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +21,7 @@ import uk.org.ponder.reflect.ReflectUtils;
 import uk.org.ponder.reflect.ReflectiveCache;
 import uk.org.ponder.stringutil.CharWrap;
 import uk.org.ponder.util.AssertionException;
+import uk.org.ponder.util.CompletableDenumeration;
 import uk.org.ponder.util.Denumeration;
 import uk.org.ponder.util.EnumerationConverter;
 import uk.org.ponder.util.Logger;
@@ -131,19 +133,19 @@ public class SAXalizer extends HandlerBase {
     // is called multiple times.
     // QQQQQ economise on this at some point! One hashmap created per
     // collection.
-    // TODO: Note that this could just be stashed in the CHILD CONTEXT!!!!! YOU
-    // IDIOT!!!
+    // TODO: We THOUGHT this could be put in the child object like "objectpeer", 
+    // but then realised that it might have been deallocated as they were popped
     HashMap denumerationmap;
     // Is this object using the GenericSAXImpl object lookup scheme
     boolean isgeneric;
-    // Is this object using the polymorphic-style "*" object lookup scheme
-    // boolean ispoly;
     // Is this object a leaf-style object
     boolean isleaf;
     // The character data seen so far
     CharWrap textsofar;
     // The key name if this is an attribute-keyed map entry
     String mapkey;
+    // Currently only set for "mappable" types, but "in general" holds the
+    // object being constructed in the real tree.
     Object objectpeer;
 
     ParseContext(Object object, MethodAnalyser ma, boolean isgeneric,
@@ -209,11 +211,18 @@ public class SAXalizer extends HandlerBase {
     Object newinstance = null;
     ReflectiveCache reflectivecache = mappingcontext.getReflectiveCache();
     if (oldinstance == null || isdenumerable) {
-      if (isdenumerable && oldinstance == null) {
+      if (isdenumerable && oldinstance == null && 
+          !beingparsed.hasDenumeration(parentsetter.tagname)) {
+        // NB, do not try to make "old" instance (collection/"peer") if we are already
+        // in a denumeration, since it must be the array case.
         oldinstance = ReflectUtils.instantiateContainer(
             parentsetter.accessclazz, ReflectUtils.UNKNOWN_SIZE,
             reflectivecache);
-        parentsetter.setChildObject(beingparsed.object, oldinstance);
+        // Do NOT deliver the object to parent now for arrays, but wait until
+        // enclosing tag is complete in endElement.
+        if (!parentsetter.accessclazz.isArray()) {
+          parentsetter.setChildObject(beingparsed.object, oldinstance);
+        }
       }
       newinstance = isleaf ? topush : reflectivecache.construct(topush);
     }
@@ -225,9 +234,8 @@ public class SAXalizer extends HandlerBase {
     // For denumerable types, oldinstance will be the previously obtained
     // container class, and newinstance will be of the containee type.
     if (isdenumerable) {
-
       if (!beingparsed.hasDenumeration(parentsetter.tagname)) {
-        Denumeration den = EnumerationConverter.getDenumeration(oldinstance);
+        Denumeration den = EnumerationConverter.getDenumeration(oldinstance, reflectivecache);
         if (den == null) {
           throw new UniversalRuntimeException("Child " + oldinstance + " in "
               + topush
@@ -451,7 +459,7 @@ public class SAXalizer extends HandlerBase {
       // it
       // is denumerable. It is ALSO out if it is "exact" since the class author
       // presumably has provided a precise "add" method he wants us to use.
-      if (am.canGet() && !am.isenumeration
+      if (am.canGet() && !am.isenumonly
           && (am.ismultiple || !leafparser.isLeafType(am.clazz))
           && !am.isexactsetter) {
         oldobj = am.getChildObject(beingparsed.object);
@@ -553,11 +561,21 @@ public class SAXalizer extends HandlerBase {
       Object newchild = leafparser.parse(bodymethod.clazz, body);
       bodymethod.setChildObject(beingparsed.object, newchild);
     }
+   
+    // deal with "just destroyed" completable denumerations (array types)
     if (beingparsed.denumerationmap != null
         && !beingparsed.denumerationmap.isEmpty()) {
-      // TODO! Enable parsing of array values by prodding
-      // CompletableDenumeration here.
+      for (Iterator denit = beingparsed.denumerationmap.keySet().iterator(); denit.hasNext();) {
+        String denkey = (String) denit.next();
+        Object denval = beingparsed.denumerationmap.get(denkey);
+        if (denval instanceof CompletableDenumeration) {
+          Object completed = ((CompletableDenumeration)denval).complete();
+          SAXAccessMethod deliver = beingparsed.ma.getAccessMethod(denkey);
+          deliver.setChildObject(beingparsed.object, completed);
+        }
+      }
     }
+    
     ListUtil.pop(saxingobjects); // remove the completed object from the stack.
 
     // Now we must try to deliver the completed object to the parent object.
@@ -570,10 +588,13 @@ public class SAXalizer extends HandlerBase {
     }
 
     ParseContext parentcontext = getSaxingObject();
+   
     // Logger.println("SAXing object is " + parentcontext.object,
     // Logger.DEBUG_SUBATOMIC);
 
     Object parentobject = parentcontext.object;
+    
+    // Now deal with CURRENT denumerations for the just closed tag
     Denumeration den = null;
     if ((den = parentcontext.getDenumeration(tagname)) != null) {
       den.add(beingparsed.object);

@@ -39,9 +39,9 @@ public class SAXAccessMethod implements AccessMethod {
  /** A more specific set method has been supplied
    than get method. */
   public boolean isexactsetter;
-  /** if "ismultiple" is this delivered via an
-   enumeration? */
-  boolean isenumeration;
+  /** if "ismultiple" is this ONLY enumerable and not denumerable? */
+  boolean isenumonly;
+  /** Is this property typed either BeanLocator or Map? */
   boolean ismappable;
  /** if this is a "black hole" setter for ignoring properties */
   boolean isdevnull; 
@@ -121,8 +121,7 @@ public class SAXAccessMethod implements AccessMethod {
       // ERM! byXMLNameSafe appears to try to fill in m.clazz by itself, does
       // this work?
       accessclazz = field.getType();
-      clazz = m.clazz == null ? accessclazz
-          : m.clazz;
+      clazz = m.clazz == null ? accessclazz : m.clazz;
       checkEnumerable(accessclazz);
     }
     else {
@@ -163,9 +162,12 @@ public class SAXAccessMethod implements AccessMethod {
           }
           catch (Throwable t) {
             setmethod = findSetMethod(parentclazz, m.setmethodname);
+            Class setaccessclazz = setmethod.getParameterTypes()[0];
+            boolean setismultiple = EnumerationConverter.isDenumerable(setaccessclazz);
             // if it didn't have exactly the right type, last-ditch search for a compatible setter.
             if (setmethod == null
-                || !setmethod.getParameterTypes()[0].isAssignableFrom(m.clazz)) {
+                || (!setaccessclazz.isAssignableFrom(m.clazz)
+                    && !setismultiple)) {
               throw (UniversalRuntimeException.accumulate(t,
                   "Unable to find SET method with name " + m.setmethodname
                       + " accepting argument " + m.clazz + " in class "
@@ -215,7 +217,7 @@ public class SAXAccessMethod implements AccessMethod {
   private boolean checkEnumerable(Class clazz) {
     ismultiple = EnumerationConverter.isEnumerable(clazz);
     if (ismultiple) {
-      isenumeration = !EnumerationConverter.isDenumerable(clazz);
+      isenumonly = !EnumerationConverter.isDenumerable(clazz);
     }
     ismappable = EnumerationConverter.isMappable(clazz);
     return ismultiple;
@@ -280,7 +282,7 @@ public class SAXAccessMethod implements AccessMethod {
    * value, in the case that there is no individual set method.
    */
   public boolean isEnumeration() {
-    return isenumeration;
+    return isenumonly;
   }
 
   /**
@@ -289,7 +291,7 @@ public class SAXAccessMethod implements AccessMethod {
    * receiver by EnumerationConverter.getDenumeration(oldinstance).
    */
   public boolean isDenumerable() {
-    return ismultiple && !isenumeration && !isexactsetter;
+    return ismultiple && !isenumonly && !isexactsetter;
   }
 
   /** The type of subobject that this method deals in * */
