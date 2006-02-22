@@ -3,11 +3,13 @@ package uk.org.ponder.saxalizer;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
+import uk.org.ponder.arrayutil.ListUtil;
 import uk.org.ponder.util.EnumerationConverter;
 import uk.org.ponder.util.Logger;
 import uk.org.ponder.util.UniversalRuntimeException;
@@ -36,7 +38,7 @@ public class DeSAXalizer {
     // is suspended. enum will be set to null when it expires.
     Enumeration enumm;
     // The (original) tag name of the enum in progress
-    String enumtagname;
+    //String enumtagname;
     String stashedclosingtag;
     boolean writtenchild = false;
 
@@ -46,7 +48,7 @@ public class DeSAXalizer {
       // for generic objects, currentgetindex has an honorary value of -1
       // representing
       // getChildEnum()
-      //currentgetindex = object instanceof GenericSAX ? -1 : 0;
+      // currentgetindex = object instanceof GenericSAX ? -1 : 0;
       stashedclosingtag = null;
       getenum = ma.tagmethods.getGetEnumeration();
     }
@@ -54,11 +56,10 @@ public class DeSAXalizer {
 
   // These five members constitute the state of the DeSAXalizer.
   // This is a Stack of serialcontexts.
-  private Stack desaxingobjects;
+  private List desaxingobjects;
 
   public SerialContext getDeSAXingObject() {
-    return !desaxingobjects.empty() ? (SerialContext) desaxingobjects.peek()
-        : null;
+    return (SerialContext) ListUtil.peek(desaxingobjects);
   }
 
   private XMLWriter xmlw;
@@ -85,7 +86,7 @@ public class DeSAXalizer {
   }
 
   private void blastState() {
-    //mappingcontext = null;
+    // mappingcontext = null;
     xmlw = null;
     desaxingobjects.clear();
     forbidder = null;
@@ -94,10 +95,8 @@ public class DeSAXalizer {
   /**
    * Render a <code>DeSAXalizable</code> object as a string.
    * 
-   * @param root
-   *          The object to be rendered as a string.
-   * @param roottag
-   *          The root tag of the rendered tree
+   * @param root The object to be rendered as a string.
+   * @param roottag The root tag of the rendered tree
    * @return The supplied object rendered as a <code>String</code> of XML
    *         tags, minus declaration.
    */
@@ -121,17 +120,15 @@ public class DeSAXalizer {
    * Write a serialized representation of an object subtree as XML to an output
    * stream. This method DOES NOT close the supplied output stream.
    * 
-   * @param root
-   *          The root object of the tree to be serialized. Must implement the
-   *          <code>DeSAXalizable</code> interface, as must all descendents,
-   *          or have types registered with the <code>SAXLeafParser</code>.
-   * @param roottag
-   *          The tag to be supplied to the root object (all subobjects have
-   *          their tags supplied through the <code>DeSAXalizable</code>
+   * @param root The root object of the tree to be serialized. Must implement
+   *          the <code>DeSAXalizable</code> interface, as must all
+   *          descendents, or have types registered with the
+   *          <code>SAXLeafParser</code>.
+   * @param roottag The tag to be supplied to the root object (all subobjects
+   *          have their tags supplied through the <code>DeSAXalizable</code>
    *          interface.
-   * @param os
-   *          The output stream to receive the serialized data. The data will be
-   *          written in UTF-8 format.
+   * @param os The output stream to receive the serialized data. The data will
+   *          be written in UTF-8 format.
    */
 
   public void serializeSubtree(Object root, String roottag, OutputStream os)
@@ -147,8 +144,8 @@ public class DeSAXalizer {
     xmlw.writeRaw("\"");
   }
 
-  private void renderAttrs(Object torender,
-      SAMIterator getattrenum) throws IOException {
+  private void renderAttrs(Object torender, SAMIterator getattrenum)
+      throws IOException {
     for (; getattrenum.valid(); getattrenum.next()) {
       SAXAccessMethod getattr = getattrenum.get();
       Object attrvalue = getattr.getChildObject(torender);
@@ -172,7 +169,8 @@ public class DeSAXalizer {
     }
   }
 
-  private SerialContext writeOpeningTag(Object child, String childtagname, SAXAccessMethod topgetmethod) {
+  private SerialContext writeOpeningTag(Object child, String childtagname,
+      SAXAccessMethod topgetmethod) {
     SerialContext top = null;
     try {
       SerialContext oldtop = getDeSAXingObject();
@@ -207,7 +205,8 @@ public class DeSAXalizer {
       if (closenow) {
         // it is a leaf object
         xmlw.writeRaw(">", 0);
-        // NB - 10/11/05 - final end of support for "Generic" objects. Check SVN should it ever need to come back.
+        // NB - 10/11/05 - final end of support for "Generic" objects. Check SVN
+        // should it ever need to come back.
         // use leafparser to render it into text
         if (genericdata == null) {
           xmlw.write(mappingcontext.saxleafparser.render(child));
@@ -216,24 +215,25 @@ public class DeSAXalizer {
         xmlw.writeRaw("</" + childtagname + ">\n", 0);
         top = null;
       }
-      else { // it is not a leaf object. writing it will require another pass around
+      else { // it is not a leaf object. writing it will require another pass
+              // around
         Logger.println("Pushed", Logger.DEBUG_EXTRA_INFO);
-        String polynick = mappingcontext.classnamemanager.getClassName(child.getClass());
-        if (polynick != null && topgetmethod != null && topgetmethod.ispolymorphic) {
+        String polynick = mappingcontext.classnamemanager.getClassName(child
+            .getClass());
+        if (polynick != null && topgetmethod != null
+            && topgetmethod.ispolymorphic) {
           appendAttr(Constants.TYPE_ATTRIBUTE_NAME, polynick);
         }
-        SAMIterator getattrenum = top.ma.attrmethods
-            .getGetEnumeration();
+        SAMIterator getattrenum = top.ma.attrmethods.getGetEnumeration();
         if (getattrenum.valid() || child instanceof SAXalizableExtraAttrs) {
           Logger.println("Child has attributes", Logger.DEBUG_SUBATOMIC);
-          //      renderinto.clear();
+          // renderinto.clear();
           renderAttrs(child, getattrenum);
-          //      xmlw.write(renderinto.storage, renderinto.offset, renderinto.size);
+          // xmlw.write(renderinto.storage, renderinto.offset, renderinto.size);
         }
 
-     
-        //xmlw.writeRaw(">\n", 0);
-        desaxingobjects.push(top);
+        // xmlw.writeRaw(">\n", 0);
+        desaxingobjects.add(top);
       } // else not a leaf object
     }
     catch (Throwable t) {
@@ -252,31 +252,26 @@ public class DeSAXalizer {
    * Write a serialized representation of an object subtree as XML to an output
    * stream. This method DOES NOT close the supplied output stream.
    * 
-   * @param root
-   *          The root object of the tree to be serialized. Must implement the
-   *          <code>DeSAXalizable</code> interface, as must all descendents,
-   *          or have types registered with the <code>SAXLeafParser</code>.
-   * @param roottag
-   *          The tag to be supplied to the root object (all subobjects have
-   *          their tags supplied through the <code>DeSAXalizable</code>
+   * @param root The root object of the tree to be serialized. Must implement
+   *          the <code>DeSAXalizable</code> interface, as must all
+   *          descendents, or have types registered with the
+   *          <code>SAXLeafParser</code>.
+   * @param roottag The tag to be supplied to the root object (all subobjects
+   *          have their tags supplied through the <code>DeSAXalizable</code>
    *          interface.
-   * @param os
-   *          The output stream to receive the serialized data. The data will be
-   *          written in UTF-8 format.
-   * @param forbidder
-   *          An interface through which clients may countermand the
+   * @param os The output stream to receive the serialized data. The data will
+   *          be written in UTF-8 format.
+   * @param forbidder An interface through which clients may countermand the
    *          serialization of a particular subobject of the root. Each object
    *          and tag will be supplied to this interface before serialization.
    *          <code>null</code> if all objects to be serialized without
    *          restriction.
-   * @param maxdepth
-   *          If this is not -1, subobjects below this depth from the root will
-   *          not be serialized.
-   * @param indentlevel
-   *          The initial indent level in the XML output file to be applied to
-   *          the tag representing the root object. If this is not 0, an XML
-   *          declaration will not be written to the file. If this is COMPACT_MODE,
-   *          newlines and indentation will not be written.
+   * @param maxdepth If this is not -1, subobjects below this depth from the
+   *          root will not be serialized.
+   * @param indentlevel The initial indent level in the XML output file to be
+   *          applied to the tag representing the root object. If this is not 0,
+   *          an XML declaration will not be written to the file. If this is
+   *          COMPACT_MODE, newlines and indentation will not be written.
    */
 
   public void serializeSubtree(Object root, String roottagname,
@@ -284,7 +279,7 @@ public class DeSAXalizer {
     // Store the stack of desaxing objects locally, to avoid having to allocate
     // thread-local
     // desaxalizers. This is a stack of SerialContexts.
-    desaxingobjects = new Stack();
+    desaxingobjects = new ArrayList();
     this.indentlevel = indentlevel;
 
     try {
@@ -311,9 +306,9 @@ public class DeSAXalizer {
           // closing tag.
           Logger.println("Popped", Logger.DEBUG_EXTRA_INFO);
           boolean writtenchild = top.writtenchild;
-          desaxingobjects.pop();
+          ListUtil.pop(desaxingobjects);
 
-          if (desaxingobjects.empty())
+          if (desaxingobjects.isEmpty())
             break; // GLOBAL EXIT POINT
           top = getDeSAXingObject();
           xmlw.closeTag(top.stashedclosingtag, getIndent(), writtenchild);
@@ -322,32 +317,22 @@ public class DeSAXalizer {
 
         // Step 2: get the child object that the index on top of stack refers to
         child = null;
-        // may be -1 because of genericsax, may be off the end because of
-        // unfinished enum. What terrible, terrible logic....
-        // PLAN: GenericSAX's getChildEnum will now be treated as a normal
-        // multiple get.
-        if (top.getenum.valid())
-          childtagname = top.getenum.get().tagname;
+        topgetmethod = top.getenum.get();
+        childtagname = topgetmethod.tagname;
 
-        //	String childtagname = null;
         // so long as the top object is not in an enum, get the enclosed object
         if (top.enumm == null) {
-          // TODO: This used to reflect for the GenericSAX getChildEnum method.
-          // we can probably handle this better by "automatic mapping", poly*.
-          topgetmethod = top.getenum.get();
           child = topgetmethod.getChildObject(top.object);
 
           Logger.println("Object " + child + " delivered for tag "
               + topgetmethod.tagname, Logger.DEBUG_EXTRA_INFO);
-          // IMPORTANT semantic point - during the processing of an enum,
-          // currentgetindex already points to the NEXT sibling along from the
-          // enum.
-          top.getenum.next();
+
           // if we discover it is an enum, begin chewing on it.
-          // this may be an enum delivered from GenericSAX getChildEnum().
           if (child != null && topgetmethod.ismultiple) {
             top.enumm = EnumerationConverter.getEnumeration(child);
-            top.enumtagname = childtagname;
+          }
+          else {
+            top.getenum.next();     
           }
         }
         Logger.println("About to check enum: childtagname is " + childtagname,
@@ -364,11 +349,9 @@ public class DeSAXalizer {
             }
             // if it is a polymorphic enum, the tagname must be replaced with
             // the actual object class
-            else if (top.enumtagname.equals("*")) {
+            else if (topgetmethod.tagname.equals("*")) {
               childtagname = child.getClass().getName();
             }
-            else
-              childtagname = top.enumtagname;
             // otherwise, the value set from
             // top.getmethods[top.currentgetindex].tagname is correct
             Logger.println("Got next child " + child + " from enum",
@@ -378,6 +361,7 @@ public class DeSAXalizer {
             // branch will pass on
             Logger.println("enum finished", Logger.DEBUG_EXTRA_INFO);
             top.enumm = null;
+            top.getenum.next();     
             child = null; // this line deals with the case of 0-element
             // enumerations
           }
@@ -389,7 +373,6 @@ public class DeSAXalizer {
         // If the child is a leaf object, we also write out the closing tag
         // here.
         if (child != null) {
-          //	  String currenttagname = getTagName(top, child);
           top.stashedclosingtag = childtagname;
           Logger.println("Tag name determined to be " + childtagname,
               Logger.DEBUG_EXTRA_INFO);
@@ -397,14 +380,15 @@ public class DeSAXalizer {
               child))
           // maxdepth parameter removed - forbidders should do everything AMB
           // 1/10/04
-          //              && (maxdepth == -1 || desaxingobjects.size() <= maxdepth)
+          // && (maxdepth == -1 || desaxingobjects.size() <= maxdepth)
           ) {
             // Once we have got the child object, we can write the opening tag
             // name. If it is a leaf, write closing tag as well.
-            SerialContext returnedtop = writeOpeningTag(child, childtagname, topgetmethod);
+            SerialContext returnedtop = writeOpeningTag(child, childtagname,
+                topgetmethod);
             if (returnedtop != null)
               top = returnedtop;
-            //	    prettySpaces(desaxingobjects.size(), w);
+            // prettySpaces(desaxingobjects.size(), w);
           } // end if the writing was not forbidden
           else
             Logger.println("Tag writing forbidden", Logger.DEBUG_EXTRA_INFO);
