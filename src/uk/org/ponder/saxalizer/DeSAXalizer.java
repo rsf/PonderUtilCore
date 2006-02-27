@@ -1,7 +1,6 @@
 package uk.org.ponder.saxalizer;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -20,11 +19,8 @@ import uk.org.ponder.xml.XMLWriter;
  * stream. Architectural note - this used to be a stateless class with only
  * static methods. This resulted in a slightly cleaner design since all state
  * alterations were transparent, but in the end the number of arguments to
- * internal methods began to snowball. Like the SAXalizer, this class is
- * intended to be used with ThreadLocal allocators, which now (1.4) are a good
- * deal more efficient than in the days when the first version of this class was
- * designed. DeSAXalizers are a good deal cheaper anyway, since they don't
- * require the construction of a SAX parser.
+ * internal methods began to snowball. Constructing a DeSAXalizer costs
+ * virtually nothing in the modern world.
  */
 public class DeSAXalizer {
   // one of these objects is allocated in a stack for each tag level.
@@ -38,7 +34,7 @@ public class DeSAXalizer {
     // is suspended. enum will be set to null when it expires.
     Enumeration enumm;
     // The (original) tag name of the enum in progress
-    //String enumtagname;
+    // String enumtagname;
     String stashedclosingtag;
     boolean writtenchild = false;
 
@@ -86,7 +82,6 @@ public class DeSAXalizer {
   }
 
   private void blastState() {
-    // mappingcontext = null;
     xmlw = null;
     desaxingobjects.clear();
     forbidder = null;
@@ -131,12 +126,11 @@ public class DeSAXalizer {
    *          be written in UTF-8 format.
    */
 
-  public void serializeSubtree(Object root, String roottag, OutputStream os)
-      throws IOException {
+  public void serializeSubtree(Object root, String roottag, OutputStream os) {
     serializeSubtree(root, roottag, os, 0);
   }
 
-  private void appendAttr(String attrname, Object attrvalue) throws IOException {
+  private void appendAttr(String attrname, Object attrvalue) {
     xmlw.writeRaw(" ");
     xmlw.writeRaw(attrname); // attribute names may not contain escapes
     xmlw.writeRaw("=\"");
@@ -144,8 +138,7 @@ public class DeSAXalizer {
     xmlw.writeRaw("\"");
   }
 
-  private void renderAttrs(Object torender, SAMIterator getattrenum)
-      throws IOException {
+  private void renderAttrs(Object torender, SAMIterator getattrenum) {
     for (; getattrenum.valid(); getattrenum.next()) {
       SAXAccessMethod getattr = getattrenum.get();
       Object attrvalue = getattr.getChildObject(torender);
@@ -216,7 +209,7 @@ public class DeSAXalizer {
         top = null;
       }
       else { // it is not a leaf object. writing it will require another pass
-              // around
+        // around
         Logger.println("Pushed", Logger.DEBUG_EXTRA_INFO);
         String polynick = mappingcontext.classnamemanager.getClassName(child
             .getClass());
@@ -275,7 +268,7 @@ public class DeSAXalizer {
    */
 
   public void serializeSubtree(Object root, String roottagname,
-      OutputStream os, int indentlevel) throws IOException {
+      OutputStream os, int indentlevel) {
     // Store the stack of desaxing objects locally, to avoid having to allocate
     // thread-local
     // desaxalizers. This is a stack of SerialContexts.
@@ -332,7 +325,7 @@ public class DeSAXalizer {
             top.enumm = EnumerationConverter.getEnumeration(child);
           }
           else {
-            top.getenum.next();     
+            top.getenum.next();
           }
         }
         Logger.println("About to check enum: childtagname is " + childtagname,
@@ -361,7 +354,7 @@ public class DeSAXalizer {
             // branch will pass on
             Logger.println("enum finished", Logger.DEBUG_EXTRA_INFO);
             top.enumm = null;
-            top.getenum.next();     
+            top.getenum.next();
             child = null; // this line deals with the case of 0-element
             // enumerations
           }

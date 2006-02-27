@@ -12,6 +12,12 @@ package uk.org.ponder.beanutil.entity;
  */
 
 public class EntityID {
+  public EntityID(String entityname, String ID) {
+    this.entityname = entityname;
+    this.ID = ID;
+  }
+  public EntityID() {}
+  
   public String entityname;
   // Will be parsed into correct class by BeanLocator
   public String ID;

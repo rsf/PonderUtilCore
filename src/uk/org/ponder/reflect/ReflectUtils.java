@@ -45,7 +45,7 @@ public class ReflectUtils {
       return size == UNKNOWN_SIZE? new HashMap() : new HashMap(size);
     }
     else if (declaredtype.isArray()) {
-      size = 0;
+      if (size == UNKNOWN_SIZE) size = 0;
       // erm, this is a native method! How long does it take exactly!
       Class component = declaredtype.getComponentType();
       if (component == Object.class) {
