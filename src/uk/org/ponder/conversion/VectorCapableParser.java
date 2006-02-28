@@ -51,18 +51,6 @@ public class VectorCapableParser {
    * @return Either a List or Array of Object according to whether the second
    *         parameter  represents a Class or is null. 
    */
-  // * @param arraytype The class type of the element of returned array, or
-  // <code>null</code> if
-  // * a list (in fact an ArrayList) is required.
-  // This is the slightly tricky one. It looks like we might actually need to
-  // create a whole new concrete collection - unless we can use clear() or
-  // something?
-  // If we can't clear an existing collection, we probably can't replace it
-  // either.
-  // Replacing it will probably make us guess the type wrong. This code will go
-  // into
-  // DARApplier when it detects a vector-valued property, and a LOS-type
-  // argument.
   public Object parse(Object stringlist, Object target, Class elemtype,
       ReflectiveCache reflectivecache) {
     // int size = EnumerationConverter.getEnumerableSize(stringlist);
