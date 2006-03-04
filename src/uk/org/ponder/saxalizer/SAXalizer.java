@@ -599,10 +599,10 @@ public class SAXalizer extends HandlerBase {
     if ((den = parentcontext.getDenumeration(tagname)) != null) {
       den.add(beingparsed.object);
     }
-    else if (beingparsed.parentsetter.ismappable) {
+    else if (beingparsed.parentsetter.ismappable && !beingparsed.parentsetter.isexactsetter) {
       if (beingparsed.mapkey == null) {
-        throw new SAXException("Mappable type for tag " + tagname
-            + " did not supply a map key");
+        throw new SAXParseException("Mappable type for tag " + tagname
+            + " did not supply a map key", locator);
       }
       PropertyAccessor pa = MethodAnalyser.getPropertyAccessor(
           beingparsed.objectpeer, mappingcontext);
