@@ -74,33 +74,9 @@ public class SAXAccessMethod implements AccessMethod {
     return null;
   }
 
-  // TODO: This is where we are now.
-  // The problem is that for enumerable types, get and set methods have
-  // different
-  // types, and they are provided separately in SAXalizable and DeSAXalizable.
-  // Secondly, specs provided from MAPPING file MAY have the class specification
-  // missing,
-  // in the hopes that it could be determined HERE now we actually have the
-  // relevant method in our hands.
-  // If a thing is an enumeration, we still insisted it had a typesafe
-  // SET method which would tell us what type would be provided to ADD.
-  // NOW, of course, there may be NO information in the class from
-  // reflection, and the type of the object would have to be
-  // specified in the MAPPING file.
-  // First we provided a global "*" which insisted that subtags
-  // were named after the relevant java class.
-  // Then we provided "tag*" which indicated that a nickname
-  // was supplied in a "type=nickname" attribute.
-
-  // A) the parent method may fuse these two into a single get/set
-  // spec before delivery, if their tag matches.
-  // B) What the hell to do about Enumeration tags!
-  // They come as a set/add pair.... we must simply record in the
-  // AccessMethod itself that it is an enumeration. With a flag!
-  // Then the concrete type itself (so far as it is known) can be
-  // safely put in there.
-  // the relevant call to SET is in SAXalizer.endElement.
-  // it tries to look up the tag by name
+  protected SAXAccessMethod() {
+    
+  }
 
   public SAXAccessMethod(SAXAccessMethodSpec m, Class parentclazz) {
     this(parentclazz, m.xmlname);

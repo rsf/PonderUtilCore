@@ -459,7 +459,7 @@ public class SAXalizer extends HandlerBase {
       // it
       // is denumerable. It is ALSO out if it is "exact" since the class author
       // presumably has provided a precise "add" method he wants us to use.
-      if (am.canGet() && !am.isenumonly
+      if (am != null && am.canGet() && !am.isenumonly
           && (am.ismultiple || !leafparser.isLeafType(am.clazz))
           && !am.isexactsetter) {
         oldobj = am.getChildObject(beingparsed.object);
@@ -472,13 +472,14 @@ public class SAXalizer extends HandlerBase {
       pushObject(newobjclass, oldobj, am);
 
       ParseContext newcontext = getSaxingObject();
-      if (am.ismappable) {
+      if (am != null && am.ismappable) {
         newcontext.mapkey = attrlist.getValue(Constants.KEY_ATTRIBUTE_NAME);
         newcontext.objectpeer = am.getChildObject(beingparsed.object);
       }
       if (!newcontext.isleaf) {
         tryBlastAttrs(attrlist, newcontext.ma.attrmethods, newcontext.object,
-            leafparser, am.ispolymorphic, am.ismappable);
+            leafparser, am == null? false : am.ispolymorphic, 
+                am == null? false : am.ismappable);
       }
     }
     catch (Exception e) {
@@ -596,7 +597,10 @@ public class SAXalizer extends HandlerBase {
     
     // Now deal with CURRENT denumerations for the just closed tag
     Denumeration den = null;
-    if ((den = parentcontext.getDenumeration(tagname)) != null) {
+    if (parentcontext.isgeneric) { 
+       ((GenericSAX)parentobject).addChild((GenericSAX) beingparsed.object); 
+       }
+    else if ((den = parentcontext.getDenumeration(tagname)) != null) {
       den.add(beingparsed.object);
     }
     else if (beingparsed.parentsetter.ismappable && !beingparsed.parentsetter.isexactsetter) {
@@ -613,14 +617,11 @@ public class SAXalizer extends HandlerBase {
       parentsetter.setChildObject(parentobject, beingparsed.object);
     }
 
-    /*
-     * // else if we found no set method, and parent was generic, deliver the //
-     * object // by GenericSax interface. else if (parentcontext.isgeneric) { //
-     * System.out.println("About to add object for "+tagname+" to parent"); //
-     * If the parent is a vector, add the child object to its collection
-     * GenericSAX parentobject = (GenericSAX) parentcontext.object;
-     * parentobject.addChild((GenericSAX) beingparsed.object); }
-     */
+    
+     // else if we found no set method, and parent was generic, deliver the //
+     //object by GenericSax interface. 
+  
+     
 
   } // end method endElement
 }

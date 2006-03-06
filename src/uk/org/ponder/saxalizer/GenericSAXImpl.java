@@ -1,9 +1,14 @@
 package uk.org.ponder.saxalizer;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.Vector;
+
+import uk.org.ponder.util.EnumerationConverter;
 
 //import uk.org.ponder.stringutil.CharWrap;
 
@@ -36,15 +41,15 @@ public class GenericSAXImpl implements GenericSAX {
   TreeMap attrs;
   String comment;
   // A heterogeneous vector. 
-  Vector children; // not a hash, since tags may be identical - also, order should be preserved.
+  List children; // not a hash, since tags may be identical - also, order should be preserved.
 
   // The child will be another GenericSax. Leaf nodes will just have data.
   /** Add the specified child object to the collection.
    * @param child The child object to add.
    */
   public void addChild(GenericSAX child) {
-    if (children == null) children = new Vector();
-    children.addElement(child);
+    if (children == null) children = new ArrayList();
+    children.add(child);
     }
   /** Return the number of child objects.
    * @return The number of child objects.
@@ -56,7 +61,7 @@ public class GenericSAXImpl implements GenericSAX {
    @return The required child object.
   */
   public Enumeration getChildEnum() {
-    return children == null? null : children.elements();
+    return children == null? null : EnumerationConverter.getEnumeration(children);
     }
   /** Return the child object corresponding to the tag with the given name.
    @param tagname The tag name that the child object is required for.
@@ -65,7 +70,7 @@ public class GenericSAXImpl implements GenericSAX {
   public GenericSAXImpl findChild(String tagname) {
     //    System.out.println("Tagname: "+ tagname +" required");
     for (int i = 0; i < children.size(); ++ i) {
-      GenericSAXImpl childi = (GenericSAXImpl)children.elementAt(i);
+      GenericSAXImpl childi = (GenericSAXImpl)children.get(i);
       //      System.out.println("Passing child with tag: "+childi.tagname);
       if (childi.tagname.equals(tagname)) return childi;
       }
@@ -98,6 +103,9 @@ public class GenericSAXImpl implements GenericSAX {
     return tagname;
     }
   public Map getAttributes() {
+    if (attrs == null) {
+      attrs = new TreeMap();
+    }
     return attrs;
   }
  
