@@ -23,7 +23,7 @@ public class Pluralizer {
       { "goose", "geese" }, { "tooth", "teeth" }, { "aircraft", "aircraft" },
       { "sheep", "sheep" }, { "species", "species" }, { "foot", "feet" },
       { "man", "men" }, { "ex", "ices" }, { "ix", "ices" }, { "um", "a" },
-      { "us", "i" }, { "eau", "eaux" }, { "is", "es" } };
+      { "us", "i" }, { "eau", "eaux" },  {"reply", "replies" } };
 
   public static String singularize(String plural) {
     for (int i = rules.length - 1; i >= 0; -- i) {
