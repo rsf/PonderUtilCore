@@ -12,7 +12,17 @@ import uk.org.ponder.util.Logger;
 import uk.org.ponder.util.UniversalRuntimeException;
 
 public class URLUtil {
-
+  /** Append the supplied name/value pair to the end of the supplied URL, 
+   * after URLencoding name and value.
+   */
+  
+  public static String appendAttribute(String url, String name, String value) {
+    int qpos = url.indexOf('?');
+    char sep = qpos == -1? '?' : '&';
+    return url + sep + URLEncoder.encode(name) + '=' + URLEncoder.encode(value);
+  }
+  
+  /** Convert list of URL-form name/value pairs into a Map representation */
   public static Map paramsToMap(String extraparams,
         Map target) {
       Logger.log

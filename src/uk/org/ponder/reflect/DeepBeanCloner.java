@@ -44,7 +44,7 @@ public class DeepBeanCloner {
   public void setReflectiveCache(ReflectiveCache reflectivecache) {
     this.reflectivecache = reflectivecache;
   }
-  
+
   public ReflectiveCache getReflectiveCache() {
     return reflectivecache;
   }
@@ -56,6 +56,37 @@ public class DeepBeanCloner {
 
   public Object cloneBean(Object toclone) {
     return cloneBean(toclone, null);
+  }
+
+  /**
+   * Copies the source object onto the destination - must not be a leaf or
+   * container object.
+   */
+  public void copyTrunk(Object toclone, Object cloned, StringList exceptions) {
+    MethodAnalyser ma = mappingcontext.getAnalyser(toclone.getClass());
+    for (int i = 0; i < ma.allgetters.length; ++i) {
+      SAXAccessMethod sam = ma.allgetters[i];
+      if (!sam.canGet() || !sam.canSet())
+        continue;
+      if (exceptions != null && exceptions.contains(sam.tagname))
+        continue;
+      if (sam.isexactsetter) {
+        Enumeration childenum = EnumerationConverter.getEnumeration(sam
+            .getChildObject(toclone));
+        while (childenum.hasMoreElements()) {
+          Object child = childenum.nextElement();
+          Object clonechild = cloneBean(child, null);
+          sam.setChildObject(cloned, clonechild);
+        }
+      }
+      else {
+        Object child = sam.getChildObject(toclone);
+        if (child != null) {
+          Object clonechild = cloneBean(child, null);
+          sam.setChildObject(cloned, clonechild);
+        }
+      }
+    }
   }
 
   /**
@@ -107,32 +138,8 @@ public class DeepBeanCloner {
     }
     else {
       // The general case. A trunk object with a good lot of properties.
-      MethodAnalyser ma = mappingcontext.getAnalyser(objclass);
       cloned = reflectivecache.construct(objclass);
-      for (int i = 0; i < ma.allgetters.length; ++i) {
-        SAXAccessMethod sam = ma.allgetters[i];
-        if (!sam.canGet() || !sam.canSet())
-          continue;
-        if (exceptions != null && exceptions.contains(sam.tagname))
-          continue;
-        if (sam.isexactsetter) {
-          Enumeration childenum = EnumerationConverter.getEnumeration(sam
-              .getChildObject(toclone));
-          while (childenum.hasMoreElements()) {
-            Object child = childenum.nextElement();
-            Object clonechild = cloneBean(child, null);
-            sam.setChildObject(cloned, clonechild);
-          }
-        }
-        else {
-          Object child = sam.getChildObject(toclone);
-          if (child != null) {
-            Object clonechild = cloneBean(child, null);
-            sam.setChildObject(cloned, clonechild);
-          }
-        }
-      }
-
+      copyTrunk(toclone, cloned, exceptions);
     }
     return cloned;
   }

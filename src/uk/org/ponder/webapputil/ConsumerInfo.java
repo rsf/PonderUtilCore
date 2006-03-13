@@ -34,7 +34,9 @@ public class ConsumerInfo {
   /** The URL to be issued by a user out in the wild to navigate the hosting
    * environment to the point where the tool instance corresponding to this
    * resource is visible. If this is null, the tool URL itself is presumed
-   * to be valid (as per Coursework) */
+   * to be valid (as per Coursework). This URL may be incomplete/invalid in
+   * various ways, as a result of a "private arrangement" between the forwarder
+   * and the UltimateURLRenderer in use. */
   public String externalURL;
   /** The URL base required
    * for statically served resource URLs written to a remote consumer 
