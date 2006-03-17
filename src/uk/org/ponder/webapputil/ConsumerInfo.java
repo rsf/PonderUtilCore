@@ -4,7 +4,8 @@
 package uk.org.ponder.webapputil;
 
 /**
- * Request-static information stored about a consumer of this service. 
+ * Request information stored about a consumer of this service. NB - some
+ * fields will vary per-request. 
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
  * 
  */
@@ -46,4 +47,12 @@ public class ConsumerInfo {
    * but be resolved directly.
    */
   public String resourceurlbase;
+  
+  /** A method useful to breach proxy boundaries. Call if using this object
+   * from an application-scope bean.
+   */
+  public ConsumerInfo get() {
+    return this;
+  }
+ 
 }

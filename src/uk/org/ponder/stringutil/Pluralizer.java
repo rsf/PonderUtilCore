@@ -13,7 +13,7 @@ public class Pluralizer {
   // table from
   // http://www.tiscali.co.uk/reference/dictionaries/english/data/d0082600.html
   // and http://en.wikipedia.org/wiki/English_plural
-  public static final String[][] rules = { { "", "s" }, { "s", "ses" },
+  public static final String[][] rules = { { "", "s" }, { "s", "ses" }, {"ss", "ss"},
       { "sh", "shes" }, { "ss", "sses" }, { "ch", "ches" }, { "dg", "dges" },
       { "x", "xes" }, { "o", "oes" }, { "f", "ves" }, { "fe", "ves" },
       { "y", "ies" }, { "ies", "ies" }, { "ay", "ays" }, { "ey", "eys" },

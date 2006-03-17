@@ -25,8 +25,10 @@ public class URLUtil {
   /** Convert list of URL-form name/value pairs into a Map representation */
   public static Map paramsToMap(String extraparams,
         Map target) {
-      Logger.log
-          .info("Action link requires extra parameters from " + extraparams);
+      if (Logger.log.isDebugEnabled()) {
+        Logger.log
+          .debug("Action link requires extra parameters from " + extraparams);
+      }
       StringTokenizer st = new StringTokenizer(extraparams, "&");
       while (st.hasMoreTokens()) {
         String token = st.nextToken();
@@ -35,8 +37,10 @@ public class URLUtil {
         String value = token.substring(eqpos + 1);
         target.put(key, value);
   //      target.add(new UIParameter(key, value));
-        Logger.log.info("Added extra parameter key " + key + " value " + value
+        if (Logger.log.isDebugEnabled()) {
+          Logger.log.debug("Added extra parameter key " + key + " value " + value
             + " to command link");
+        }
       }
       return target;
     }
@@ -54,7 +58,22 @@ public class URLUtil {
       throw UniversalRuntimeException.accumulate(e, "Error decoding URL " + 
           url + " using UTF-8");
     }
-    
+  }
+  
+  /** URL-encodes only the whitespace characters in a URL (necessary for some
+   * faulty incomplete encodings).
+   */
+  
+  public static String deSpace(String URL) {   
+    CharWrap togo = new CharWrap(URL.length());
+    for (int i = 0; i < URL.length(); ++ i) {
+      char c = URL.charAt(i);
+      if (Character.isWhitespace(c)) {
+        URLEncoder.appendURLHex(c, togo);
+      }
+      else togo.append(c);
+    }
+    return togo.toString();
   }
   
 }

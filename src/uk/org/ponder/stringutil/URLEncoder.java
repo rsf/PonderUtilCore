@@ -48,4 +48,28 @@ public abstract class URLEncoder {
       throw UniversalRuntimeException.accumulate(e, "Error encoding URL " + s);
     }
   }
+
+  static final int caseDiff = ('a' - 'A');
+
+  /**
+   * Converts a single character (byte) into its upper-case URL hex
+   * representation %E0, say.
+   */
+
+  public static void appendURLHex(char c, CharWrap target) {
+    target.append('%');
+    char ch = Character.forDigit((c >> 4) & 0xF, 16);
+    // converting to use uppercase letter as part of
+    // the hex value if ch is a letter.
+    if (Character.isLetter(ch)) {
+      ch -= caseDiff;
+    }
+    target.append(ch);
+    ch = Character.forDigit(c & 0xF, 16);
+    if (Character.isLetter(ch)) {
+      ch -= caseDiff;
+    }
+    target.append(ch);
+  }
+
 }

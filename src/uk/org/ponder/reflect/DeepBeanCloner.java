@@ -58,12 +58,34 @@ public class DeepBeanCloner {
     return cloneBean(toclone, null);
   }
 
+  public boolean areEqual(Object left, Object right) {
+    if (left == null) return right == null;
+    if (left.getClass() != right.getClass()) return false;
+    Class objclass = left.getClass();
+    if (mappingcontext.saxleafparser.isLeafType(objclass) || Collection.class.isAssignableFrom(objclass)) {
+      return left.equals(right);
+    }
+    else {
+      MethodAnalyser ma = mappingcontext.getAnalyser(objclass);
+      for (int i = 0; i < ma.allgetters.length; ++i) {
+        SAXAccessMethod sam = ma.allgetters[i];
+        if (!sam.canGet() || !sam.canSet())
+          continue;
+        Object leftchild = sam.getChildObject(left);
+        Object rightchild = sam.getChildObject(right);
+        boolean equals = areEqual(leftchild, rightchild);
+        if (!equals) return false;
+      }
+    }
+    return true;
+  }
+  
   /**
    * Copies the source object onto the destination - must not be a leaf or
    * container object.
    */
-  public void copyTrunk(Object toclone, Object cloned, StringList exceptions) {
-    MethodAnalyser ma = mappingcontext.getAnalyser(toclone.getClass());
+  public void copyTrunk(Object source, Object target, StringList exceptions) {
+    MethodAnalyser ma = mappingcontext.getAnalyser(source.getClass());
     for (int i = 0; i < ma.allgetters.length; ++i) {
       SAXAccessMethod sam = ma.allgetters[i];
       if (!sam.canGet() || !sam.canSet())
@@ -72,18 +94,18 @@ public class DeepBeanCloner {
         continue;
       if (sam.isexactsetter) {
         Enumeration childenum = EnumerationConverter.getEnumeration(sam
-            .getChildObject(toclone));
+            .getChildObject(source));
         while (childenum.hasMoreElements()) {
           Object child = childenum.nextElement();
           Object clonechild = cloneBean(child, null);
-          sam.setChildObject(cloned, clonechild);
+          sam.setChildObject(target, clonechild);
         }
       }
       else {
-        Object child = sam.getChildObject(toclone);
+        Object child = sam.getChildObject(source);
         if (child != null) {
           Object clonechild = cloneBean(child, null);
-          sam.setChildObject(cloned, clonechild);
+          sam.setChildObject(target, clonechild);
         }
       }
     }
