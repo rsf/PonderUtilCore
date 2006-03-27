@@ -97,7 +97,7 @@ public class UniversalRuntimeException extends RuntimeException implements
     accumulate.append(extradetail);
     
     if (orig != null && orig.length() > 0) {
-      accumulate.append("\n").append(orig);
+      accumulate.append("\n--> ").append(orig);
     }
     return accumulate.toString();
   }
@@ -185,13 +185,13 @@ public class UniversalRuntimeException extends RuntimeException implements
   public String getStackHead() {
     CharWrap togo = new CharWrap();
     if (targetexception != null) {
-      togo.append("Target " + targetexception.getClass());
+      togo.append("Target exception of " + targetexception.getClass());
     }
     else if (category != null) {
-      togo.append(" Category " + category);
+      togo.append("Exception category " + category);
       
     }
-    togo.append("\n").append(getMessage());
+    togo.append("\nSuccessive lines until stack trace show causes progressing to exception site:").append(getMessage());
     return togo.toString();
   }
 
