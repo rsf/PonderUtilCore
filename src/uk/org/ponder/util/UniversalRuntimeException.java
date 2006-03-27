@@ -191,7 +191,7 @@ public class UniversalRuntimeException extends RuntimeException implements
       togo.append("Exception category " + category);
       
     }
-    togo.append("\nSuccessive lines until stack trace show causes progressing to exception site:").append(getMessage());
+    togo.append("\nSuccessive lines until stack trace show causes progressing to exception site:\n").append(getMessage());
     return togo.toString();
   }
 
