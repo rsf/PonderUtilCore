@@ -15,7 +15,7 @@ public class StringRIS implements ReadInputStream {
    */
   public char get() {
     if (pos == read.length()) {
-      return (char) -1;
+      return EOF;
     }
     else {
       return read.charAt(pos++);
@@ -31,5 +31,8 @@ public class StringRIS implements ReadInputStream {
   
   public boolean EOF() {
     return pos == read.length();
+  }
+  
+  public void close() {
   }
 }

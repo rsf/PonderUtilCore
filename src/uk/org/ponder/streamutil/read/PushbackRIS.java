@@ -37,5 +37,9 @@ public class PushbackRIS implements ReadInputStream {
   public boolean EOF() {
     return pushback.size == 0 && wrapped.EOF();
   }
+
+  public void close() {
+    wrapped.close();
+  }
   
 }

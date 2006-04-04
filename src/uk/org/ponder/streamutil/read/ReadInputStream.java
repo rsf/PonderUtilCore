@@ -5,7 +5,10 @@ package uk.org.ponder.streamutil.read;
 
 import java.io.IOException;
 
+/** A slimline, checked-exception-free INTERFACE replacing java.io.Reader */
+
 public interface ReadInputStream {
+  public static final char EOF = (char) - 1;
   /** Reads a single character from the stream and returns it. If the stream
    * has reached the end of file, return the value (char)-1.
    * @return The character that was read.
@@ -17,4 +20,6 @@ public interface ReadInputStream {
    * @return <code>true</code> if the stream has reached the end of file.
    */
   public boolean EOF();
+  /** A close method that will throw NO exception */
+  public void close();
 }
