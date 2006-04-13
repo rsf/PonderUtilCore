@@ -11,6 +11,7 @@ import uk.org.ponder.reflect.ReflectiveCache;
 import uk.org.ponder.stringutil.StringList;
 import uk.org.ponder.util.Denumeration;
 import uk.org.ponder.util.EnumerationConverter;
+import uk.org.ponder.util.Logger;
 
 /**
  * An "aggregating" object parser/renderer that is capable of dealing with
@@ -34,6 +35,7 @@ public class VectorCapableParser {
    * type, either String[] or StringList.
    */
   public static boolean isLOSType(Object o) {
+    Logger.log.info("SAC: " + ArrayUtil.stringArrayClass);
     return ArrayUtil.stringArrayClass.isAssignableFrom(o.getClass())
         || o instanceof StringList;
   }

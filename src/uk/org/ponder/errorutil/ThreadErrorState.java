@@ -5,6 +5,7 @@ package uk.org.ponder.errorutil;
 
 import uk.org.ponder.hashutil.EighteenIDGenerator;
 import uk.org.ponder.hashutil.IDGenerator;
+import uk.org.ponder.util.Logger;
 
 /**
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
@@ -18,6 +19,7 @@ public class ThreadErrorState {
   
   private static ThreadLocal errormap = new ThreadLocal() {
     public Object initialValue() {
+      Logger.log.warn("ThreadErrorState allocated for thread " + Thread.currentThread());
       return new ErrorStateEntry();
     }
   };

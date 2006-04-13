@@ -40,6 +40,7 @@ public class DARApplier implements BeanModelAlterer {
   private SAXalizerMappingContext mappingcontext;
   private VectorCapableParser vcp;
   private ReflectiveCache reflectivecache;
+  private boolean springmode;
 
   public void setSAXalXMLProvider(SAXalXMLProvider saxal) {
     xmlprovider = saxal;
@@ -59,6 +60,15 @@ public class DARApplier implements BeanModelAlterer {
     this.reflectivecache = reflectivecache;
   }
 
+  /** Will enable more aggressive type conversions as appropriate for 
+   * operating a Spring-style container specified in XML. In particular will
+   * convert String values into lists of Strings by splitting at commas,
+   * if they are applied to vector-valued beans.
+   */
+  public void setSpringMode(boolean springmode) {
+    this.springmode = springmode;
+  }
+  
   public Object getFlattenedValue(String fullpath, Object root,
       Class targetclass, BeanResolver resolver) {
     Object toconvert = getBeanValue(fullpath, root);
@@ -97,13 +107,7 @@ public class DARApplier implements BeanModelAlterer {
 
   // a convenience method to have the effect of a "set" ValueBinding,
   // constructs a mini-DAR just for setting. Errors will be accumulated
-  // into ThreadErrorState
-  // NB there are two calls in the workspace, both from PostHandler.applyValues.
-  // Should we really try to do away with the ThreadErrorState?
-  // Yes, we should! Since it has now become an invisible load-time issue.
-  // We are currently making lots of things lazy just so they don't
-  // precipitate an "early" getting of this error state that may be empty.
-  // Also people may have different error contexts for different targets.
+  // into the supplied error list.
   public void setBeanValue(String fullpath, Object root, Object value,
       TargettedMessageList messages) {
     DataAlterationRequest dar = new DataAlterationRequest(fullpath, value);
@@ -134,11 +138,21 @@ public class DARApplier implements BeanModelAlterer {
     Logger.log.debug("Applying DAR " + dar.type + " to path " + dar.path + ": "
         + dar.data);
     String totail = PathUtil.getToTailPath(dar.path);
-    // TODO: Pause at any DARReceiver we discover in the model and instead
-    // queue the requests there.
+    // TODO: Allow DARReceiver to occur at earlier points in the path than
+    // the end, and lengthen their target paths accordingly.
     Object moveobj = BeanUtil.navigate(rootobj, totail, mappingcontext);
-    Object convert = dar.data;
     String tail = PathUtil.getTailPath(dar.path);
+    
+    if (moveobj instanceof DARReceiver) {
+      String oldpath = dar.path;
+      dar.path = tail;
+      boolean accepted = ((DARReceiver)moveobj).addDataAlterationRequest(dar);
+      if (accepted) return;
+      else dar.path = oldpath;
+    }
+    
+    Object convert = dar.data;
+  
     PropertyAccessor pa = MethodAnalyser.getPropertyAccessor(moveobj,
         mappingcontext);
     Class leaftype = pa.getPropertyType(tail);
@@ -152,8 +166,9 @@ public class DARApplier implements BeanModelAlterer {
 
         SAXAccessMethod sam = mappingcontext.getAnalyser(moveobj.getClass())
             .getAccessMethod(tail);
-        if (convert instanceof String) {
+        if (convert instanceof String && springmode) {
           // deference to Spring "auto-convert from comma-separated list"
+          // NB this is currently disused, RSACBeanLocator does not use DARApplier yet.
           convert = StringList.fromString((String) convert);
         }
         if (lastobj == null) {

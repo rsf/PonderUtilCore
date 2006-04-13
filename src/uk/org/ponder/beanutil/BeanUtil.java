@@ -126,7 +126,7 @@ public class BeanUtil {
   public static String stripELNoisy(String el) {
     String stripped = stripEL(el);
     if (stripped == null) {
-      throw new IllegalArgumentException("EL expression " + el + " is not bracketed with #{..}");
+      throw new IllegalArgumentException("EL expression \"" + el + "\" is not bracketed with #{..}");
     }
     return stripped;
   }

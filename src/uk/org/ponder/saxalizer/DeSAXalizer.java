@@ -188,6 +188,7 @@ public class DeSAXalizer {
       }
       boolean isleaf = mappingcontext.saxleafparser
           .isLeafType(child.getClass());
+      // TODO: It may be a leaf as a result of a parent class (ViewParameters)
       top = isleaf ? null
           : new SerialContext(child, mappingcontext);
       // leaf is NOT DeSAXalizable OR we found some valid text

@@ -8,8 +8,10 @@ package uk.org.ponder.mapping;
  * 
  */
 public interface DARReceiver {
-  // Users of DARApplier now take responsibility for navigating the
-  // TargettedMessageList themselves.
-  //public void setRootPath(String rootpath);
-  public void addDataAlterationRequest(DataAlterationRequest toadd);
+  /** Adds the supplied AlterationRequest into the target's collection
+   * (probably for later replay).
+   * @return <code>false</code> if the DAR was NOT added, but should be
+   * applied directly to the target.
+   */
+  public boolean addDataAlterationRequest(DataAlterationRequest toadd);
 }

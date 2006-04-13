@@ -15,7 +15,7 @@ public class ArrayUtil {
   public static Class doubleArrayClass = doubleexemplar.getClass();
   private static int[] intexemplar = new int[0];
   public static Class intArrayClass = intexemplar.getClass();
-  public static Class stringArrayClass = ClassGetter.forName("[LString;");
+  public static Class stringArrayClass = ClassGetter.forName("[Ljava.lang.String;");
   
   /** Concatenates two arrays of the same reference type to return a larger array.
    * @param array1 The first array to be concatenated.
