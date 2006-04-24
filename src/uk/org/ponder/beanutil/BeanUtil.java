@@ -46,17 +46,6 @@ public class BeanUtil {
     return path.split("\\.");
   }
   
-  public static String getContainingPath(String path) {
-    int dotpos = path.lastIndexOf(".");
-    return dotpos == -1 ? null
-        : path.substring(0, dotpos);
-  }
-  
-  public static String getTail(String path) {
-    int dotpos = path.lastIndexOf(".");
-    return dotpos == -1 ? path : path.substring(dotpos + 1);
-  }
-  
   public static String composeEL(String head, String tail) {
     return head + '.' + tail;
   }
