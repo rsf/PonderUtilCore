@@ -12,11 +12,11 @@ public class TargettedMessage {
   public String messagecode;
   public Object[] args = null;
   public String targetid = TARGET_NONE;
-  public Class exceptionclass;
+  public Exception exception;
 
   public static final int SEVERITY_INFO = 0;
   public static final int SEVERITY_ERROR = 1;
-  public int severity = 1;
+  public int severity = SEVERITY_ERROR;
 
   public TargettedMessage(String messagecode, String targetid) {
     this.messagecode = messagecode;
@@ -33,15 +33,15 @@ public class TargettedMessage {
     this.messagecode = messagecode;
   }
 
-  public TargettedMessage(String messagecode, Class exceptionclass) {
+  public TargettedMessage(String messagecode, Exception exception) {
     this.messagecode = messagecode;
-    this.exceptionclass = exceptionclass;
+    this.exception = exception;
   }
 
-  public TargettedMessage(String messagecode, Class exceptionclass,
+  public TargettedMessage(String messagecode, Exception exception,
       String targetid) {
     this.messagecode = messagecode;
-    this.exceptionclass = exceptionclass;
+    this.exception = exception;
     this.targetid = targetid == null? TARGET_NONE : targetid;
   }
 

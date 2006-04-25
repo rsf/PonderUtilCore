@@ -157,6 +157,9 @@ public class SAXAccessMethod implements AccessMethod {
           accessclazz = clazz;
         }
       } // end if there is a set method
+      if (clazz == null) { // triggers if there is get method, no set method and no m info
+        clazz = accessclazz;
+      }
       if (m.accesstype.equals(SAXAccessMethodSpec.ACCESS_IGNORE)) {
         isdevnull = true;
       }

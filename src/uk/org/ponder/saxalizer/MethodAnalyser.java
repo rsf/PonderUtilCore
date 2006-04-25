@@ -84,6 +84,10 @@ public class MethodAnalyser implements PropertyAccessor {
           .accumulate(new PropertyException(), "Property " + name
               + " of object " + parent.getClass() + " not found");
     }
+    else if (!accessmethod.canSet()) {
+      throw UniversalRuntimeException.accumulate(new PropertyException(), "Property " + name
+              + " of object " + parent.getClass() + " is not writeable");
+    }
     accessmethod.setChildObject(parent, value);
   }
 
