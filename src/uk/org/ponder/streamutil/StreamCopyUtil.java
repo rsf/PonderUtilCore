@@ -143,7 +143,7 @@ public class StreamCopyUtil {
    *              if an I/O error occurs.
    */
 
-  public static final String readerToString(Reader source) throws IOException {
+  public static final String readerToString(Reader source) {
     char[] buffer = new char[CharWrap.INITIAL_SIZE];
     CharWrap build = new CharWrap();
     try {
@@ -155,8 +155,11 @@ public class StreamCopyUtil {
           break;
       }
     }
+    catch (Exception e) {
+      throw UniversalRuntimeException.accumulate(e, "Error converting Reader to String");
+    }
     finally {
-      source.close();
+      StreamCloseUtil.closeReader(source);
     }
     return build.toString();
   }
