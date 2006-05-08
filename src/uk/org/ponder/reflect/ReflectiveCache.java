@@ -21,6 +21,8 @@ import uk.org.ponder.util.UniversalRuntimeException;
  * 
  * This class is full of static state and methods, in the belief that all 
  * reflective objects will have the same lifetime as their parent ClassLoader.
+ * This militates that <b>PonderUtilCore MUST NEVER be placed at a shared
+ * ClassLoader level </b>
  * 
  * This implementation will probably shortly be replaced by a FastClass variant.
  * 

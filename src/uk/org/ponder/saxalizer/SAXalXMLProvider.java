@@ -34,19 +34,17 @@ public class SAXalXMLProvider implements MappableXMLProvider {
       return togo;
     }
   };
-
-  private ThreadLocal desaxalizergetter = new ThreadLocal() {
-    public Object initialValue() {
-      return new DeSAXalizer(mappingcontext);
-    }
-  };
+  
+  private DeSAXalizer getDeSAXalizer() {
+    return new DeSAXalizer(mappingcontext); 
+  }
 
   public SAXalXMLProvider(SAXalizerMappingContext mappingcontext) {
     this.mappingcontext = mappingcontext;
   }
 
   public void writeXML(Object towrite, OutputStream os) {
-    DeSAXalizer desaxalizer = (DeSAXalizer) desaxalizergetter.get();
+    DeSAXalizer desaxalizer = getDeSAXalizer();
     String resourcename = mappingcontext.classnamemanager.getClassName(towrite.getClass());
     if (resourcename == null) {
       throw new UniversalRuntimeException("Object of unknown type " 
@@ -87,7 +85,7 @@ public class SAXalXMLProvider implements MappableXMLProvider {
   }
 
   public String toString(Object towrite) {
-    DeSAXalizer desaxalizer = (DeSAXalizer) desaxalizergetter.get();
+    DeSAXalizer desaxalizer = getDeSAXalizer();
     String resourcename = mappingcontext.classnamemanager.getClassName(towrite.getClass());
     if (resourcename == null) {
       throw new UniversalRuntimeException("Object of unknown type " 

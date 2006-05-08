@@ -8,10 +8,10 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
 
+import uk.org.ponder.arrayutil.ArrayUtil;
 import uk.org.ponder.saxalizer.MethodAnalyser;
 import uk.org.ponder.saxalizer.SAXAccessMethod;
 import uk.org.ponder.saxalizer.SAXalizerMappingContext;
-import uk.org.ponder.stringutil.StringList;
 import uk.org.ponder.util.EnumerationConverter;
 
 /**
@@ -59,10 +59,13 @@ public class DeepBeanCloner {
   }
 
   public boolean areEqual(Object left, Object right) {
-    if (left == null) return right == null;
-    if (left.getClass() != right.getClass()) return false;
+    if (left == null)
+      return right == null;
+    if (left.getClass() != right.getClass())
+      return false;
     Class objclass = left.getClass();
-    if (mappingcontext.saxleafparser.isLeafType(objclass) || Collection.class.isAssignableFrom(objclass)) {
+    if (mappingcontext.saxleafparser.isLeafType(objclass)
+        || Collection.class.isAssignableFrom(objclass)) {
       return left.equals(right);
     }
     else {
@@ -74,23 +77,24 @@ public class DeepBeanCloner {
         Object leftchild = sam.getChildObject(left);
         Object rightchild = sam.getChildObject(right);
         boolean equals = areEqual(leftchild, rightchild);
-        if (!equals) return false;
+        if (!equals)
+          return false;
       }
     }
     return true;
   }
-  
+
   /**
    * Copies the source object onto the destination - must not be a leaf or
    * container object.
    */
-  public void copyTrunk(Object source, Object target, StringList exceptions) {
+  public void copyTrunk(Object source, Object target, String[] exceptions) {
     MethodAnalyser ma = mappingcontext.getAnalyser(source.getClass());
     for (int i = 0; i < ma.allgetters.length; ++i) {
       SAXAccessMethod sam = ma.allgetters[i];
       if (!sam.canGet() || !sam.canSet())
         continue;
-      if (exceptions != null && exceptions.contains(sam.tagname))
+      if (exceptions != null && ArrayUtil.contains(exceptions, sam.tagname))
         continue;
       if (sam.isexactsetter) {
         Enumeration childenum = EnumerationConverter.getEnumeration(sam
@@ -114,12 +118,10 @@ public class DeepBeanCloner {
   /**
    * Produce a deep clone of the supplied object
    * 
-   * @param toclone
-   *          The object to be cloned
-   * @param A
-   *          list of property names to be excluded from the top-level bean.
+   * @param toclone The object to be cloned
+   * @param A list of property names to be excluded from the top-level bean.
    */
-  public Object cloneBean(Object toclone, StringList exceptions) {
+  public Object cloneBean(Object toclone, String[] exceptions) {
     if (toclone == null)
       return null;
     Class objclass = toclone.getClass();
