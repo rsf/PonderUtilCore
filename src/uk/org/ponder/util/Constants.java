@@ -7,6 +7,6 @@ public interface Constants {
    * where an identifiable non-null key is required. 
    * Never try to store or transmit this character outside the JVM!
    */
-  public static final String UNUSED_STRING = "\ufdd0";
+  //public static final String UNUSED_STRING = "\ ufdd0";
   public static final double root2 = Math.sqrt(2);
   }
