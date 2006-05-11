@@ -12,6 +12,13 @@ import uk.org.ponder.util.Logger;
 import uk.org.ponder.util.UniversalRuntimeException;
 
 public class URLUtil {
+  
+  public static boolean isAbsolute(String url) {
+    int slashpos = url.indexOf('/');
+    int protpos = url.indexOf("://");
+    if (slashpos == -1 || protpos == -1) return false;
+    return slashpos == protpos + 1;
+  }
   /** Append the supplied name/value pair to the end of the supplied URL, 
    * after URLencoding name and value.
    */
