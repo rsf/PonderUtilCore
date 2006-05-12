@@ -25,7 +25,6 @@ public class XMLWriter {
    * as a multiplier for this factor.
    */
   public static final int INDENT_WIDTH = 2;
-  // Sun are evil cretins who do not call UTF-8 by its proper name
   /**
    * The default encoding to be used when writing byte streams - currently the
    * UTF-8 encoding
