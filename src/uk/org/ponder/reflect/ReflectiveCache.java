@@ -53,6 +53,7 @@ public abstract class ReflectiveCache {
 
     }
     if (mapclass == null) {
+      System.err.println("Fatal: Could not instantiate concurrent map class from either oswego or JDK 1.5 provider");
       Logger.log
           .fatal("Could not instantiate concurrent map class from either oswego or JDK 1.5 provider");
     }
