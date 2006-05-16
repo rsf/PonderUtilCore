@@ -38,7 +38,17 @@ public interface BeanModelAlterer {
   /** Converts the object currently present at the supplied bean path into the
    * specified target class, which must be one of the classes handled by the
    * UIType framework.
+   * @param fullpath The full EL path from the root object from which
+   * the flattened value is to be fetched.
+   * @param root The root object
+   * @param targetclazz A class of one of the UIType types, or else <code>null</code>.
+   * If <code>null</code>, the type of the returned object will be either String[] or
+   * String, depending on whether the path holds an enumerable (vectorial) value or not.
+   * @param resolver A resolver which will be applied to each scalar value to 
+   * convert it to String if necessary. If <code>null</code>, default leaf conversion
+   * will be applied.
    */
+
   public Object getFlattenedValue(String fullpath, Object root, Class targetclazz,
       BeanResolver resolver);
 }

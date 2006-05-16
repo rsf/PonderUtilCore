@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Map;
 
+import uk.org.ponder.arrayutil.ArrayUtil;
 import uk.org.ponder.beanutil.BeanModelAlterer;
 import uk.org.ponder.beanutil.BeanResolver;
 import uk.org.ponder.beanutil.BeanUtil;
@@ -75,7 +76,12 @@ public class DARApplier implements BeanModelAlterer {
     Object toconvert = getBeanValue(fullpath, root);
     if (toconvert == null)
       return null;
+    if (targetclass == null) {
+      targetclass = EnumerationConverter.isEnumerable(toconvert.getClass())?
+          ArrayUtil.stringArrayClass : String.class;
+    }
     if (targetclass == String.class || targetclass == Boolean.class) {
+      // TODO: We need proper vector support
       if (toconvert instanceof String[]) {
         toconvert = ((String[]) toconvert)[0];
       }

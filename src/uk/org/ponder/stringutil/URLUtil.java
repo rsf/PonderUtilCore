@@ -30,6 +30,7 @@ public class URLUtil {
   }
   
   /** Convert list of URL-form name/value pairs into a Map representation */
+  // TODO: backport vector values code
   public static Map paramsToMap(String extraparams,
         Map target) {
       if (Logger.log.isDebugEnabled()) {
@@ -43,11 +44,6 @@ public class URLUtil {
         String key = token.substring(0, eqpos);
         String value = token.substring(eqpos + 1);
         target.put(key, value);
-  //      target.add(new UIParameter(key, value));
-        if (Logger.log.isDebugEnabled()) {
-          Logger.log.debug("Added extra parameter key " + key + " value " + value
-            + " to command link");
-        }
       }
       return target;
     }
