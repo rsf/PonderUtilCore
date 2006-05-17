@@ -13,7 +13,7 @@ import java.util.ListIterator;
  * pleasant to have a typesafe list. The primary value of this wrapper will
  * be realised in dynamic environments like Hibernate, which will want directed
  * to perform a "wrap-under" proxy of the contained List, while letting us
- * retain our concrete exterior with type information 
+ * retain our concrete exterior with type information. 
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
  *
  */
