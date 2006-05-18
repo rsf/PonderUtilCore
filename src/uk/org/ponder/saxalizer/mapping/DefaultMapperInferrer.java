@@ -40,6 +40,10 @@ public class DefaultMapperInferrer implements SAXalizerMapperInferrer {
   }
 
   public Class getContaineeType(Class collectiontype) {
+    if (collectiontype.isArray()) {
+      Class component = collectiontype.getComponentType();
+      if (!component.isPrimitive()) return component;
+    }
     return (Class)collectionmap.get(collectiontype);
   }
   

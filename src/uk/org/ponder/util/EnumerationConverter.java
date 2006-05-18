@@ -109,6 +109,7 @@ public class EnumerationConverter {
         public void add(Object o) {
           ((Collection) collo).add(o);
         }
+
         public boolean remove(Object o) {
           return ((Collection) collo).remove(o);
         }
@@ -124,26 +125,32 @@ public class EnumerationConverter {
             return buildup.toArray((Object[]) ReflectUtils
                 .instantiateContainer(coll.getClass(), buildup.size(), cache));
           }
+
           public void add(Object o) {
             buildup.add(o);
           }
+
           public boolean remove(Object o) {
             return buildup.remove(o);
           }
 
         };
       }
-      return new Denumeration() {
-        int index = 0;
-        public void add(Object o) {
-          coll[index++] = o;
-        }
-        public boolean remove(Object o) {
-          throw new UniversalRuntimeException(
-              "Removal not supported from Array denumerable");
-        }
+      else {
+        return new Denumeration() {
+          int index = 0;
 
-      };
+          public void add(Object o) {
+            coll[index++] = o;
+          }
+
+          public boolean remove(Object o) {
+            throw new UniversalRuntimeException(
+                "Removal not supported from Array denumerable");
+          }
+
+        };
+      }
     }
     return null;
   }

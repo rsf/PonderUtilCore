@@ -92,13 +92,11 @@ public class DARApplier implements BeanModelAlterer {
           : mappingcontext.saxleafparser.parse(Boolean.class, rendered);
     }
     else {
-      // It MUST be String[], AND the value must be a container.
-      // this had BETTER be a Container otherwise we will fail to update the
-      // value
-      // in setBeanValue below.
-      Collection collection = (Collection) toconvert;
-      String[] target = new String[collection.size()];
-      vcp.render(collection, target, resolver, reflectivecache);
+      // this is inverse to the "vector" setBeanValue branch below
+      Object target = ReflectUtils.instantiateContainer(ArrayUtil.stringArrayClass,
+          EnumerationConverter.getEnumerableSize(toconvert),
+          reflectivecache);
+      vcp.render(toconvert, target, resolver, reflectivecache);
       return target;
     }
   }
@@ -187,7 +185,7 @@ public class DARApplier implements BeanModelAlterer {
             convert = StringList.fromString((String) convert);
           }
           if (lastobj == null) {
-            lastobj = ReflectUtils.instantiateContainer(leaftype,
+            lastobj = ReflectUtils.instantiateContainer(sam.getDeclaredType(),
                 EnumerationConverter.getEnumerableSize(convert),
                 reflectivecache);
             pa.setProperty(moveobj, tail, lastobj);
@@ -196,7 +194,7 @@ public class DARApplier implements BeanModelAlterer {
             if (lastobj instanceof Collection) {
               ((Collection) lastobj).clear();
             }
-            vcp.parse(convert, lastobj, sam.getAccessedType(), reflectivecache);
+            vcp.parse(convert, lastobj, leaftype, reflectivecache);
           }
           else { // must be a single item, or else a collection
             Denumeration den = EnumerationConverter.getDenumeration(lastobj,
@@ -271,8 +269,10 @@ public class DARApplier implements BeanModelAlterer {
       }
     }
     catch (Exception e) {
-      TargettedMessage message = new TargettedMessage(e.getMessage(), e, dar.path);
-      messages.addMessage(message);
+      if (messages != null) {
+        TargettedMessage message = new TargettedMessage(e.getMessage(), e, dar.path);
+        messages.addMessage(message);
+      }
       Logger.log.warn("Error applying value " + dar.data + " to path "
           + dar.path, e);
     }
