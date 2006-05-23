@@ -1,6 +1,6 @@
 package uk.org.ponder.stringutil;
 
-/** This class encodes supplied byte data as characters in the Base64 system.
+/** This class encodes supplied byte data as characters in a modified Base64 system.
  * It accepts data as byte arrays and native types, which are written direct
  * to a supplied CharWrap as plain ASCII characters.
  */
