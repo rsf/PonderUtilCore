@@ -53,9 +53,7 @@ public class LexUtil {
       sb.append(c);
       c = pbr.get();
     }
-    if (!pbr.EOF()) {
-      pbr.unread(c);
-    }
+    pbr.unread(c);
     int togo = 0;
     try {
       togo = Integer.parseInt(sb.toString());

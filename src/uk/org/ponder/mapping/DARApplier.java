@@ -184,9 +184,11 @@ public class DARApplier implements BeanModelAlterer {
             // DARApplier yet.
             convert = StringList.fromString((String) convert);
           }
-          if (lastobj == null) {
+          int incomingsize = EnumerationConverter.getEnumerableSize(convert); 
+          if (lastobj == null || lastobj.getClass().isArray() && 
+              EnumerationConverter.getEnumerableSize(lastobj) != incomingsize) {
             lastobj = ReflectUtils.instantiateContainer(sam.getDeclaredType(),
-                EnumerationConverter.getEnumerableSize(convert),
+                incomingsize,
                 reflectivecache);
             pa.setProperty(moveobj, tail, lastobj);
           }
@@ -194,12 +196,15 @@ public class DARApplier implements BeanModelAlterer {
             if (lastobj instanceof Collection) {
               ((Collection) lastobj).clear();
             }
+            // TODO: for JDK collections, "leaftype" will be equal to the
+            // collection type unless we have got type info from elsewhere.
+            // for now, use arrays.
             vcp.parse(convert, lastobj, leaftype, reflectivecache);
           }
           else { // must be a single item, or else a collection
             Denumeration den = EnumerationConverter.getDenumeration(lastobj,
                 reflectivecache);
-
+            // TODO: use CompletableDenumeration here to support extensible arrays.
             if (EnumerationConverter.isEnumerable(convert.getClass())) {
               for (Enumeration enumm = EnumerationConverter
                   .getEnumeration(convert); enumm.hasMoreElements();) {

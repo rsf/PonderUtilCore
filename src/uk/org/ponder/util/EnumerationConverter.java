@@ -137,6 +137,7 @@ public class EnumerationConverter {
         };
       }
       else {
+        // TODO: use CompletableDenumeration here to allow "extensible" arrays.
         return new Denumeration() {
           int index = 0;
 

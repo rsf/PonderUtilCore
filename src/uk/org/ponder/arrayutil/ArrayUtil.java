@@ -96,17 +96,21 @@ public class ArrayUtil {
 
   /** Appends a single object to the end of the supplied array, returning an array
    * one element longer than the supplied array.
-   * @param array1 The array to which the element is to be appended.
+   * @param array1 The array to which the element is to be appended, or <code>null</code>
+   * if no array yet exists.
    * @param toappend The object to be appended to the array.
-   * @return A new array one element longer thean the supplied array, with the supplied
+   * @return A new array one element longer than the supplied array, with the supplied
    * object copied into the final place.
    */
 
   public static final Object[] append(Object[] array1, Object toappend) {
-    Class component1 = array1.getClass().getComponentType();
-    Object[] togo = (Object[])Array.newInstance(component1, array1.length + 1);
-    System.arraycopy(array1, 0, togo, 0, array1.length);
-    togo[array1.length] = toappend;
+    Class component1 = array1 == null? array1.getClass().getComponentType(): toappend.getClass();
+    int length = array1 == null? 0 : array1.length;
+    Object[] togo = (Object[])Array.newInstance(component1, length + 1);
+    if (length > 0) {
+      System.arraycopy(array1, 0, togo, 0, array1.length);
+    }
+    togo[length] = toappend;
     return togo;
     }
 
@@ -167,10 +171,25 @@ public class ArrayUtil {
    * index shuffled back one place.
    */
 
-  public static final void removeElementAt(Object[] array, int index) {
+  public static final void removeElementAtShift(Object[] array, int index) {
     System.arraycopy(array, index + 1, array, index, array.length - index - 1);
     }
 
+  
+  public static final Object[] removeElementAt(Object[] array, int index) {
+    Class component1 = array.getClass().getComponentType();
+    Object[] togo = (Object[])Array.newInstance(component1, array.length - 1);
+    
+    for (int i = 0; i < index; ++ i) {
+      togo[i] = array[i];
+    }
+    for (int i = index + 1; i < array.length; ++ i) {
+      togo[i - 1] = array[i];
+    }
+    
+    return togo;
+  }
+  
   public static int lexicalCompare(Comparable[] array1, int length1, Comparable[] array2, int length2) {
     int i = 0;
     while (true) {
