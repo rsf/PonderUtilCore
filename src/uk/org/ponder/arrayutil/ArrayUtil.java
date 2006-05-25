@@ -104,7 +104,7 @@ public class ArrayUtil {
    */
 
   public static final Object[] append(Object[] array1, Object toappend) {
-    Class component1 = array1 == null? array1.getClass().getComponentType(): toappend.getClass();
+    Class component1 = array1 == null? toappend.getClass() : array1.getClass().getComponentType();
     int length = array1 == null? 0 : array1.length;
     Object[] togo = (Object[])Array.newInstance(component1, length + 1);
     if (length > 0) {

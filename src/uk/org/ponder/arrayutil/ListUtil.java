@@ -29,6 +29,15 @@ public class ListUtil {
       }
     };
   } 
+  
+  public static void append(List list, Object[] toappend) {
+    if (toappend != null) {
+      for (int i = 0; i < toappend.length; ++ i) {
+        list.add(toappend[i]);
+      }
+    }
+  }
+  
   public static void setSafe(List list, int index, Object toset) {
     if (index >= list.size()) {
       expandSize(list, index + 1);

@@ -139,29 +139,31 @@ public class DARApplier implements BeanModelAlterer {
           + method + " in bean at path " + totail);
     }
   }
-
+  
   private void applyAlteration(Object rootobj, DataAlterationRequest dar,
       TargettedMessageList messages) {
     Logger.log.debug("Applying DAR " + dar.type + " to path " + dar.path + ": "
         + dar.data);
+    String oldpath = dar.path;
     try {
-      String totail = PathUtil.getToTailPath(dar.path);
-      // TODO: Allow DARReceiver to occur at earlier points in the path than
-      // the end, and lengthen their target paths accordingly.
-      Object moveobj = BeanUtil.navigate(rootobj, totail, mappingcontext);
-      String tail = PathUtil.getTailPath(dar.path);
-
-      if (moveobj instanceof DARReceiver) {
-        String oldpath = dar.path;
-        dar.path = tail;
-        boolean accepted = ((DARReceiver) moveobj)
-            .addDataAlterationRequest(dar);
-        if (accepted)
-          return;
-        else
-          dar.path = oldpath;
+      Object moveobj = rootobj;
+      String tail = null;
+      
+      while (true) {
+        String headpath = PathUtil.getHeadPath(dar.path);
+        if (headpath.equals(dar.path)) {
+          tail = headpath;
+          break;
+        }
+        moveobj = BeanUtil.navigate(moveobj, headpath, mappingcontext);
+        dar.path = PathUtil.getFromHeadPath(dar.path);
+        if (moveobj instanceof DARReceiver) {
+          boolean accepted = ((DARReceiver) moveobj)
+              .addDataAlterationRequest(dar);
+          if (accepted) return;
+        }
       }
-
+      dar.path = oldpath;
       Object convert = dar.data;
 
       PropertyAccessor pa = MethodAnalyser.getPropertyAccessor(moveobj,
@@ -275,7 +277,7 @@ public class DARApplier implements BeanModelAlterer {
     }
     catch (Exception e) {
       if (messages != null) {
-        TargettedMessage message = new TargettedMessage(e.getMessage(), e, dar.path);
+        TargettedMessage message = new TargettedMessage(e.getMessage(), e, oldpath);
         messages.addMessage(message);
       }
       Logger.log.warn("Error applying value " + dar.data + " to path "
