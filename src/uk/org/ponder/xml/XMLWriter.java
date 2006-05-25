@@ -189,11 +189,11 @@ public class XMLWriter {
   // are likely to contain more than one. This could no doubt be tuned
   // even further but there is only a maximum of 5% slack left in typical
   // page rendering -
-  // original timing:             690µs
-  // timing with strategy:        680µs
-  // timing with strategy - apos: 658µs
-  // timing with unencoded write: 650µs
-  // timing with write as no-op:  630µs
+  // original timing:             690Âµs
+  // timing with strategy:        680Âµs
+  // timing with strategy - apos: 658Âµs
+  // timing with unencoded write: 650Âµs
+  // timing with write as no-op:  630Âµs
   public final void write(char[] towrite, int start, int length) {
     int limit = start + length;
     // String ent = null;
