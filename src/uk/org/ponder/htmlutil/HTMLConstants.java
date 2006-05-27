@@ -10,4 +10,5 @@ public class HTMLConstants {
     {"src", "<img ", "<frame ", "<script "}
   };
 
+  public static String[] ubiquitousURL = {"background"};
 }

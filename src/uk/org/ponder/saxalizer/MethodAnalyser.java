@@ -153,9 +153,14 @@ public class MethodAnalyser implements PropertyAccessor {
       SAXalizerMappingContext context) {
 
     SAXalizerMapperEntry entry = context.mapper.byClass(objclass);
-    MethodAnalyser togo = new MethodAnalyser(objclass, entry, context);
-
-    return togo;
+    try {
+      MethodAnalyser togo = new MethodAnalyser(objclass, entry, context);
+      return togo;
+    }
+    catch (Exception e) {
+      throw UniversalRuntimeException.accumulate(e, 
+          "Error constructing method analyser for " + objclass);
+    }
   }
 
   public static PropertyAccessor getPropertyAccessor(Object o,
@@ -197,8 +202,7 @@ public class MethodAnalyser implements PropertyAccessor {
           }
           if (setmethod == null) {
             throw new UniversalRuntimeException("Neither of specifications "
-                + previous + " and " + nextentry + " referring to property "
-                + xmlform + " defines a set method");
+                + previous + " and " + nextentry + " defines a set method");
           }
           // The "set" method will in general have a more precise argument type.
           previous.clazz = setmethod.clazz;
