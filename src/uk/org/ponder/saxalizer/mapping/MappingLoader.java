@@ -9,7 +9,7 @@ import uk.org.ponder.saxalizer.SAXalizerMappingContext;
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
  * 
  */
-public interface MappingLoader {
+public interface MappingLoader extends ContainerTypeRegistrar {
   public void loadExtendedMappings(SAXalizerMappingContext context);
   public void loadStandardMappings(MappableXMLProvider xmlprovider);
 }

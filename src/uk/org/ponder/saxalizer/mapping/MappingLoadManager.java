@@ -17,6 +17,7 @@ import uk.org.ponder.util.UniversalRuntimeException;
 public class MappingLoadManager {
   private MappableXMLProvider xmlprovider;
   private SAXalizerMappingContext mappingcontext;
+  private ContainerTypeRegistry ctr;
 
   public void setMappableXMLProvider(MappableXMLProvider xmlprovider) {
     this.xmlprovider = xmlprovider;
@@ -29,12 +30,17 @@ public class MappingLoadManager {
   public SAXalizerMappingContext getSAXalizerMappingContext() {
     return mappingcontext;
   }
+  
+  public void setContainerTypeRegistry(ContainerTypeRegistry ctr) {
+    this.ctr = ctr;
+  }
 
   public void setMappingLoaders(List mappingloaders) {
     for (int i = 0; i < mappingloaders.size(); ++i) {
       MappingLoader mappingloader = (MappingLoader) mappingloaders.get(i);
       mappingloader.loadExtendedMappings(mappingcontext);
       mappingloader.loadStandardMappings(xmlprovider);
+      mappingloader.registerContainerTypes(ctr);
     }
   }
 

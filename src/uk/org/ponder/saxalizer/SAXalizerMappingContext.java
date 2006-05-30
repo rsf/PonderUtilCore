@@ -24,7 +24,7 @@ import uk.org.ponder.saxalizer.mapping.SAXalizerMapperInferrer;
  * 
  */
 public class SAXalizerMappingContext {
-  public SAXalizerMapperInferrer inferrer = new DefaultMapperInferrer();
+  public SAXalizerMapperInferrer inferrer;
   public StaticLeafParser saxleafparser;
   public ClassNameManager classnamemanager = ClassNameManager.instance();
   private ReflectiveCache reflectivecache;

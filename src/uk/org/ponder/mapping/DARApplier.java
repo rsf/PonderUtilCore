@@ -240,6 +240,11 @@ public class DARApplier implements BeanModelAlterer {
           boolean removed = false;
           // if we have data, we can try to remove it by value
           if (convert != null) {
+            // copied code from "ADD" branch. Regularise this conversion at some point.
+            if (convert instanceof String) {
+              String string = (String) convert;
+                convert = ConvertUtil.parse(string, xmlprovider, leaftype);
+            }
             Object lastobj = pa.getProperty(moveobj, tail);
             if (lastobj instanceof Collection) {
               removed = ((Collection) lastobj).remove(convert);
@@ -271,7 +276,7 @@ public class DARApplier implements BeanModelAlterer {
             messages.addMessage(message);
           }
           Logger.log.warn("Couldn't remove object " + convert + " from path "
-              + dar.path);
+              + dar.path, e);
         }
       }
     }

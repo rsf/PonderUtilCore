@@ -39,6 +39,10 @@ public class TransactionThreadMap {
   public void assertTransactionsConcluded() {
     Transaction trans = getTransaction();
     if (trans != null) {
+      try {
+        trans.rollback();
+      }
+      catch (Exception e) {}
       throw new UniversalRuntimeException("Outstanding transaction " + trans
           + " discovered on thread " + Thread.currentThread());
     }

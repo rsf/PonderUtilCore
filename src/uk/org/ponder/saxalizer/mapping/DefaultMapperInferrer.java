@@ -6,7 +6,6 @@ package uk.org.ponder.saxalizer.mapping;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.HashMap;
 import java.util.HashSet;
 
 import uk.org.ponder.saxalizer.DefaultInferrible;
@@ -28,31 +27,23 @@ public class DefaultMapperInferrer implements SAXalizerMapperInferrer {
     // We expect to be the head of the chain
   }
   private boolean depluralize = true;
+  private ContainerTypeRegistry containertyperegistry;
   public void setDepluralize(boolean depluralize) {
     this.depluralize = depluralize;
   }
-  private HashMap collectionmap = new HashMap();
+ 
+  public void setContainerTypeRegistry(ContainerTypeRegistry containertyperegistry) {
+    this.containertyperegistry = containertyperegistry;
+  }
+    
   private HashSet defaultiblemap = new HashSet();
   
-  public DefaultMapperInferrer() {
-    addCollectionType(StringList.class, String.class);
-    addCollectionType(StringSet.class, String.class);
-  }
 
-  public Class getContaineeType(Class collectiontype) {
-    if (collectiontype.isArray()) {
-      Class component = collectiontype.getComponentType();
-      if (!component.isPrimitive()) return component;
-    }
-    return (Class)collectionmap.get(collectiontype);
+  public void init() {
+    containertyperegistry.addCollectionType(StringList.class, String.class);
+    containertyperegistry.addCollectionType(StringSet.class, String.class);
   }
   
-  
-  public void addCollectionType(Class collectiontype, Class containeetype) {
-    collectionmap.put(collectiontype, containeetype);
-  }
-  
-
   public void setDefaultInferrible(Class clazz) {
     defaultiblemap.add(clazz);
   }
@@ -104,7 +95,7 @@ public class DefaultMapperInferrer implements SAXalizerMapperInferrer {
     // depluralise if it is a get method 
     spec.xmlname = depluralize? dePluralize(tagname, clazz) : tagname;
   
-    Class containeetype = getContaineeType(clazz);
+    Class containeetype = containertyperegistry.getContaineeType(clazz);
     if (containeetype != null) {
       spec.clazz = containeetype;
     }
