@@ -6,6 +6,8 @@ package uk.org.ponder.saxalizer;
 // TODO: This interface was experimentally extracted - we are probably
 // going to go with PropertyAccessor instead.
 public interface AccessMethod {
+  public String getPropertyName();
+  
   public Object getChildObject(Object parent);
 
   public void setChildObject(Object parent, Object newchild);

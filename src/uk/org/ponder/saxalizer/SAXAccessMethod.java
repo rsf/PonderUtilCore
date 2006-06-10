@@ -281,4 +281,8 @@ public class SAXAccessMethod implements AccessMethod {
   public Class getDeclaredType() {
     return accessclazz;
   }
+
+  public String getPropertyName() {
+    return tagname;
+  }
 }

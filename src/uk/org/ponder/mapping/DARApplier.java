@@ -22,8 +22,8 @@ import uk.org.ponder.errorutil.TargettedMessage;
 import uk.org.ponder.errorutil.TargettedMessageList;
 import uk.org.ponder.reflect.ReflectUtils;
 import uk.org.ponder.reflect.ReflectiveCache;
+import uk.org.ponder.saxalizer.AccessMethod;
 import uk.org.ponder.saxalizer.MethodAnalyser;
-import uk.org.ponder.saxalizer.SAXAccessMethod;
 import uk.org.ponder.saxalizer.SAXalXMLProvider;
 import uk.org.ponder.saxalizer.SAXalizerMappingContext;
 import uk.org.ponder.stringutil.StringList;
@@ -178,7 +178,7 @@ public class DARApplier implements BeanModelAlterer {
         if (pa.isMultiple(tail)) {
           Object lastobj = pa.getProperty(moveobj, tail);
 
-          SAXAccessMethod sam = mappingcontext.getAnalyser(moveobj.getClass())
+          AccessMethod sam = mappingcontext.getAnalyser(moveobj.getClass())
               .getAccessMethod(tail);
           if (convert instanceof String && springmode) {
             // deference to Spring "auto-convert from comma-separated list"

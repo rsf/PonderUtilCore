@@ -7,7 +7,6 @@ import java.util.Comparator;
 
 import uk.org.ponder.saxalizer.AccessMethod;
 import uk.org.ponder.saxalizer.MethodAnalyser;
-import uk.org.ponder.saxalizer.SAXAccessMethod;
 import uk.org.ponder.saxalizer.SAXalizerMappingContext;
 import uk.org.ponder.util.UniversalRuntimeException;
 
@@ -23,8 +22,8 @@ public class FieldComparator implements Comparator {
   public static AccessMethod findSingleGetter(Class objclass,
       SAXalizerMappingContext context, String tagname) {
     MethodAnalyser ma = context.getAnalyser(objclass);
-    SAXAccessMethod method = ma.getAccessMethod(tagname);
-    if (!method.canGet() || method.ismultiple) {
+    AccessMethod method = ma.getAccessMethod(tagname);
+    if (!method.canGet() || method.isDenumerable()) {
       throw new UniversalRuntimeException(
           "Located access method of unsuitable type for name " + tagname
               + " in " + objclass);

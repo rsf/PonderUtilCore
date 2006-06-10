@@ -10,6 +10,7 @@ import uk.org.ponder.beanutil.BeanLocator;
 import uk.org.ponder.beanutil.BeanLocatorPropertyAccessor;
 import uk.org.ponder.beanutil.MapPropertyAccessor;
 import uk.org.ponder.beanutil.PropertyAccessor;
+import uk.org.ponder.beanutil.WriteableBeanLocator;
 import uk.org.ponder.errorutil.PropertyException;
 import uk.org.ponder.reflect.ClassGetter;
 import uk.org.ponder.saxalizer.mapping.SAXalizerMapperEntry;
@@ -30,6 +31,7 @@ import uk.org.ponder.util.UniversalRuntimeException;
  * "attribute" methods &c.
  */
 public class MethodAnalyser implements PropertyAccessor {
+  public Class targetclass;
   /**
    * Each of the four types of SAXAccessMethods supported, being get and set
    * methods for subtags and attributes.
@@ -62,23 +64,26 @@ public class MethodAnalyser implements PropertyAccessor {
     }
   }
 
-  public SAXAccessMethod getAccessMethod(String tagname) {
+  public AccessMethod getAccessMethod(String tagname) {
     SAXAccessMethod method = tagmethods.get(tagname);
     if (method == null) {
       method = attrmethods.get(tagname);
+    }
+    if (method == null && targetclass.isAssignableFrom(WriteableBeanLocator.class)) {
+      return new WBLAccessMethod(tagname);
     }
     return method;
   }
 
   // ****** Begin implementation of PropertyAccessor interface
   public boolean canSet(String name) {
-    SAXAccessMethod accessmethod = getAccessMethod(name);
+    AccessMethod accessmethod = getAccessMethod(name);
     return accessmethod == null ? false
         : accessmethod.canSet();
   }
 
   public void setProperty(Object parent, String name, Object value) {
-    SAXAccessMethod accessmethod = getAccessMethod(name);
+   AccessMethod accessmethod = getAccessMethod(name);
     if (accessmethod == null) {
       throw UniversalRuntimeException
           .accumulate(new PropertyException(), "Property " + name
@@ -92,7 +97,7 @@ public class MethodAnalyser implements PropertyAccessor {
   }
 
   public void unlink(Object parent, String name) {
-    SAXAccessMethod accessmethod = getAccessMethod(name);
+    AccessMethod accessmethod = getAccessMethod(name);
     if (accessmethod == null) {
       throw UniversalRuntimeException
           .accumulate(new PropertyException(), "Property " + name
@@ -102,13 +107,13 @@ public class MethodAnalyser implements PropertyAccessor {
   }
 
   public boolean canGet(String name) {
-    SAXAccessMethod accessmethod = getAccessMethod(name);
+    AccessMethod accessmethod = getAccessMethod(name);
     return accessmethod == null ? false
         : accessmethod.canGet();
   }
 
   public Object getProperty(Object parent, String name) {
-    SAXAccessMethod accessmethod = getAccessMethod(name);
+    AccessMethod accessmethod = getAccessMethod(name);
     if (accessmethod == null) {
       throw UniversalRuntimeException
           .accumulate(new PropertyException(), "Property " + name
@@ -118,23 +123,21 @@ public class MethodAnalyser implements PropertyAccessor {
   }
 
   public Class getPropertyType(String name) {
-    SAXAccessMethod accessmethod = getAccessMethod(name);
+    AccessMethod accessmethod = getAccessMethod(name);
     if (accessmethod == null) {
       throw UniversalRuntimeException.accumulate(new PropertyException(),
-          "Property " + name + " not found"); // too much trouble to determine
-      // the class here
+          "Property " + name + " of " + targetclass + " not found ");
     }
-    return accessmethod.clazz;
+    return accessmethod.getAccessedType();
   }
 
   public boolean isMultiple(String name) {
-    SAXAccessMethod accessmethod = getAccessMethod(name);
+    AccessMethod accessmethod = getAccessMethod(name);
     if (accessmethod == null) {
       throw UniversalRuntimeException.accumulate(new PropertyException(),
-          "Property " + name + " not found"); // too much trouble to determine
-      // the class here
+          "Property " + name + " of " + targetclass + " not found"); 
     }
-    return accessmethod.ismultiple;
+    return accessmethod.isDenumerable();
   }
 
   // ****** End implementation of PropertyAccessor interface.
@@ -271,6 +274,7 @@ public class MethodAnalyser implements PropertyAccessor {
    */
   MethodAnalyser(Class objclass, SAXalizerMapperEntry entry,
       SAXalizerMappingContext context) {
+    targetclass = objclass;
     bodymethodspec = null;
     SAMSList tagMethods = new SAMSList();
     SAMSList attrMethods = new SAMSList();

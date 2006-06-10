@@ -3,8 +3,8 @@
  */
 package uk.org.ponder.reflect;
 
+import uk.org.ponder.saxalizer.AccessMethod;
 import uk.org.ponder.saxalizer.MethodAnalyser;
-import uk.org.ponder.saxalizer.SAXAccessMethod;
 import uk.org.ponder.saxalizer.SAXalizerMappingContext;
 
 public class BeanCloner {
@@ -45,9 +45,9 @@ public class BeanCloner {
     Object togo = reflectivecache.construct(beanclz);
     
     for (int i = 0; i < targetma.allgetters.length; ++i) {
-      SAXAccessMethod pot = targetma.allgetters[i];
+      AccessMethod pot = targetma.allgetters[i];
       if (!pot.canGet() || !pot.canSet()) continue;
-      String propname = pot.tagname;
+      String propname = pot.getPropertyName();
       if (respectma.getAccessMethod(propname) != null) {
         Object getit = pot.getChildObject(bean);
         pot.setChildObject(togo, getit);

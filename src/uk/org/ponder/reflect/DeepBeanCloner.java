@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import uk.org.ponder.arrayutil.ArrayUtil;
+import uk.org.ponder.saxalizer.AccessMethod;
 import uk.org.ponder.saxalizer.MethodAnalyser;
 import uk.org.ponder.saxalizer.SAXAccessMethod;
 import uk.org.ponder.saxalizer.SAXalizerMappingContext;
@@ -71,7 +72,7 @@ public class DeepBeanCloner {
     else {
       MethodAnalyser ma = mappingcontext.getAnalyser(objclass);
       for (int i = 0; i < ma.allgetters.length; ++i) {
-        SAXAccessMethod sam = ma.allgetters[i];
+        AccessMethod sam = ma.allgetters[i];
         if (!sam.canGet() || !sam.canSet())
           continue;
         Object leftchild = sam.getChildObject(left);

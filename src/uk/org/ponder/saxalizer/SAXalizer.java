@@ -571,7 +571,7 @@ public class SAXalizer extends HandlerBase {
         Object denval = beingparsed.denumerationmap.get(denkey);
         if (denval instanceof CompletableDenumeration) {
           Object completed = ((CompletableDenumeration)denval).complete();
-          SAXAccessMethod deliver = beingparsed.ma.getAccessMethod(denkey);
+          AccessMethod deliver = beingparsed.ma.getAccessMethod(denkey);
           deliver.setChildObject(beingparsed.object, completed);
         }
       }
