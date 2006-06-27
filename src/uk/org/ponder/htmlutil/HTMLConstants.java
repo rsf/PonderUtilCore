@@ -7,7 +7,7 @@ public class HTMLConstants {
 
   public static String[][] tagtoURL = {
     {"href", "<a ", "<link "},
-    {"src", "<img ", "<frame ", "<script "}
+    {"src", "<img ", "<frame ", "<script ", "<iframe "}
   };
 
   public static String[] ubiquitousURL = {"background"};
