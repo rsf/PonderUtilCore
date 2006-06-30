@@ -9,6 +9,7 @@ import uk.org.ponder.conversion.StaticLeafParser;
 import uk.org.ponder.reflect.JDKReflectiveCache;
 import uk.org.ponder.reflect.ReflectiveCache;
 import uk.org.ponder.saxalizer.mapping.ClassNameManager;
+import uk.org.ponder.saxalizer.mapping.ContainerTypeRegistry;
 import uk.org.ponder.saxalizer.mapping.DefaultMapperInferrer;
 import uk.org.ponder.saxalizer.mapping.SAXalizerMapper;
 import uk.org.ponder.saxalizer.mapping.SAXalizerMapperInferrer;
@@ -66,11 +67,16 @@ public class SAXalizerMappingContext {
   private void putAnalyser(Class clazz, MethodAnalyser analyser) {
     methodanalysers.put(clazz, analyser);
   }
+  
   private SAXalizerMappingContext(boolean systemwide) {
     saxleafparser = StaticLeafParser.instance();
     classnamemanager = ClassNameManager.instance();
+    DefaultMapperInferrer definferrer = new DefaultMapperInferrer();
+    definferrer.setContainerTypeRegistry(new ContainerTypeRegistry());
+    inferrer = definferrer;
     setReflectiveCache(new JDKReflectiveCache());
   }
+  
   public SAXalizerMappingContext() {
     saxleafparser = new StaticLeafParser();
     classnamemanager = new ClassNameManager();
