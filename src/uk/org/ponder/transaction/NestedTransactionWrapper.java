@@ -97,7 +97,9 @@ public class NestedTransactionWrapper implements Transaction {
 
   public void rollback() {
     if (nestingdepth == 0) {
-      throw new UniversalRuntimeException("Attempting to roll back transaction which has already been committed");
+      Logger.log.fatal(
+          "Fatal logic error: Attempting to roll back transaction which has already been committed");
+      return;
     }
     // Having rolled back the transaction once, it is removed from the map
     // so that a fresh transaction may be started. However, further people

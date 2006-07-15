@@ -35,7 +35,7 @@ public interface PropertyAccessor {
    * In this case, getProperty will return an object some enumerable or denumerable
    * object rather than one of this type.
    */
-  public Class getPropertyType(String name);
+  public Class getPropertyType(Object parent, String name);
 
-  public boolean isMultiple(String name);
+  public boolean isMultiple(Object parent, String name);
 }

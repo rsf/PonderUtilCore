@@ -13,7 +13,7 @@ package uk.org.ponder.streamutil.write;
  * There are a number of wrappers for various kinds of targets, for example 
  * standard Writers, PrintStreams, StringList and standard String. There is
  * also a POSMulticaster for forking output to multiple streams. Note that
- * at the pre-1.5 level, StringWriter not includes the sync overhead of the
+ * at the pre-1.5 level, StringWriter not only includes the sync overhead of the
  * Writer, but also the StringBuffer it constructs.
  * @author Bosmon
  */

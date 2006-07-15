@@ -11,4 +11,9 @@ public class StringUtil {
     }
     else return a.equals(b);
   }
+  
+  /** Returns a hashCode for a String, which may be null **/
+  public static final int hashCode(String a) {
+    return a == null? 0 : a.hashCode();
+  }
 }

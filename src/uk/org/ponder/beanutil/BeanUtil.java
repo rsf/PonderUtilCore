@@ -85,13 +85,11 @@ public class BeanUtil {
         moveobj = movearr[index];
       }
       else {
+        // This case deals with BeanLocators, Maps and "real" properties.
         PropertyAccessor pa = MethodAnalyser.getPropertyAccessor(moveobj,
             mappingcontext);
         moveobj = pa.getProperty(moveobj, components[comp]);
       }
-      // AccessMethod am = DARApplier.getAMExpected(moveobj, components[comp],
-      // mappingcontext);
-      // moveobj = am.getChildObject(moveobj);
     }
     return moveobj;
   }

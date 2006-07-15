@@ -5,6 +5,8 @@ package uk.org.ponder.beanutil;
 
 import java.util.Map;
 
+import uk.org.ponder.util.EnumerationConverter;
+
 public class MapPropertyAccessor implements PropertyAccessor {
   // This class is completely immutable, can universally use this instance.
   public static final MapPropertyAccessor instance = new MapPropertyAccessor();
@@ -31,12 +33,12 @@ public class MapPropertyAccessor implements PropertyAccessor {
    return ((Map)parent).get(name);
   }
 
-  public Class getPropertyType(String name) {
-    return Object.class; // no idea!
+  public Class getPropertyType(Object parent, String name) {
+    Object got = ((Map)parent).get(name);
+    return got == null? Object.class : got.getClass();
   }
 
-  public boolean isMultiple(String name) {
-    // TODO Auto-generated method stub. See comment on BeanLocatorPropertyAccessor.
-    return false;
+  public boolean isMultiple(Object parent, String name) {
+    return EnumerationConverter.isDenumerable(getPropertyType(parent, name));
   }
 }

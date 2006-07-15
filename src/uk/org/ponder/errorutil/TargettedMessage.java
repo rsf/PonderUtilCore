@@ -3,11 +3,13 @@
  */
 package uk.org.ponder.errorutil;
 
+import java.io.Serializable;
+
 /**
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
  * 
  */
-public class TargettedMessage {
+public class TargettedMessage implements Serializable {
   public static final String TARGET_NONE = "No specific target";
   public String messagecode;
   public Object[] args = null;

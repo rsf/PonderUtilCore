@@ -30,6 +30,7 @@ import uk.org.ponder.stringutil.StringList;
 import uk.org.ponder.util.Denumeration;
 import uk.org.ponder.util.EnumerationConverter;
 import uk.org.ponder.util.Logger;
+import uk.org.ponder.util.SingleEnumeration;
 import uk.org.ponder.util.UniversalRuntimeException;
 
 /**
@@ -49,8 +50,6 @@ public class DARApplier implements BeanModelAlterer {
 
   public void setMappingContext(SAXalizerMappingContext mappingcontext) {
     this.mappingcontext = mappingcontext;
-    vcp = new VectorCapableParser();
-    vcp.setScalarParser(mappingcontext.saxleafparser);
   }
 
   public SAXalizerMappingContext getMappingContext() {
@@ -61,6 +60,10 @@ public class DARApplier implements BeanModelAlterer {
     this.reflectivecache = reflectivecache;
   }
 
+  public void setVectorCapableParser(VectorCapableParser vcp) {
+    this.vcp = vcp;
+  }
+  
   /**
    * Will enable more aggressive type conversions as appropriate for operating a
    * Spring-style container specified in XML. In particular will convert String
@@ -77,8 +80,8 @@ public class DARApplier implements BeanModelAlterer {
     if (toconvert == null)
       return null;
     if (targetclass == null) {
-      targetclass = EnumerationConverter.isEnumerable(toconvert.getClass())?
-          ArrayUtil.stringArrayClass : String.class;
+      targetclass = EnumerationConverter.isEnumerable(toconvert.getClass()) ? ArrayUtil.stringArrayClass
+          : String.class;
     }
     if (targetclass == String.class || targetclass == Boolean.class) {
       // TODO: We need proper vector support
@@ -93,9 +96,9 @@ public class DARApplier implements BeanModelAlterer {
     }
     else {
       // this is inverse to the "vector" setBeanValue branch below
-      Object target = ReflectUtils.instantiateContainer(ArrayUtil.stringArrayClass,
-          EnumerationConverter.getEnumerableSize(toconvert),
-          reflectivecache);
+      Object target = ReflectUtils.instantiateContainer(
+          ArrayUtil.stringArrayClass, EnumerationConverter
+              .getEnumerableSize(toconvert), reflectivecache);
       vcp.render(toconvert, target, resolver, reflectivecache);
       return target;
     }
@@ -139,8 +142,8 @@ public class DARApplier implements BeanModelAlterer {
           + method + " in bean at path " + totail);
     }
   }
-  
-  private void applyAlteration(Object rootobj, DataAlterationRequest dar,
+
+  public void applyAlteration(Object rootobj, DataAlterationRequest dar,
       TargettedMessageList messages) {
     Logger.log.debug("Applying DAR " + dar.type + " to path " + dar.path + ": "
         + dar.data);
@@ -148,7 +151,7 @@ public class DARApplier implements BeanModelAlterer {
     try {
       Object moveobj = rootobj;
       String tail = null;
-      
+
       while (true) {
         String headpath = PathUtil.getHeadPath(dar.path);
         if (headpath.equals(dar.path)) {
@@ -160,7 +163,8 @@ public class DARApplier implements BeanModelAlterer {
         if (moveobj instanceof DARReceiver) {
           boolean accepted = ((DARReceiver) moveobj)
               .addDataAlterationRequest(dar);
-          if (accepted) return;
+          if (accepted)
+            return;
         }
       }
       dar.path = oldpath;
@@ -168,14 +172,14 @@ public class DARApplier implements BeanModelAlterer {
 
       PropertyAccessor pa = MethodAnalyser.getPropertyAccessor(moveobj,
           mappingcontext);
-      Class leaftype = pa.getPropertyType(tail);
+      Class leaftype = pa.getPropertyType(moveobj, tail);
       if (dar.type.equals(DataAlterationRequest.ADD)) {
         // If we got a list of Strings in from
         // the UI, they may be "cryptic" leaf types without proper packaging.
         // This
         // implies we MUST know the element type of the collection.
         // For now we must assume collection is of leaf types.
-        if (pa.isMultiple(tail)) {
+        if (pa.isMultiple(moveobj, tail)) {
           Object lastobj = pa.getProperty(moveobj, tail);
 
           AccessMethod sam = mappingcontext.getAnalyser(moveobj.getClass())
@@ -186,12 +190,12 @@ public class DARApplier implements BeanModelAlterer {
             // DARApplier yet.
             convert = StringList.fromString((String) convert);
           }
-          int incomingsize = EnumerationConverter.getEnumerableSize(convert); 
-          if (lastobj == null || lastobj.getClass().isArray() && 
-              EnumerationConverter.getEnumerableSize(lastobj) != incomingsize) {
+          int incomingsize = EnumerationConverter.getEnumerableSize(convert);
+          if (lastobj == null
+              || lastobj.getClass().isArray()
+              && EnumerationConverter.getEnumerableSize(lastobj) != incomingsize) {
             lastobj = ReflectUtils.instantiateContainer(sam.getDeclaredType(),
-                incomingsize,
-                reflectivecache);
+                incomingsize, reflectivecache);
             pa.setProperty(moveobj, tail, lastobj);
           }
           if (VectorCapableParser.isLOSType(convert)) {
@@ -206,7 +210,8 @@ public class DARApplier implements BeanModelAlterer {
           else { // must be a single item, or else a collection
             Denumeration den = EnumerationConverter.getDenumeration(lastobj,
                 reflectivecache);
-            // TODO: use CompletableDenumeration here to support extensible arrays.
+            // TODO: use CompletableDenumeration here to support extensible
+            // arrays.
             if (EnumerationConverter.isEnumerable(convert.getClass())) {
               for (Enumeration enumm = EnumerationConverter
                   .getEnumeration(convert); enumm.hasMoreElements();) {
@@ -226,7 +231,7 @@ public class DARApplier implements BeanModelAlterer {
           // using our now knowledge of the target leaf type.
           if (convert instanceof String) {
             String string = (String) convert;
-              convert = ConvertUtil.parse(string, xmlprovider, leaftype);
+            convert = ConvertUtil.parse(string, xmlprovider, leaftype);
           }
           // this case also deals with Maps and WBLs.
           pa.setProperty(moveobj, tail, convert);
@@ -237,35 +242,64 @@ public class DARApplier implements BeanModelAlterer {
 
       else if (dar.type.equals(DataAlterationRequest.DELETE)) {
         try {
-          boolean removed = false;
+          boolean failedremove = false;
+          Object removetarget = null;
           // if we have data, we can try to remove it by value
-          if (convert != null) {
-            // copied code from "ADD" branch. Regularise this conversion at some point.
-            if (convert instanceof String) {
-              String string = (String) convert;
-                convert = ConvertUtil.parse(string, xmlprovider, leaftype);
-            }
-            Object lastobj = pa.getProperty(moveobj, tail);
-            if (lastobj instanceof Collection) {
-              removed = ((Collection) lastobj).remove(convert);
-            }
-            else if (lastobj instanceof Map) {
-              removed = ((Map) moveobj).remove(convert) != null;
-            }
+          if (convert == null) {
+            removetarget = moveobj;
+            convert = tail;
           }
-          else { // there is no data, so it must be a Map, concrete or
-            // WriteableBeanLocator.
-            if (moveobj instanceof Map) {
-              removed = ((Map) moveobj).remove(tail) != null;
+          else {
+            removetarget = pa.getProperty(moveobj, tail);
+          }
+            
+            // this decision is not quite right for "Map" but we have no way to
+            // declare the type of the container.
+            if (removetarget instanceof WriteableBeanLocator
+                || removetarget instanceof Map) {
+              leaftype = String.class;
             }
-            else if (moveobj instanceof WriteableBeanLocator) {
-              removed = ((WriteableBeanLocator) moveobj).remove(tail);
+            Enumeration values = null;
+            if (EnumerationConverter.isEnumerable(convert.getClass())) {
+              values = EnumerationConverter.getEnumeration(convert);
             }
             else {
-              pa.setProperty(moveobj, tail, null);
+              values = new SingleEnumeration(convert);
             }
-          }
-          if (!removed) {
+          
+            while (values.hasMoreElements()) {
+
+              Object toremove = values.nextElement();
+              // copied code from "ADD" branch. Regularise this conversion at
+              // some point.
+              if (toremove instanceof String) {
+                String string = (String) toremove;
+                convert = ConvertUtil.parse(string, xmlprovider, leaftype);
+              }
+              else if (leaftype == String.class) {
+                convert = ConvertUtil.render(toremove, xmlprovider);
+              }
+              if (removetarget instanceof WriteableBeanLocator) {
+                if (! ((WriteableBeanLocator) removetarget).remove((String)toremove)) {
+                  failedremove = true;
+                }
+              }
+              else if (removetarget instanceof Collection) {
+                if (!((Collection) removetarget).remove(toremove)) {
+                  failedremove = true;
+                }
+              }
+              else if (removetarget instanceof Map) {
+                if (((Map) removetarget).remove(toremove) == null) {
+                  failedremove = true;
+                }
+              }
+              else {
+                pa.setProperty(removetarget, (String) toremove, null);
+              }
+            }
+        
+          if (failedremove) {
             throw UniversalRuntimeException.accumulate(new PropertyException());
           }
         }
@@ -282,7 +316,8 @@ public class DARApplier implements BeanModelAlterer {
     }
     catch (Exception e) {
       if (messages != null) {
-        TargettedMessage message = new TargettedMessage(e.getMessage(), e, oldpath);
+        TargettedMessage message = new TargettedMessage(e.getMessage(), e,
+            oldpath);
         messages.addMessage(message);
       }
       Logger.log.warn("Error applying value " + dar.data + " to path "

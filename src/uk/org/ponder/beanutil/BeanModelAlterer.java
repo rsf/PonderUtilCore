@@ -5,6 +5,7 @@ package uk.org.ponder.beanutil;
 
 import uk.org.ponder.errorutil.TargettedMessageList;
 import uk.org.ponder.mapping.DARList;
+import uk.org.ponder.mapping.DataAlterationRequest;
 
 /** The base interface for RSF's expression language (EL) */
 
@@ -35,6 +36,10 @@ public interface BeanModelAlterer {
   public void applyAlterations(Object rootobj, DARList toapply,
       TargettedMessageList messages);
 
+  /** @see #applyAlterations(Object, DARList, TargettedMessageList) **/
+  public void applyAlteration(Object rootobj, DataAlterationRequest dar,
+      TargettedMessageList messages);
+  
   /** Converts the object currently present at the supplied bean path into the
    * specified target class, which must be one of the classes handled by the
    * UIType framework.

@@ -69,7 +69,7 @@ public class MethodAnalyser implements PropertyAccessor {
     if (method == null) {
       method = attrmethods.get(tagname);
     }
-    if (method == null && targetclass.isAssignableFrom(WriteableBeanLocator.class)) {
+    if (method == null && WriteableBeanLocator.class.isAssignableFrom(targetclass)) {
       return new WBLAccessMethod(tagname);
     }
     return method;
@@ -122,7 +122,7 @@ public class MethodAnalyser implements PropertyAccessor {
     return accessmethod.getChildObject(parent);
   }
 
-  public Class getPropertyType(String name) {
+  public Class getPropertyType(Object parent, String name) {
     AccessMethod accessmethod = getAccessMethod(name);
     if (accessmethod == null) {
       throw UniversalRuntimeException.accumulate(new PropertyException(),
@@ -131,7 +131,7 @@ public class MethodAnalyser implements PropertyAccessor {
     return accessmethod.getAccessedType();
   }
 
-  public boolean isMultiple(String name) {
+  public boolean isMultiple(Object parent, String name) {
     AccessMethod accessmethod = getAccessMethod(name);
     if (accessmethod == null) {
       throw UniversalRuntimeException.accumulate(new PropertyException(),

@@ -4,6 +4,7 @@
 package uk.org.ponder.beanutil;
 
 import uk.org.ponder.util.AssertionException;
+import uk.org.ponder.util.EnumerationConverter;
 
 public class BeanLocatorPropertyAccessor implements PropertyAccessor {
   // This class is completely immutable, can universally use this instance.
@@ -40,16 +41,13 @@ public class BeanLocatorPropertyAccessor implements PropertyAccessor {
     return ((BeanLocator) parent).locateBean(name);
   }
 
-  public Class getPropertyType(String name) {
-    return Object.class; // no idea!
+  public Class getPropertyType(Object parent, String name) {
+    Object located = ((BeanLocator)parent).locateBean(name);
+    return located == null? Object.class : located.getClass(); 
   }
 
-  public boolean isMultiple(String name) {
-    // no idea!
-    // TODO: the only conceivable way to implement this is to
-    // HAVE AN OBJECT HERE ALREADY, and then defer to MethodAnalyser again.
-    // Type system still needs a bit of a kicking, better await some use cases.
-    return false;
+  public boolean isMultiple(Object parent, String name) {
+    return EnumerationConverter.isDenumerable(getPropertyType(parent, name));
   }
 
 }

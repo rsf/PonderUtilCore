@@ -3,6 +3,7 @@
  */
 package uk.org.ponder.errorutil;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import uk.org.ponder.stringutil.CharWrap;
@@ -17,7 +18,7 @@ import uk.org.ponder.stringutil.StringList;
 // which couples to all sorts of other greasy stuff, including the dreaded
 // BeanWrapper. However, it may be worth going back to Errors and Validator
 // at least, which are fairly clean in of themselves.
-public class TargettedMessageList {
+public class TargettedMessageList implements Serializable {
   private ArrayList errors = new ArrayList();
   public int size() {
     return errors.size();

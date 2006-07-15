@@ -8,6 +8,7 @@ import java.util.Enumeration;
 import uk.org.ponder.arrayutil.ArrayUtil;
 import uk.org.ponder.beanutil.BeanResolver;
 import uk.org.ponder.reflect.ReflectiveCache;
+import uk.org.ponder.saxalizer.mapping.ContainerTypeRegistry;
 import uk.org.ponder.stringutil.StringList;
 import uk.org.ponder.util.Denumeration;
 import uk.org.ponder.util.EnumerationConverter;
@@ -25,6 +26,7 @@ import uk.org.ponder.util.Logger;
 // level.
 public class VectorCapableParser {
   private StaticLeafParser scalarparser;
+  private ContainerTypeRegistry ctr;
 
   public void setScalarParser(StaticLeafParser scalarparser) {
     this.scalarparser = scalarparser;
@@ -40,6 +42,10 @@ public class VectorCapableParser {
         || o instanceof StringList;
   }
 
+  public void setContainerTypeRegistry(ContainerTypeRegistry ctr) {
+    this.ctr = ctr;
+  }
+  
   /**
    * Converts some form of multiple Strings into some form of multiple Objects.
    * 
@@ -60,6 +66,10 @@ public class VectorCapableParser {
     // Array.newInstance(arraytype, size);
     Denumeration denum = EnumerationConverter.getDenumeration(target,
         reflectivecache);
+    Class containeetype = ctr.getContaineeType(target.getClass());
+    if (containeetype != null) {
+      elemtype = containeetype;
+    }
     for (Enumeration elemenum = EnumerationConverter.getEnumeration(stringlist); elemenum
         .hasMoreElements();) {
       String elem = (String) elemenum.nextElement();
