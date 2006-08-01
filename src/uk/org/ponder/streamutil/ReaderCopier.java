@@ -4,12 +4,13 @@
 package uk.org.ponder.streamutil;
 
 import java.io.Reader;
-import java.io.Writer;
+
+import uk.org.ponder.streamutil.write.PrintOutputStream;
 
 /**
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
  * 
  */
 public interface ReaderCopier {
-  public void copyReader(Reader r, Writer w);
+  public void copyReader(Reader r, PrintOutputStream pos);
 }

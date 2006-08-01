@@ -33,7 +33,7 @@ public class PathUtil {
   }
 
   public static String composePath(String prefix, String suffix) {
-    return prefix + '.' + suffix;
+    return prefix.equals("")? suffix : (prefix + '.' + suffix);
   }
   
 }

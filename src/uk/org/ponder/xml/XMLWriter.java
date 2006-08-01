@@ -316,7 +316,7 @@ public class XMLWriter {
    */
 
   public void write(String towrite) {
-    char[] array = towrite.toCharArray();
+    char[] array = (towrite == null ? "null" : towrite).toCharArray();
     write(array, 0, array.length);
   }
 

@@ -34,6 +34,9 @@ import uk.org.ponder.util.SingleEnumeration;
 import uk.org.ponder.util.UniversalRuntimeException;
 
 /**
+ * The core "EL engine". Will apply a "DataAlterationRequest" to an arbitrary
+ * bean target.
+ * 
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
  * 
  */
@@ -63,7 +66,7 @@ public class DARApplier implements BeanModelAlterer {
   public void setVectorCapableParser(VectorCapableParser vcp) {
     this.vcp = vcp;
   }
-  
+
   /**
    * Will enable more aggressive type conversions as appropriate for operating a
    * Spring-style container specified in XML. In particular will convert String
@@ -123,7 +126,7 @@ public class DARApplier implements BeanModelAlterer {
     DataAlterationRequest dar = new DataAlterationRequest(fullpath, value);
     // messages.pushNestedPath(headpath);
     // try {
-    applyAlteration(root, dar, messages);
+    applyAlteration(root, dar, messages, null);
     // }
     // finally {
     // messages.popNestedPath();
@@ -144,7 +147,7 @@ public class DARApplier implements BeanModelAlterer {
   }
 
   public void applyAlteration(Object rootobj, DataAlterationRequest dar,
-      TargettedMessageList messages) {
+      TargettedMessageList messages, BeanInvalidationIterator bii) {
     Logger.log.debug("Applying DAR " + dar.type + " to path " + dar.path + ": "
         + dar.data);
     String oldpath = dar.path;
@@ -160,6 +163,8 @@ public class DARApplier implements BeanModelAlterer {
         }
         moveobj = BeanUtil.navigate(moveobj, headpath, mappingcontext);
         dar.path = PathUtil.getFromHeadPath(dar.path);
+        if (bii != null)
+          bii.push(headpath);
         if (moveobj instanceof DARReceiver) {
           boolean accepted = ((DARReceiver) moveobj)
               .addDataAlterationRequest(dar);
@@ -173,7 +178,12 @@ public class DARApplier implements BeanModelAlterer {
       PropertyAccessor pa = MethodAnalyser.getPropertyAccessor(moveobj,
           mappingcontext);
       Class leaftype = pa.getPropertyType(moveobj, tail);
+      // invalidate FIRST - since even if exception is thrown, we may
+      // REQUIRE to perform a "guard" action to restore consistency.
+      if (bii != null)
+        bii.invalidate(tail);
       if (dar.type.equals(DataAlterationRequest.ADD)) {
+    
         // If we got a list of Strings in from
         // the UI, they may be "cryptic" leaf types without proper packaging.
         // This
@@ -252,53 +262,54 @@ public class DARApplier implements BeanModelAlterer {
           else {
             removetarget = pa.getProperty(moveobj, tail);
           }
-            
-            // this decision is not quite right for "Map" but we have no way to
-            // declare the type of the container.
-            if (removetarget instanceof WriteableBeanLocator
-                || removetarget instanceof Map) {
-              leaftype = String.class;
+
+          // this decision is not quite right for "Map" but we have no way to
+          // declare the type of the container.
+          if (removetarget instanceof WriteableBeanLocator
+              || removetarget instanceof Map) {
+            leaftype = String.class;
+          }
+          Enumeration values = null;
+          if (EnumerationConverter.isEnumerable(convert.getClass())) {
+            values = EnumerationConverter.getEnumeration(convert);
+          }
+          else {
+            values = new SingleEnumeration(convert);
+          }
+
+          while (values.hasMoreElements()) {
+
+            Object toremove = values.nextElement();
+            // copied code from "ADD" branch. Regularise this conversion at
+            // some point.
+            if (toremove instanceof String) {
+              String string = (String) toremove;
+              convert = ConvertUtil.parse(string, xmlprovider, leaftype);
             }
-            Enumeration values = null;
-            if (EnumerationConverter.isEnumerable(convert.getClass())) {
-              values = EnumerationConverter.getEnumeration(convert);
+            else if (leaftype == String.class) {
+              convert = ConvertUtil.render(toremove, xmlprovider);
+            }
+            if (removetarget instanceof WriteableBeanLocator) {
+              if (!((WriteableBeanLocator) removetarget)
+                  .remove((String) toremove)) {
+                failedremove = true;
+              }
+            }
+            else if (removetarget instanceof Collection) {
+              if (!((Collection) removetarget).remove(toremove)) {
+                failedremove = true;
+              }
+            }
+            else if (removetarget instanceof Map) {
+              if (((Map) removetarget).remove(toremove) == null) {
+                failedremove = true;
+              }
             }
             else {
-              values = new SingleEnumeration(convert);
+              pa.setProperty(removetarget, (String) toremove, null);
             }
-          
-            while (values.hasMoreElements()) {
+          }
 
-              Object toremove = values.nextElement();
-              // copied code from "ADD" branch. Regularise this conversion at
-              // some point.
-              if (toremove instanceof String) {
-                String string = (String) toremove;
-                convert = ConvertUtil.parse(string, xmlprovider, leaftype);
-              }
-              else if (leaftype == String.class) {
-                convert = ConvertUtil.render(toremove, xmlprovider);
-              }
-              if (removetarget instanceof WriteableBeanLocator) {
-                if (! ((WriteableBeanLocator) removetarget).remove((String)toremove)) {
-                  failedremove = true;
-                }
-              }
-              else if (removetarget instanceof Collection) {
-                if (!((Collection) removetarget).remove(toremove)) {
-                  failedremove = true;
-                }
-              }
-              else if (removetarget instanceof Map) {
-                if (((Map) removetarget).remove(toremove) == null) {
-                  failedremove = true;
-                }
-              }
-              else {
-                pa.setProperty(removetarget, (String) toremove, null);
-              }
-            }
-        
           if (failedremove) {
             throw UniversalRuntimeException.accumulate(new PropertyException());
           }
@@ -342,10 +353,10 @@ public class DARApplier implements BeanModelAlterer {
    *          of ThreadLocal gets.
    */
   public void applyAlterations(Object rootobj, DARList toapply,
-      TargettedMessageList messages) {
+      TargettedMessageList messages, BeanInvalidationIterator bii) {
     for (int i = 0; i < toapply.size(); ++i) {
       DataAlterationRequest dar = toapply.DARAt(i);
-      applyAlteration(rootobj, dar, messages);
+      applyAlteration(rootobj, dar, messages, bii);
     }
 
   }

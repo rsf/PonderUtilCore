@@ -4,6 +4,7 @@
 package uk.org.ponder.beanutil;
 
 import uk.org.ponder.errorutil.TargettedMessageList;
+import uk.org.ponder.mapping.BeanInvalidationIterator;
 import uk.org.ponder.mapping.DARList;
 import uk.org.ponder.mapping.DataAlterationRequest;
 
@@ -13,7 +14,8 @@ public interface BeanModelAlterer {
 
   public Object getBeanValue(String fullpath, Object root);
 
-  public void setBeanValue(String fullpath, Object root, Object value, TargettedMessageList messages);
+  public void setBeanValue(String fullpath, Object root, Object value,
+      TargettedMessageList messages);
 
   public Object invokeBeanMethod(String fullpath, Object root);
 
@@ -23,37 +25,35 @@ public interface BeanModelAlterer {
    * already navigated to the root path referred to by the bean, and that the
    * DARList mentions paths relative to that bean.
    * 
-   * @param rootobj
-   *          The object to which alterations are to be applied
-   * @param toapply
-   *          The list of alterations
-   * @param messages
-   *          The list to which error messages accreted during application are
-   *          to be appended. This is probably the same as that in the
-   *          ThreadErrorState, but is supplied as an argument to reduce costs
-   *          of ThreadLocal gets.
+   * @param rootobj The object to which alterations are to be applied
+   * @param toapply The list of alterations
+   * @param messages The list to which error messages accreted during
+   *          application are to be appended.
    */
   public void applyAlterations(Object rootobj, DARList toapply,
-      TargettedMessageList messages);
+      TargettedMessageList messages, BeanInvalidationIterator bii);
 
-  /** @see #applyAlterations(Object, DARList, TargettedMessageList) **/
+  /** @see #applyAlterations(Object, DARList, TargettedMessageList) * */
   public void applyAlteration(Object rootobj, DataAlterationRequest dar,
-      TargettedMessageList messages);
-  
-  /** Converts the object currently present at the supplied bean path into the
+      TargettedMessageList messages, BeanInvalidationIterator bii);
+
+  /**
+   * Converts the object currently present at the supplied bean path into the
    * specified target class, which must be one of the classes handled by the
    * UIType framework.
-   * @param fullpath The full EL path from the root object from which
-   * the flattened value is to be fetched.
+   * 
+   * @param fullpath The full EL path from the root object from which the
+   *          flattened value is to be fetched.
    * @param root The root object
-   * @param targetclazz A class of one of the UIType types, or else <code>null</code>.
-   * If <code>null</code>, the type of the returned object will be either String[] or
-   * String, depending on whether the path holds an enumerable (vectorial) value or not.
-   * @param resolver A resolver which will be applied to each scalar value to 
-   * convert it to String if necessary. If <code>null</code>, default leaf conversion
-   * will be applied.
+   * @param targetclazz A class of one of the UIType types, or else
+   *          <code>null</code>. If <code>null</code>, the type of the
+   *          returned object will be either String[] or String, depending on
+   *          whether the path holds an enumerable (vectorial) value or not.
+   * @param resolver A resolver which will be applied to each scalar value to
+   *          convert it to String if necessary. If <code>null</code>,
+   *          default leaf conversion will be applied.
    */
 
-  public Object getFlattenedValue(String fullpath, Object root, Class targetclazz,
-      BeanResolver resolver);
+  public Object getFlattenedValue(String fullpath, Object root,
+      Class targetclazz, BeanResolver resolver);
 }
