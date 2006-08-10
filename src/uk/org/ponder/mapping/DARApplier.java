@@ -331,7 +331,7 @@ public class DARApplier implements BeanModelAlterer {
             oldpath);
         messages.addMessage(message);
       }
-      Logger.log.warn("Error applying value " + dar.data + " to path "
+      Logger.log.info("Error applying value " + dar.data + " to path "
           + dar.path, e);
     }
   }

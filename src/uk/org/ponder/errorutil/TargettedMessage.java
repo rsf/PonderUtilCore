@@ -11,7 +11,10 @@ import java.io.Serializable;
  */
 public class TargettedMessage implements Serializable {
   public static final String TARGET_NONE = "No specific target";
-  public String messagecode;
+  /** A list of possible message codes, in descending order of specificity.
+   * This is the same semantics as Spring's "MessageSourceResolvable" system.
+   */
+  public String[] messagecodes;
   public Object[] args = null;
   public String targetid = TARGET_NONE;
   public Exception exception;
@@ -19,36 +22,51 @@ public class TargettedMessage implements Serializable {
   public static final int SEVERITY_INFO = 0;
   public static final int SEVERITY_ERROR = 1;
   public int severity = SEVERITY_ERROR;
+  public void updateMessageCode(String messagecode) {
+    messagecodes = new String[] {messagecode};
+  }
+  public void updateTarget(String targetid) {
+    this.targetid = targetid == null? TARGET_NONE : targetid; 
+  }
+  
+  public String acquireMessageCode() {
+    return messagecodes == null? null : messagecodes[messagecodes.length - 1];
+  }
 
   public TargettedMessage(String messagecode, String targetid) {
-    this.messagecode = messagecode;
+    updateMessageCode(messagecode);
     this.targetid = targetid == null? TARGET_NONE : targetid;
   }
 
   public TargettedMessage(String messagecode, Object[] args, String targetid) {
-    this.messagecode = messagecode;
+    updateMessageCode(messagecode);
+    updateTarget(targetid);
     this.args = args;
-    this.targetid = targetid == null? TARGET_NONE : targetid;
   }
 
   public TargettedMessage(String messagecode) {
-    this.messagecode = messagecode;
+    updateMessageCode(messagecode);
   }
 
   public TargettedMessage(String messagecode, Exception exception) {
-    this.messagecode = messagecode;
+    updateMessageCode(messagecode);
     this.exception = exception;
   }
 
   public TargettedMessage(String messagecode, Exception exception,
       String targetid) {
-    this.messagecode = messagecode;
+    updateMessageCode(messagecode);
+    updateTarget(targetid);
     this.exception = exception;
-    this.targetid = targetid == null? TARGET_NONE : targetid;
   }
 
   public TargettedMessage(String messagecode, Object[] args) {
-    this.messagecode = messagecode;
+    updateMessageCode(messagecode);
+    this.args = args;
+  }
+  public TargettedMessage(String[] messagecodes, Object[] args, String targetid) {
+    updateTarget(targetid);
+    this.messagecodes = messagecodes;
     this.args = args;
   }
 }

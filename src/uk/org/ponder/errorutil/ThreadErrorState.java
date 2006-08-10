@@ -32,7 +32,7 @@ public class ThreadErrorState {
    * the current request.
    */
   public static boolean isError() {
-    return getErrorState().errors.size() > 0;
+    return getErrorState().errors.isError();
   }
   
   // Idea is that during POST processing, this will be full of messages
@@ -48,15 +48,8 @@ public class ThreadErrorState {
   public static void beginRequest() {
     errormap.set(new ErrorStateEntry());
   }
-//  
-//  private static void beginRequest(String tokenid) {
-//    beginRequest();
-//    getErrorState().errorid = tokenid;
-//  }
   
   public static void endRequest() {
     errormap.set(null);
-//    getErrorState().errorid = null;
-//    getErrorState().errors.clear();
   }
 }

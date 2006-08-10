@@ -35,6 +35,15 @@ public class TargettedMessageList implements Serializable {
       addMessage(list.messageAt(i));
     }
   }
+  
+  public boolean isError() {
+    for (int i = 0; i < size(); ++ i) {
+      TargettedMessage mess = messageAt(i);
+      if (mess.severity == TargettedMessage.SEVERITY_ERROR) return true;
+    }
+    return false;
+  }
+  
   private StringList pathstack;
   
   private String nestedpath = null;
@@ -62,6 +71,11 @@ public class TargettedMessageList implements Serializable {
   public TargettedMessage messageAt(int i) {
     return (TargettedMessage)errors.get(i);
   }
+  
+  public void setMessageAt(int i, TargettedMessage message) {
+    errors.set(i, message);
+  }
+  
   public void clear() {
     errors.clear();
   }
@@ -69,7 +83,7 @@ public class TargettedMessageList implements Serializable {
     CharWrap togo = new CharWrap();
     for (int i = 0; i < size(); ++ i) {
       TargettedMessage mess = messageAt(i);
-      togo.append("Target: " + mess.targetid + " message " + mess.messagecode + "\n");
+      togo.append("Target: " + mess.targetid + " message " + mess.acquireMessageCode() + "\n");
     }
     return togo.toString();
   }
@@ -78,7 +92,7 @@ public class TargettedMessageList implements Serializable {
     StringList togo = new StringList();
     for (int i = 0; i < size(); ++ i) {
       TargettedMessage message = messageAt(i);
-      togo.add(locator.getMessage(message.messagecode, message.args));
+      togo.add(locator.getMessage(message.messagecodes, message.args));
     }
     return togo;
   }
