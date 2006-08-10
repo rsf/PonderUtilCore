@@ -9,6 +9,8 @@ import uk.org.ponder.conversion.StaticLeafParser;
 import uk.org.ponder.reflect.JDKReflectiveCache;
 import uk.org.ponder.reflect.ReflectiveCache;
 import uk.org.ponder.saxalizer.mapping.ClassNameManager;
+import uk.org.ponder.saxalizer.mapping.ContainerTypeRegistry;
+import uk.org.ponder.saxalizer.mapping.DefaultMapperInferrer;
 import uk.org.ponder.saxalizer.mapping.SAXalizerMapper;
 import uk.org.ponder.saxalizer.mapping.SAXalizerMapperInferrer;
 
