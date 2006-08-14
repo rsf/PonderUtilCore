@@ -33,6 +33,8 @@ public class TargettedMessage implements Serializable {
     return messagecodes == null? null : messagecodes[messagecodes.length - 1];
   }
 
+  public TargettedMessage() {}
+  
   public TargettedMessage(String messagecode, String targetid) {
     updateMessageCode(messagecode);
     this.targetid = targetid == null? TARGET_NONE : targetid;
@@ -69,4 +71,5 @@ public class TargettedMessage implements Serializable {
     this.messagecodes = messagecodes;
     this.args = args;
   }
+ 
 }
