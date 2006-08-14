@@ -17,6 +17,9 @@ public class FileUtil {
     StringList result = new StringList();
 
     File[] filesAndDirs = aStartingDir.listFiles();
+    if (filesAndDirs == null) {
+      return result;
+    }
    
     for (int i = 0; i < filesAndDirs.length; ++ i) {
       File file = filesAndDirs[i];
