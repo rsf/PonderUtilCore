@@ -34,7 +34,7 @@ public class TargettedMessage implements Serializable {
   }
 
   public TargettedMessage() {}
-  
+
   public TargettedMessage(String messagecode, String targetid) {
     updateMessageCode(messagecode);
     this.targetid = targetid == null? TARGET_NONE : targetid;
