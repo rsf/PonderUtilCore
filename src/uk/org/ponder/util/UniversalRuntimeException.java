@@ -208,7 +208,7 @@ public class UniversalRuntimeException extends RuntimeException implements
 
   public void printStackTrace(PrintWriter pw) {
     if (targetexception != null) {
-      pw.print(getStackHead());
+      pw.println(getStackHead());
       targetexception.printStackTrace(pw);
     }
     else
@@ -217,7 +217,7 @@ public class UniversalRuntimeException extends RuntimeException implements
 
   public void printStackTrace(PrintStream ps) {
     if (targetexception != null) {
-      ps.print(getStackHead());
+      ps.println(getStackHead());
       targetexception.printStackTrace(ps);
     }
     else

@@ -9,6 +9,6 @@ public class HTMLConstants {
     {"href", "<a ", "<link "},
     {"src", "<img ", "<frame ", "<script ", "<iframe "}
   };
-
+// Every tag may have a "background" attribute holding a URL
   public static String[] ubiquitousURL = {"background"};
 }
