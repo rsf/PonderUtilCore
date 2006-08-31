@@ -118,6 +118,13 @@ public class Algorithms {
     return togo;
   }
   
+  public static int[] fill(int[] target, int size, int val) {
+    for (int i = 0; i < size; ++ i) {
+      target[i] = val;
+    }
+    return target;
+  }
+  
   public static int[] copy(int[] tocopy) {
     int[] togo = new int[tocopy.length];
     System.arraycopy(tocopy, 0, togo, 0, tocopy.length);
