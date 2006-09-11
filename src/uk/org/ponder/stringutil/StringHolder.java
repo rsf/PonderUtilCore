@@ -26,6 +26,10 @@ public class StringHolder implements StringGetter {
     return value;
   }
 
+  public void append(String toappend) {
+    this.value = this.value + toappend;
+  }
+  
   public String get() {
     return value;
   }

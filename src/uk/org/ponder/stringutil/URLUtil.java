@@ -14,10 +14,12 @@ import uk.org.ponder.util.UniversalRuntimeException;
 public class URLUtil {
   
   public static boolean isAbsolute(String url) {
-    int slashpos = url.indexOf('/');
     int protpos = url.indexOf("://");
-    if (slashpos == -1 || protpos == -1) return false;
-    return slashpos == protpos + 1;
+    if (protpos == -1) return false;
+    for (int i = 0; i < protpos; ++ i) {
+      if (!Character.isLetterOrDigit(url.charAt(i))) return false;
+    }
+    return true;
   }
   /** Append the supplied name/value pair to the end of the supplied URL, 
    * after URLencoding name and value.
