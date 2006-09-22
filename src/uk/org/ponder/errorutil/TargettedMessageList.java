@@ -39,7 +39,7 @@ public class TargettedMessageList implements Serializable {
   public boolean isError() {
     for (int i = 0; i < size(); ++ i) {
       TargettedMessage mess = messageAt(i);
-      if (mess.severity == TargettedMessage.SEVERITY_ERROR) return true;
+      if ((mess.severity & 1) == TargettedMessage.SEVERITY_ERROR) return true;
     }
     return false;
   }
