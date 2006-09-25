@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import uk.org.ponder.beanutil.BeanLocator;
+import uk.org.ponder.beanutil.ELEvaluator;
 import uk.org.ponder.reflect.DeepBeanCloner;
 
 /** Will "explode" a bean prototype into a "freely indexed" address space by
@@ -25,9 +26,17 @@ public class BeanExploder implements BeanLocator {
 
   private DeepBeanCloner deepbeancloner;
   private Class beanclass;
+
+  private String beanname;
+
+  private ELEvaluator elEvaluator;
   
   public void setBeanClass(Class beanclass) {
     this.beanclass = beanclass;
+  }
+  // Should be the path to a non-singleton Spring bean
+  public void setBeanName(String beanname) {
+    this.beanname = beanname;
   }
   
   public void setExemplar(Object exemplar) {
@@ -38,9 +47,16 @@ public class BeanExploder implements BeanLocator {
     this.deepbeancloner = deepbeancloner;
   }
   
+  public void setELEvaluator(ELEvaluator elEvaluator) {
+    this.elEvaluator = elEvaluator;
+  }
+  
   public Object locateBean(String path) {
     Object togo = beans.get(path);
     if (togo == null) {
+      if (beanname != null) {
+        togo = elEvaluator.getBean(beanname);
+      }
       if (beanclass != null) {
         togo = deepbeancloner.getReflectiveCache().construct(beanclass);
       }

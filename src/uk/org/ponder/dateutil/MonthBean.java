@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Locale;
 
 import uk.org.ponder.beanutil.BeanResolver;
+import uk.org.ponder.stringutil.LocaleGetter;
 import uk.org.ponder.stringutil.StringList;
 
 /** A bean exposing an indexed range of month names, for a particular Locale **/
@@ -19,10 +20,18 @@ public class MonthBean {
   private Locale locale = Locale.getDefault();
   private DateFormatSymbols formatsymbols;
 
-  public void setLocale(String locale) {
-    this.locale = new Locale(locale);
+  public void setLocaleName(String localename) {
+    this.locale = new Locale(localename);
   }
 
+  public void setLocale(Locale locale) {
+    this.locale = locale;
+  }
+  
+  public void setLocaleGetter(LocaleGetter localegetter) {
+    this.locale = localegetter.get();
+  }
+  
   public void init() {
     formatsymbols = new DateFormatSymbols(locale);
   }
