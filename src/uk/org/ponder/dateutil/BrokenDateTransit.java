@@ -58,26 +58,35 @@ public class BrokenDateTransit {
     render();
   }
 
+  public static int parseToZero(String value) {
+    int togo = 0;
+    try {
+      togo = Integer.parseInt(value);
+    }
+    catch (Exception e) {}
+    return togo;
+  }
+  
   public void parse() {
     try {
       if (mode.equals(DMY_MODE)) {
         int yearint = Integer.parseInt(year);
         int monthint = Integer.parseInt(month);
         int dayint = Integer.parseInt(day);
-        calendar.set(yearint, monthint, dayint);
+        calendar.set(yearint, monthint - 1, dayint);
       }
       else if (mode.equals(FULL_MODE)) {
         int yearint = Integer.parseInt(year);
         int monthint = Integer.parseInt(month);
         int dayint = Integer.parseInt(day);
         int hourint = Integer.parseInt(hour);
-        int minuteint = Integer.parseInt(minute);
-        int secondint = Integer.parseInt(second);
+        int minuteint = parseToZero(minute);
+        int secondint = parseToZero(second);
         if (ampm != null) {
           hourint += Integer.parseInt(ampm) == 1 ? 12
               : 0;
         }
-        calendar.set(yearint, monthint, dayint, hourint, minuteint, secondint);
+        calendar.set(yearint, monthint - 1, dayint, hourint, minuteint, secondint);
       }
     }
     catch (Exception e) {

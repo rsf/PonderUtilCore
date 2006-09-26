@@ -157,6 +157,12 @@ public class UniversalRuntimeException extends RuntimeException implements
     return null;
   }
   
+  // Problem: URE(ITE(URE)) will lose message.
+  // SAXException eg RETAINS inner message, ITE wrapping layer
+  // discards id. This suggests that unwrapException needs to be somehow
+  // stateful in that it signals when it unwraps, whether a *NEW* message
+  // might have been uncovered. The hack below is no good.
+  
   public static UniversalRuntimeException accumulateMsg(Throwable t,
       Class category, String fullmsg) {
     Throwable tounwrap;

@@ -16,7 +16,7 @@ public class DateUtil {
   }
 
   public static String[] twoDigitList(int first, int last, int step) {
-    int count = (last - first) / step;
+    int count = (last - first) / step + 1;
     String[] togo = new String[count];
     DecimalFormat format = new DecimalFormat("00");
     int val = first;
