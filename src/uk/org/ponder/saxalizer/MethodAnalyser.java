@@ -8,6 +8,7 @@ import java.util.Map;
 import uk.org.ponder.arrayutil.ArrayEnumeration;
 import uk.org.ponder.beanutil.BeanLocator;
 import uk.org.ponder.beanutil.BeanLocatorPropertyAccessor;
+import uk.org.ponder.beanutil.IndexedPropertyAccessor;
 import uk.org.ponder.beanutil.MapPropertyAccessor;
 import uk.org.ponder.beanutil.PropertyAccessor;
 import uk.org.ponder.beanutil.WriteableBeanLocator;
@@ -174,7 +175,9 @@ public class MethodAnalyser implements PropertyAccessor {
     else if (o instanceof Map) {
       return MapPropertyAccessor.instance;
     }
-
+    else if (IndexedPropertyAccessor.isIndexed(o.getClass())) {
+      return context.getIndexedPropertyAccessor();
+    }
     else
       return context.getAnalyser(o.getClass());
   }

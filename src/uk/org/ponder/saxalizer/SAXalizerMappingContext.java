@@ -5,6 +5,7 @@ package uk.org.ponder.saxalizer;
 
 import java.util.Map;
 
+import uk.org.ponder.beanutil.IndexedPropertyAccessor;
 import uk.org.ponder.conversion.StaticLeafParser;
 import uk.org.ponder.reflect.JDKReflectiveCache;
 import uk.org.ponder.reflect.ReflectiveCache;
@@ -29,6 +30,16 @@ public class SAXalizerMappingContext {
   public StaticLeafParser saxleafparser;
   public ClassNameManager classnamemanager = ClassNameManager.instance();
   private ReflectiveCache reflectivecache;
+  private IndexedPropertyAccessor indexedPropertyAccessor;
+  
+  public IndexedPropertyAccessor getIndexedPropertyAccessor() {
+    return indexedPropertyAccessor;
+  }
+
+  public void setIndexedPropertyAccessor(
+      IndexedPropertyAccessor indexedPropertyAccessor) {
+    this.indexedPropertyAccessor = indexedPropertyAccessor;
+  }
 
   public void setStaticLeafParser(StaticLeafParser saxleafparser) {
     this.saxleafparser = saxleafparser;

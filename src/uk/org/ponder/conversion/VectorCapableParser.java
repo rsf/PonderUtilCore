@@ -66,7 +66,7 @@ public class VectorCapableParser {
     // Array.newInstance(arraytype, size);
     Denumeration denum = EnumerationConverter.getDenumeration(target,
         reflectivecache);
-    Class containeetype = ctr.getContaineeType(target.getClass());
+    Class containeetype = ctr.getContaineeType(target);
     if (containeetype != null) {
       elemtype = containeetype;
     }
