@@ -3,6 +3,7 @@ package uk.org.ponder.arrayutil;
 import java.lang.reflect.Array;
 
 import uk.org.ponder.reflect.ClassGetter;
+import uk.org.ponder.stringutil.CharWrap;
 
 /** This class supplies a selection of useful methods to operate on Java arrays. With
  * these methods, arrays can behave very much like Vectors, only with much greater
@@ -223,9 +224,9 @@ public class ArrayUtil {
 
   public static final String toString(Object[] array) {
     if (array == null) return "null";
-    StringBuffer togo = new StringBuffer();
+    CharWrap togo = new CharWrap();
     for (int i = 0; i < array.length; ++ i) {
-      togo.append(array[i].toString());
+      togo.append(array[i] == null? "null" : array[i].toString());
       if (i != array.length - 1) togo.append(' ');
       }
     return togo.toString();

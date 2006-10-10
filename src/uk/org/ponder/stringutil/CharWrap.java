@@ -150,7 +150,10 @@ public class CharWrap {
       append(s);
     return this;
   }
-
+  
+  /** Appends the "toString" value of the supplied Object to this CharWrap.
+   * The value will not be checked for <code>null</code>.
+   */
   public CharWrap append(Object o) {
     return append(o.toString());
   }

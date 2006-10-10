@@ -16,8 +16,7 @@ public class ContainerTypeRegistry {
         : container.getClass();
     if (collectiontype.isArray()) {
       Class component = collectiontype.getComponentType();
-      if (!component.isPrimitive())
-        return component;
+      return component;
     }
     else if (container instanceof TypedListWrapper) {
       return ((TypedListWrapper) container).getWrappedType();

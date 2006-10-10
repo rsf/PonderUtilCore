@@ -2,8 +2,6 @@ package uk.org.ponder.intutil;
 
 import java.util.Arrays;
 
-import uk.org.ponder.util.Assertions;
-
 /** A simple container class representing a vector of native integers.
  */
 

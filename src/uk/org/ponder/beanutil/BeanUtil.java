@@ -3,8 +3,6 @@
  */
 package uk.org.ponder.beanutil;
 
-import java.util.List;
-
 import uk.org.ponder.saxalizer.MethodAnalyser;
 import uk.org.ponder.saxalizer.SAXalizerMappingContext;
 import uk.org.ponder.stringutil.CharWrap;
@@ -74,18 +72,7 @@ public class BeanUtil {
         throw UniversalRuntimeException.accumulate(new IllegalArgumentException(),
             "Null value encounted in bean path at component " + components[comp - 1]);
       }
-      if (moveobj instanceof List) {
-        List movelist = (List) moveobj;
-        int index = Integer.valueOf(components[comp]).intValue();
-        moveobj = movelist.get(index);
-      }
-      else if (moveobj.getClass().isArray()) {
-        Object[] movearr = (Object[]) moveobj;
-        int index = Integer.valueOf(components[comp]).intValue();
-        moveobj = movearr[index];
-      }
       else {
-        // This case deals with BeanLocators, Maps and "real" properties.
         PropertyAccessor pa = MethodAnalyser.getPropertyAccessor(moveobj,
             mappingcontext);
         moveobj = pa.getProperty(moveobj, components[comp]);
