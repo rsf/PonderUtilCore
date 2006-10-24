@@ -25,6 +25,5 @@ public class ConcreteRunnableWrapper implements RunnableWrapper {
 
   public void proceed(Runnable towrap) {
     towrap.run();
-
   }
 }
