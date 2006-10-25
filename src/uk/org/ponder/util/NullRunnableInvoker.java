@@ -8,8 +8,8 @@ package uk.org.ponder.util;
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
  *
  */
-public class NullRunnableWrapper implements RunnableWrapper {
-  public Runnable wrapRunnable(Runnable towrap) {
-    return towrap;
+public class NullRunnableInvoker implements RunnableInvoker {
+  public void invokeRunnable(Runnable towrap) {
+    towrap.run();
   }
 }
