@@ -94,6 +94,23 @@ public class ArrayUtil {
     System.arraycopy(array1, 0, togo, 0, tolength);
     return togo;
     }
+  
+
+  /** Returns a sub-array whose elements are copied from a range of the
+   * entries in the supplied array.
+   * @param array1 The source array
+   * @param tolength The number of elements to be returned from the beginning of the
+   * array.
+   * @return An array containing the elements from index <code>start</code>
+   * (inclusive) to index <code>end</code> (not inclusive) from the source array.
+   */
+
+  public static final Object[] subArray(Object[] array1, int start, int end) {
+    Class component1 = array1.getClass().getComponentType();
+    Object[] togo = (Object[])Array.newInstance(component1, end - start);
+    System.arraycopy(array1, start, togo, 0, end - start);
+    return togo;
+    }
 
   /** Appends a single object to the end of the supplied array, returning an array
    * one element longer than the supplied array.
