@@ -30,7 +30,7 @@ public class DateSymbolJSEmitter extends LocaleReceiver {
   public String emitDateSymbols() {
     Locale locale = getLocale();
     CharWrap togo = new CharWrap();
-    togo.append("\n<--\n");
+    togo.append("\n<!--\n");
     Calendar defcal = Calendar.getInstance(locale);
     DateFormatSymbols formatsymbols = new DateFormatSymbols(locale);
     // note that Java numbers months starting at 0!
@@ -65,7 +65,7 @@ public class DateSymbolJSEmitter extends LocaleReceiver {
     togo.append(HTMLUtil.emitJavascriptArray(prefix + "WEEKDAYS_1CHAR",
         weekonechar));
 
-    int firstday = defcal.getFirstDayOfWeek();
+    int firstday = defcal.getFirstDayOfWeek() - 1;
     togo.append(HTMLUtil.emitJavascriptVar(prefix + "FIRST_DAY_OF_WEEK",
         Integer.toString(firstday)));
 

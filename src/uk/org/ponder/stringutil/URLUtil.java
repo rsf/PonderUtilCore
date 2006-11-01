@@ -14,6 +14,7 @@ import uk.org.ponder.util.UniversalRuntimeException;
 public class URLUtil {
   
   public static boolean isAbsolute(String url) {
+    if (url.startsWith("javascript:")) return true;
     int protpos = url.indexOf("://");
     if (protpos == -1) return false;
     for (int i = 0; i < protpos; ++ i) {
