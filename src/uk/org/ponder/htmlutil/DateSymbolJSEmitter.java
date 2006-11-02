@@ -30,7 +30,7 @@ public class DateSymbolJSEmitter extends LocaleReceiver {
   public String emitDateSymbols() {
     Locale locale = getLocale();
     CharWrap togo = new CharWrap();
-    togo.append("\n<!--\n");
+    togo.append("\n//<![CDATA[\n");
     Calendar defcal = Calendar.getInstance(locale);
     DateFormatSymbols formatsymbols = new DateFormatSymbols(locale);
     // note that Java numbers months starting at 0!
@@ -85,7 +85,7 @@ public class DateSymbolJSEmitter extends LocaleReceiver {
     togo.append(HTMLUtil.emitJavascriptVar(prefix + "TIME_FORMAT", timeformat
         .toLocalizedPattern()));
 
-    togo.append("-->\n");
+    togo.append("\n//]]>\n");
     return togo.toString();
   }
 

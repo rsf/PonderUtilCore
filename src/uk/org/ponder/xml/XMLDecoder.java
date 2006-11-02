@@ -71,7 +71,7 @@ public class XMLDecoder {
 				declaration.toString());
 	  }
 	else declaration.append(nextchar);
-	if (nextchar == (int)'>') break;
+	if (nextchar == '>') break;
 	}
       }
     else if (magic4 == 0x3c3f786d) { // not fully decoded, but declaration is 8-bit
@@ -85,7 +85,7 @@ public class XMLDecoder {
 	else {
 	  declaration.append(nextchar);
 	  ++ totalbytesread;
-	  if (nextchar == (int)'>') break;
+	  if (nextchar == '>') break;
 	  }
 	}
       decstring = declaration.toString();
