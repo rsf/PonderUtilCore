@@ -4,6 +4,9 @@
 package uk.org.ponder.htmlutil;
 
 public class HTMLConstants {
+  
+  public static final String JS_BLOCK_START = "\n//<![CDATA[\n";
+  public static final String JS_BLOCK_END = "\n//]]>\n";
 
   public static String[][] tagtoURL = {
     {"href", "<a ", "<link "},

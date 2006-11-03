@@ -81,8 +81,10 @@ public class HTMLUtil {
     togo.append("\");\n");
 
     return togo.toString();
-
   }
+  
+  /** The "natural" format accepted by Javascript's Date.parse() method **/
+  public static String JS_DATE_FORMAT = "MMMM, d yyyy HH:mm:ss";
 
   public static String emitJavascriptVar(String name, String value) {
     return "  " + name + " = \"" + value + "\";\n";

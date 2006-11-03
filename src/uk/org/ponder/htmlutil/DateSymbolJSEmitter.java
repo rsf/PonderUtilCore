@@ -30,7 +30,8 @@ public class DateSymbolJSEmitter extends LocaleReceiver {
   public String emitDateSymbols() {
     Locale locale = getLocale();
     CharWrap togo = new CharWrap();
-    togo.append("\n//<![CDATA[\n");
+    togo.append(HTMLConstants.JS_BLOCK_START);
+    
     Calendar defcal = Calendar.getInstance(locale);
     DateFormatSymbols formatsymbols = new DateFormatSymbols(locale);
     // note that Java numbers months starting at 0!
@@ -38,8 +39,8 @@ public class DateSymbolJSEmitter extends LocaleReceiver {
 
     String[] monthlong = formatsymbols.getMonths();
     monthlong = (String[]) ArrayUtil.trim(monthlong, cmonths);
-    togo.append(HTMLUtil
-        .emitJavascriptArray(prefix + "MONTHS_LONG", monthlong));
+    togo
+        .append(HTMLUtil.emitJavascriptArray(prefix + "MONTHS_LONG", monthlong));
 
     String[] monthshort = formatsymbols.getShortMonths();
     monthshort = (String[]) ArrayUtil.trim(monthshort, cmonths);
@@ -85,27 +86,50 @@ public class DateSymbolJSEmitter extends LocaleReceiver {
     togo.append(HTMLUtil.emitJavascriptVar(prefix + "TIME_FORMAT", timeformat
         .toLocalizedPattern()));
 
-    togo.append("\n//]]>\n");
+    togo.append(HTMLConstants.JS_BLOCK_END);
     return togo.toString();
   }
 
-  public static String shorten(String s, int length) {
+  public static String shorten(String s, int prefix, int length) {
+    if (prefix != 0) {
+      s = s.substring(prefix);
+    }
     return s.length() < length ? s
         : s.substring(0, length);
+
+  }
+
+  // Deal with oriental-style weekday names by removing any common prefix
+  public static int getCommonPrefix(String[] names) {
+    if (names.length < 2)
+      return 0;
+    else {
+      int index = 0;
+      while (true) {
+        if (index >= names[0].length() || index >= names[1].length())
+          break;
+        if (names[0].charAt(index) != names[1].charAt(index))
+          break;
+        ++index;
+      }
+      return index;
+    }
   }
 
   String[] shortenWeekdays(String[] weekmed) {
     String[] togo = new String[weekmed.length];
+    int prefix = getCommonPrefix(weekmed);
     for (int i = 0; i < weekmed.length; ++i) {
-      togo[i] = shorten(weekmed[i], 2);
+      togo[i] = shorten(weekmed[i], prefix, 2);
     }
     return togo;
   }
 
   String[] oneCharWeekdays(String[] weekmed) {
     String[] togo = new String[weekmed.length];
+    int prefix = getCommonPrefix(weekmed);
     for (int i = 0; i < weekmed.length; ++i) {
-      togo[i] = shorten(weekmed[i], 1);
+      togo[i] = shorten(weekmed[i], prefix, 1);
     }
     return togo;
   }
