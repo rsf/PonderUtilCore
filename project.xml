@@ -4,7 +4,7 @@
   <name>PonderUtilCore</name>
   <groupId>ponderutilcore</groupId>
   <artifactId>ponderutilcore</artifactId>
-  <currentVersion>${ponderutilcore.version}</currentVersion>
+  <currentVersion>1.2-dev</currentVersion>
   <shortDescription>PonderUtilCore low-level library</shortDescription>
   <description>PonderUtilCore is a low-level library for Serialization and Primitive type manipulation</description>
   <inceptionYear>2005</inceptionYear>

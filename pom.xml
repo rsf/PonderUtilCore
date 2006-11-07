@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+                      http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <name>PonderUtilCore</name>
+  <groupId>uk.org.ponder</groupId>
+  <artifactId>ponderutilcore</artifactId>
+  <version>1.1.4</version>
+  <description>
+    PonderUtilCore is a low-level library for Serialization and
+    Primitive type manipulation
+  </description>
+  <inceptionYear>2005</inceptionYear>
+  <properties>
+    <deploy.type>jar</deploy.type>
+  </properties>
+  <mailingLists>
+    <mailingList>
+      <name>${pom.name} Dev List</name>
+    </mailingList>
+    <mailingList>
+      <name>${pom.name} User List</name>
+    </mailingList>
+  </mailingLists>
+  <!-- 
+    <gumpRepositoryId>caret-saffron-svn</gumpRepositoryId>
+    <siteAddress>saffron.caret.cam.ac.uk</siteAddress>
+    <siteDirectory>
+    /home/gump/project-websites/PonderUtilCore/
+    </siteDirectory>
+    <distributionSite>saffron.caret.cam.ac.uk</distributionSite>
+    <distributionDirectory>
+    /home/gump/project-downloads/PonderUtilCore
+    </distributionDirectory>
+  -->
+  <developers>
+    <developer>
+      <id>amb26</id>
+      <name>Antranig Basman</name>
+      <email>antranig@caret.cam.ac.uk</email>
+      <url></url>
+      <organization>CARET</organization>
+      <organizationUrl>http://www.caret.cam.ac.uk/</organizationUrl>
+    </developer>
+  </developers>
+  <licenses>
+    <license>
+      <name>University of Cambridge, Open Source License</name>
+      <url></url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <scm>
+    <connection>
+      scm:svn:https://saffron.caret.cam.ac.uk/svn/projects/PonderUtilCore/trunk
+    </connection>
+    <developerConnection>
+      scm:svn:https://saffron.caret.cam.ac.uk/svn/projects/PonderUtilCore/trunk
+    </developerConnection>
+    <url>https://saffron.caret.cam.ac.uk/cgi-bin/viewcvs.cgi/</url>
+  </scm>
+  <organization>
+    <name>CARET, University of Cambridge</name>
+    <url>http://www.caret.cam.ac.uk/</url>
+  </organization>
+  <dependencies>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.9</version>
+      <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <sourceDirectory>src</sourceDirectory>
+  </build>
+</project>
+
