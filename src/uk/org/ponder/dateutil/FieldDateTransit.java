@@ -4,12 +4,17 @@
 package uk.org.ponder.dateutil;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
 import uk.org.ponder.localeutil.LocaleReceiver;
-import uk.org.ponder.util.ExceptionRunnable;
+
+/** A transit bean parsing Date objects into their Locale-specific 
+ * forms.
+ * @author Antranig Basman (antranig@caret.cam.ac.uk)
+ */
 
 public class FieldDateTransit extends LocaleReceiver {
   private Date date = new Date();
@@ -37,19 +42,23 @@ public class FieldDateTransit extends LocaleReceiver {
     return longformat.format(date);
   }
   
-  public void setShort(final String shortform) {
-    invoke(new ExceptionRunnable() {
-      public void run() throws Exception {
-        date = shortformat.parse(shortform);
-      }});
+  public void setShort(String shortform) throws ParseException {
+    date = shortformat.parse(shortform);
   }
 
-  private void invoke(ExceptionRunnable runnable) {
-    // TODO Auto-generated method stub
-    
+  public void setMedium(String medform) throws ParseException {
+    date = medformat.parse(medform);
   }
   
+  public void setLong(String longform) throws ParseException {
+    date = longformat.parse(longform);
+  }
   
+  public Date getDate() {
+    return date;
+  }
   
-  
+  public void setDate(Date date) {
+    this.date = date;
+  }
 }
