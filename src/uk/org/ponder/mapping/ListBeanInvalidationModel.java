@@ -10,9 +10,6 @@ import uk.org.ponder.stringutil.StringList;
 public class ListBeanInvalidationModel implements BeanInvalidationModel {
   private StringList invalidpaths = new StringList();
   
-  public BeanInvalidationIterator iterator() {
-    return new BIMIterator();
-  }
   
   public void clear() {
     invalidpaths.clear();
@@ -42,25 +39,9 @@ public class ListBeanInvalidationModel implements BeanInvalidationModel {
     }
     return null;
   }
-  
-  class BIMIterator implements BeanInvalidationIterator {
-    String path = "";
-    
-    public void invalidate(String childpath) {
-      String fullpath = PathUtil.composePath(path, childpath);
-      invalidpaths.add(fullpath);
-    }
 
-    public void pop() {
-      String totail = PathUtil.getToTailPath(path);
-      path = totail;
-    }
-
-    public void push(String childpath) {
-      String fullpath = PathUtil.composePath(path, childpath);
-      path = fullpath;
-    }
-    
+  public void invalidate(String path) {
+    invalidpaths.add(path);
   }
   
 }

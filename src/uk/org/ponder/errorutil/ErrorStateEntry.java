@@ -7,5 +7,5 @@ public class ErrorStateEntry {
   /** A unique error ID, for easy location in logs.
    */
   public String errorid;
-  public TargettedMessageList errors = new TargettedMessageList();
+  public TargettedMessageList messages = new TargettedMessageList();
 }

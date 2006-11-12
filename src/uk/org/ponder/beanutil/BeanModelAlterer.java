@@ -4,7 +4,7 @@
 package uk.org.ponder.beanutil;
 
 import uk.org.ponder.errorutil.TargettedMessageList;
-import uk.org.ponder.mapping.BeanInvalidationIterator;
+import uk.org.ponder.mapping.BeanInvalidationBracketer;
 import uk.org.ponder.mapping.DARList;
 import uk.org.ponder.mapping.DataAlterationRequest;
 
@@ -31,11 +31,11 @@ public interface BeanModelAlterer {
    *          application are to be appended.
    */
   public void applyAlterations(Object rootobj, DARList toapply,
-      TargettedMessageList messages, BeanInvalidationIterator bii);
+      TargettedMessageList messages, BeanInvalidationBracketer bib);
 
   /** @see #applyAlterations(Object, DARList, TargettedMessageList) * */
   public void applyAlteration(Object rootobj, DataAlterationRequest dar,
-      TargettedMessageList messages, BeanInvalidationIterator bii);
+      TargettedMessageList messages, BeanInvalidationBracketer bib);
 
   /**
    * Converts the object currently present at the supplied bean path into the

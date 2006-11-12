@@ -32,17 +32,17 @@ public class ThreadErrorState {
    * the current request.
    */
   public static boolean isError() {
-    return getErrorState().errors.isError();
+    return getErrorState().messages.isError();
   }
   
   // Idea is that during POST processing, this will be full of messages
   // keyed by field path, but during GET processing, keyed by component ID. 
-  public static void addError(TargettedMessage message) {
+  public static void addMessage(TargettedMessage message) {
     ErrorStateEntry ese = getErrorState();
     if (ese.errorid == null) {
       ese.errorid = idgenerator.generateID();
     }
-    getErrorState().errors.addMessage(message);
+    getErrorState().messages.addMessage(message);
   }
   
   public static void beginRequest() {

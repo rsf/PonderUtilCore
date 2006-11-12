@@ -16,7 +16,7 @@ public class LocaleReceiver {
   private LocaleGetter localegetter;
 
   public void setLocaleName(String localename) {
-    this.locale = new Locale(localename);
+    this.locale = LocaleUtil.parseLocale(localename);
   }
 
   public void setLocale(Locale locale) {

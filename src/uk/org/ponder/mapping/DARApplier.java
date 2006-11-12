@@ -118,6 +118,10 @@ public class DARApplier implements BeanModelAlterer {
     }
   }
 
+  private static BeanInvalidationBracketer nullbib = new BeanInvalidationBracketer() {
+    public void invalidate(String path, Runnable toinvoke) {
+      toinvoke.run();
+    }};
   // a convenience method to have the effect of a "set" ValueBinding,
   // constructs a mini-DAR just for setting. Errors will be accumulated
   // into the supplied error list.
@@ -126,7 +130,7 @@ public class DARApplier implements BeanModelAlterer {
     DataAlterationRequest dar = new DataAlterationRequest(fullpath, value);
     // messages.pushNestedPath(headpath);
     // try {
-    applyAlteration(root, dar, messages, null);
+    applyAlteration(root, dar, messages, nullbib);
     // }
     // finally {
     // messages.popNestedPath();
@@ -146,8 +150,168 @@ public class DARApplier implements BeanModelAlterer {
     }
   }
 
-  public void applyAlteration(Object rootobj, DataAlterationRequest dar,
-      TargettedMessageList messages, BeanInvalidationIterator bii) {
+  private void applyAlterationImpl(final Object moveobj, final String tail,
+      final TargettedMessageList messages, final DataAlterationRequest dar,
+      BeanInvalidationBracketer bib) {
+    final PropertyAccessor pa = MethodAnalyser.getPropertyAccessor(moveobj,
+        mappingcontext);
+
+    bib.invalidate(dar.path, new Runnable() {
+      public void run() {
+        Class leaftype = pa.getPropertyType(moveobj, tail);
+        Object convert = dar.data;
+        // invalidate FIRST - since even if exception is thrown, we may
+        // REQUIRE to perform a "guard" action to restore consistency.
+        if (dar.type.equals(DataAlterationRequest.ADD)) {
+
+          // If we got a list of Strings in from the UI, they may be
+          // "cryptic" leaf types without proper packaging.
+          // This implies we MUST know the element type of the collection.
+          // For now we must assume collection is of leaf types.
+          if (pa.isMultiple(moveobj, tail)) {
+            Object lastobj = pa.getProperty(moveobj, tail);
+
+            AccessMethod sam = mappingcontext.getAnalyser(moveobj.getClass())
+                .getAccessMethod(tail);
+            if (convert instanceof String && springmode) {
+              // deference to Spring "auto-convert from comma-separated list"
+              // NB this is currently disused, RSACBeanLocator does not use
+              // DARApplier yet.
+              convert = StringList.fromString((String) convert);
+            }
+            int incomingsize = EnumerationConverter.getEnumerableSize(convert);
+            if (lastobj == null
+                || lastobj.getClass().isArray()
+                && EnumerationConverter.getEnumerableSize(lastobj) != incomingsize) {
+              lastobj = ReflectUtils.instantiateContainer(
+                  sam.getDeclaredType(), incomingsize, reflectivecache);
+              pa.setProperty(moveobj, tail, lastobj);
+            }
+            if (VectorCapableParser.isLOSType(convert)) {
+              if (lastobj instanceof Collection) {
+                ((Collection) lastobj).clear();
+              }
+              // TODO: for JDK collections, "leaftype" will be equal to the
+              // collection type unless we have got type info from elsewhere.
+              // for now, use arrays.
+              vcp.parse(convert, lastobj, leaftype, reflectivecache);
+            }
+            else { // must be a single item, or else a collection
+              Denumeration den = EnumerationConverter.getDenumeration(lastobj,
+                  reflectivecache);
+              // TODO: use CompletableDenumeration here to support extensible
+              // arrays.
+              if (EnumerationConverter.isEnumerable(convert.getClass())) {
+                for (Enumeration enumm = EnumerationConverter
+                    .getEnumeration(convert); enumm.hasMoreElements();) {
+                  den.add(enumm.nextElement());
+                }
+              }
+              else {
+                den.add(convert);
+              }
+            }
+          }
+          else { // property is a scalar type, possibly composite.
+            if (convert instanceof String[]) {
+              convert = ((String[]) convert)[0];
+            }
+            // Step 1 - attempt to convert the dar value if it is still a
+            // String,
+            // using our now knowledge of the target leaf type.
+            if (convert instanceof String) {
+              String string = (String) convert;
+              convert = ConvertUtil.parse(string, xmlprovider, leaftype);
+            }
+            // this case also deals with Maps and WBLs.
+            pa.setProperty(moveobj, tail, convert);
+          }
+        }
+        // at this point, moveobj contains the object BEFORE the final path
+        // section.
+
+        else if (dar.type.equals(DataAlterationRequest.DELETE)) {
+          try {
+            boolean failedremove = false;
+            Object removetarget = null;
+            // if we have data, we can try to remove it by value
+            if (convert == null) {
+              removetarget = moveobj;
+              convert = tail;
+            }
+            else {
+              removetarget = pa.getProperty(moveobj, tail);
+            }
+
+            // this decision is not quite right for "Map" but we have no way
+            // to
+            // declare the type of the container.
+            if (removetarget instanceof WriteableBeanLocator
+                || removetarget instanceof Map) {
+              leaftype = String.class;
+            }
+            Enumeration values = null;
+            if (EnumerationConverter.isEnumerable(convert.getClass())) {
+              values = EnumerationConverter.getEnumeration(convert);
+            }
+            else {
+              values = new SingleEnumeration(convert);
+            }
+
+            while (values.hasMoreElements()) {
+
+              Object toremove = values.nextElement();
+              // copied code from "ADD" branch. Regularise this conversion at
+              // some point.
+              if (toremove instanceof String) {
+                String string = (String) toremove;
+                convert = ConvertUtil.parse(string, xmlprovider, leaftype);
+              }
+              else if (leaftype == String.class) {
+                convert = ConvertUtil.render(toremove, xmlprovider);
+              }
+              if (removetarget instanceof WriteableBeanLocator) {
+                if (!((WriteableBeanLocator) removetarget)
+                    .remove((String) toremove)) {
+                  failedremove = true;
+                }
+              }
+              else if (removetarget instanceof Collection) {
+                if (!((Collection) removetarget).remove(toremove)) {
+                  failedremove = true;
+                }
+              }
+              else if (removetarget instanceof Map) {
+                if (((Map) removetarget).remove(toremove) == null) {
+                  failedremove = true;
+                }
+              }
+              else {
+                pa.setProperty(removetarget, (String) toremove, null);
+              }
+            }
+
+            if (failedremove) {
+              throw UniversalRuntimeException
+                  .accumulate(new PropertyException());
+            }
+          }
+          catch (Exception e) {
+            if (messages != null) {
+              TargettedMessage message = new TargettedMessage(
+                  CoreMessages.MISSING_DATA_ERROR, dar.path);
+              messages.addMessage(message);
+            }
+            Logger.log.warn("Couldn't remove object " + convert + " from path "
+                + dar.path, e);
+          }
+        }
+      }
+    });
+  }
+
+  public void applyAlteration(Object rootobj, final DataAlterationRequest dar,
+      TargettedMessageList messages, BeanInvalidationBracketer bib) {
     Logger.log.debug("Applying DAR " + dar.type + " to path " + dar.path + ": "
         + dar.data);
     String oldpath = dar.path;
@@ -163,8 +327,6 @@ public class DARApplier implements BeanModelAlterer {
         }
         moveobj = BeanUtil.navigate(moveobj, headpath, mappingcontext);
         dar.path = PathUtil.getFromHeadPath(dar.path);
-        if (bii != null)
-          bii.push(headpath);
         if (moveobj instanceof DARReceiver) {
           boolean accepted = ((DARReceiver) moveobj)
               .addDataAlterationRequest(dar);
@@ -173,166 +335,18 @@ public class DARApplier implements BeanModelAlterer {
         }
       }
       dar.path = oldpath;
-      Object convert = dar.data;
+      applyAlterationImpl(moveobj, tail, messages, dar, bib);
 
-      PropertyAccessor pa = MethodAnalyser.getPropertyAccessor(moveobj,
-          mappingcontext);
-      Class leaftype = pa.getPropertyType(moveobj, tail);
-      // invalidate FIRST - since even if exception is thrown, we may
-      // REQUIRE to perform a "guard" action to restore consistency.
-      if (bii != null)
-        bii.invalidate(tail);
-      if (dar.type.equals(DataAlterationRequest.ADD)) {
-    
-        // If we got a list of Strings in from
-        // the UI, they may be "cryptic" leaf types without proper packaging.
-        // This
-        // implies we MUST know the element type of the collection.
-        // For now we must assume collection is of leaf types.
-        if (pa.isMultiple(moveobj, tail)) {
-          Object lastobj = pa.getProperty(moveobj, tail);
-
-          AccessMethod sam = mappingcontext.getAnalyser(moveobj.getClass())
-              .getAccessMethod(tail);
-          if (convert instanceof String && springmode) {
-            // deference to Spring "auto-convert from comma-separated list"
-            // NB this is currently disused, RSACBeanLocator does not use
-            // DARApplier yet.
-            convert = StringList.fromString((String) convert);
-          }
-          int incomingsize = EnumerationConverter.getEnumerableSize(convert);
-          if (lastobj == null
-              || lastobj.getClass().isArray()
-              && EnumerationConverter.getEnumerableSize(lastobj) != incomingsize) {
-            lastobj = ReflectUtils.instantiateContainer(sam.getDeclaredType(),
-                incomingsize, reflectivecache);
-            pa.setProperty(moveobj, tail, lastobj);
-          }
-          if (VectorCapableParser.isLOSType(convert)) {
-            if (lastobj instanceof Collection) {
-              ((Collection) lastobj).clear();
-            }
-            // TODO: for JDK collections, "leaftype" will be equal to the
-            // collection type unless we have got type info from elsewhere.
-            // for now, use arrays.
-            vcp.parse(convert, lastobj, leaftype, reflectivecache);
-          }
-          else { // must be a single item, or else a collection
-            Denumeration den = EnumerationConverter.getDenumeration(lastobj,
-                reflectivecache);
-            // TODO: use CompletableDenumeration here to support extensible
-            // arrays.
-            if (EnumerationConverter.isEnumerable(convert.getClass())) {
-              for (Enumeration enumm = EnumerationConverter
-                  .getEnumeration(convert); enumm.hasMoreElements();) {
-                den.add(enumm.nextElement());
-              }
-            }
-            else {
-              den.add(convert);
-            }
-          }
-        }
-        else { // property is a scalar type, possibly composite.
-          if (convert instanceof String[]) {
-            convert = ((String[]) convert)[0];
-          }
-          // Step 1 - attempt to convert the dar value if it is still a String,
-          // using our now knowledge of the target leaf type.
-          if (convert instanceof String) {
-            String string = (String) convert;
-            convert = ConvertUtil.parse(string, xmlprovider, leaftype);
-          }
-          // this case also deals with Maps and WBLs.
-          pa.setProperty(moveobj, tail, convert);
-        }
-      }
-      // at this point, moveobj contains the object BEFORE the final path
-      // section.
-
-      else if (dar.type.equals(DataAlterationRequest.DELETE)) {
-        try {
-          boolean failedremove = false;
-          Object removetarget = null;
-          // if we have data, we can try to remove it by value
-          if (convert == null) {
-            removetarget = moveobj;
-            convert = tail;
-          }
-          else {
-            removetarget = pa.getProperty(moveobj, tail);
-          }
-
-          // this decision is not quite right for "Map" but we have no way to
-          // declare the type of the container.
-          if (removetarget instanceof WriteableBeanLocator
-              || removetarget instanceof Map) {
-            leaftype = String.class;
-          }
-          Enumeration values = null;
-          if (EnumerationConverter.isEnumerable(convert.getClass())) {
-            values = EnumerationConverter.getEnumeration(convert);
-          }
-          else {
-            values = new SingleEnumeration(convert);
-          }
-
-          while (values.hasMoreElements()) {
-
-            Object toremove = values.nextElement();
-            // copied code from "ADD" branch. Regularise this conversion at
-            // some point.
-            if (toremove instanceof String) {
-              String string = (String) toremove;
-              convert = ConvertUtil.parse(string, xmlprovider, leaftype);
-            }
-            else if (leaftype == String.class) {
-              convert = ConvertUtil.render(toremove, xmlprovider);
-            }
-            if (removetarget instanceof WriteableBeanLocator) {
-              if (!((WriteableBeanLocator) removetarget)
-                  .remove((String) toremove)) {
-                failedremove = true;
-              }
-            }
-            else if (removetarget instanceof Collection) {
-              if (!((Collection) removetarget).remove(toremove)) {
-                failedremove = true;
-              }
-            }
-            else if (removetarget instanceof Map) {
-              if (((Map) removetarget).remove(toremove) == null) {
-                failedremove = true;
-              }
-            }
-            else {
-              pa.setProperty(removetarget, (String) toremove, null);
-            }
-          }
-
-          if (failedremove) {
-            throw UniversalRuntimeException.accumulate(new PropertyException());
-          }
-        }
-        catch (Exception e) {
-          if (messages != null) {
-            TargettedMessage message = new TargettedMessage(
-                CoreMessages.MISSING_DATA_ERROR, dar.path);
-            messages.addMessage(message);
-          }
-          Logger.log.warn("Couldn't remove object " + convert + " from path "
-              + dar.path, e);
-        }
-      }
     }
     catch (Exception e) {
+      String emessage = "Error applying value " + dar.data + " to path " + dar.path; 
       if (messages != null) {
         TargettedMessage message = new TargettedMessage(e.getMessage(), e,
             oldpath);
         messages.addMessage(message);
+        Logger.log.info(emessage, e);
       }
-      Logger.log.info("Error applying value " + dar.data + " to path "
-          + dar.path, e);
+      else throw UniversalRuntimeException.accumulate(e, emessage);
     }
   }
 
@@ -342,21 +356,18 @@ public class DARApplier implements BeanModelAlterer {
    * already navigated to the root path referred to by the bean, and that the
    * DARList mentions paths relative to that bean.
    * 
-   * @param rootobj
-   *          The object to which alterations are to be applied
-   * @param toapply
-   *          The list of alterations
-   * @param messages
-   *          The list to which error messages accreted during application are
-   *          to be appended. This is probably the same as that in the
-   *          ThreadErrorState, but is supplied as an argument to reduce costs
-   *          of ThreadLocal gets.
+   * @param rootobj The object to which alterations are to be applied
+   * @param toapply The list of alterations
+   * @param messages The list to which error messages accreted during
+   *          application are to be appended. This is probably the same as that
+   *          in the ThreadErrorState, but is supplied as an argument to reduce
+   *          costs of ThreadLocal gets.
    */
   public void applyAlterations(Object rootobj, DARList toapply,
-      TargettedMessageList messages, BeanInvalidationIterator bii) {
+      TargettedMessageList messages, BeanInvalidationBracketer bib) {
     for (int i = 0; i < toapply.size(); ++i) {
       DataAlterationRequest dar = toapply.DARAt(i);
-      applyAlteration(rootobj, dar, messages, bii);
+      applyAlteration(rootobj, dar, messages, bib);
     }
 
   }

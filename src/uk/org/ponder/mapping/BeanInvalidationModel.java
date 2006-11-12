@@ -11,7 +11,7 @@ package uk.org.ponder.mapping;
  */
 
 public interface BeanInvalidationModel {
-  public BeanInvalidationIterator iterator();
+  public void invalidate(String path);
   public void clear();
   /** Returns a concrete path which was written to invalidate the specification.
    * Will be as long as the specification with wildcards replaced by their matches.
