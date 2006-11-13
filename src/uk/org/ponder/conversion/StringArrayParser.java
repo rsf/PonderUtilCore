@@ -10,6 +10,8 @@ import uk.org.ponder.stringutil.CharWrap;
 import uk.org.ponder.util.UniversalRuntimeException;
 
 public class StringArrayParser implements LeafObjectParser {
+  public static String[] EMPTY_STRINGL = {};
+  
   public static StringArrayParser instance = new StringArrayParser();
   
   public Object parse(String toparse) {
