@@ -17,6 +17,9 @@ public abstract class MessageLocator implements BeanLocator {
   public String getMessage(String code) {
     return getMessage(code, null);
   }
+  public String getMessage(String code, Object[] args) {
+    return getMessage(new String[] {code}, args);
+  }
   public String getMessage(String[] code, Object param) {
     return getMessage(code, new Object[] {param});
   }
