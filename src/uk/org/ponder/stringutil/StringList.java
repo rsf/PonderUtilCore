@@ -24,6 +24,11 @@ public class StringList extends ArrayList {
     append(tocopy);
   }
 
+  public StringList(String string) {
+    ensureCapacity(2);
+    add(string);
+  }
+  
   public StringList(String[] strings) {
     ensureCapacity(strings.length);
     for (int i = 0; i < strings.length; ++i) {

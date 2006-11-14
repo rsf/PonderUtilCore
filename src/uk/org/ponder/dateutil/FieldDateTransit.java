@@ -19,15 +19,15 @@ import uk.org.ponder.localeutil.LocaleReceiver;
 public class FieldDateTransit extends LocaleReceiver {
   private Date date = new Date();
   
-  private DateFormat shortformat;
+  private SimpleDateFormat shortformat;
   private DateFormat medformat;
   private DateFormat longformat;
   
   public void init() {
     Locale locale = getLocale();
-    shortformat = SimpleDateFormat.getDateInstance(SimpleDateFormat.SHORT, locale);
-    medformat = SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM, locale);
-    longformat = SimpleDateFormat.getDateInstance(SimpleDateFormat.LONG, locale);
+    shortformat = (SimpleDateFormat) DateFormat.getDateInstance(SimpleDateFormat.SHORT, locale);
+    medformat = DateFormat.getDateInstance(SimpleDateFormat.MEDIUM, locale);
+    longformat = DateFormat.getDateInstance(SimpleDateFormat.LONG, locale);
   }
   
   public String getShort() {
@@ -60,5 +60,9 @@ public class FieldDateTransit extends LocaleReceiver {
   
   public void setDate(Date date) {
     this.date = date;
+  }
+  
+  public String getShortFormat() {
+    return shortformat.toLocalizedPattern();
   }
 }
