@@ -16,34 +16,25 @@ import uk.org.ponder.util.UniversalRuntimeException;
 public class BeanUtil {
   /**
    * The String prefix used for the ID of a freshly created entity to an
-   * "obstinate" BeanLocator. The text following the prefix is arbitrary. Surely
-   * noone would be perverse enough to manage to create a legitimate object ID
-   * containing a space.
+   * "obstinate" BeanLocator following the standard OTP system. 
+   * The text following the prefix is arbitrary. Custom OTP systems might use
+   * a different prefix. 
    */
   public static String NEW_ENTITY_PREFIX = "new ";
 
-  // public static final String ELQUOTSTART = "['";
-  // public static final String ELQUOTEND = "]'";
-  // TODO: parse the special .['thing with.dots']. form of property names.
   public static String[] splitEL(String path) {
-    // StringList components = new StringList();
-    // boolean wassquare = true;
-    // int end = path.length();
-    // for (int i = 0; i < end; ++ i) {
-    // if (path.startsWith(ELQUOTSTART, i)) {
-    // int quotend = path.indexOf(ELQUOTEND, i + 2);
-    // if (quotend == -1) {
-    // throw new IllegalArgumentException("EL quoted string opened at index " +
-    // i + " in "
-    // + path + " was not closed");
-    // }
-    //        
-    // char c = path.charAt(i);
-    // if (c == '[' && i < end - 1 && path.charAt(i + 1) == '')
-    // }
-    return path.split("\\.");
+    StringList togo = new StringList();
+    CharWrap build = new CharWrap();
+    int index = 0;
+    while (index < path.length()) {
+      index = PathUtil.getPathSegment(build, path, index) + 1;
+      togo.add(build.toString());
+      build.clear();
+    }
+    return togo.toStringArray();
   }
-  
+ 
+  /** Compose head and tail paths, where escaping is unnecessary **/
   public static String composeEL(String head, String tail) {
     return head + '.' + tail;
   }
@@ -51,7 +42,7 @@ public class BeanUtil {
   public static String composeEL(StringList tocompose) {
     CharWrap togo = new CharWrap();
     for (int i = 0; i < tocompose.size(); ++i) {
-      togo.append(tocompose.stringAt(i));
+      PathUtil.composeSegment(togo, tocompose.stringAt(i));
       if (i != tocompose.size() - 1) {
         togo.append(".");
       }
