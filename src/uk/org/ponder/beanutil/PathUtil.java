@@ -71,8 +71,8 @@ public class PathUtil {
   static void composeSegment(CharWrap toaccept, String toappend) {
     for (int i = 0; i < toappend.length(); ++i) {
       char c = toappend.charAt(i);
-      if (c == '.') {
-        toaccept.append('\\').append('.');
+      if (c == '.' || c == '\\') {
+        toaccept.append('\\').append(c);
       }
       else
         toaccept.append(c);
