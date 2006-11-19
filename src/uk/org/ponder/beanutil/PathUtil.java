@@ -16,6 +16,11 @@ public class PathUtil {
   public static String getHeadPath(String path) {
     return getPathSegment(path, 0);
   }
+  
+  public static String getHeadPathEncoded(String path) {
+    int firstdot = getPathSegment(null, path, 0);
+    return path.substring(0, firstdot);
+  }
 
   public static String getFromHeadPath(String path) {
     int firstdot = getPathSegment(null, path, 0);

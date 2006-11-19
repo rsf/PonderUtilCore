@@ -320,7 +320,7 @@ public class DARApplier implements BeanModelAlterer {
       String tail = null;
 
       while (true) {
-        String headpath = PathUtil.getHeadPath(dar.path);
+        String headpath = PathUtil.getHeadPathEncoded(dar.path);
         if (headpath.equals(dar.path)) {
           tail = headpath;
           break;
