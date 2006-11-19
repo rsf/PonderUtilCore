@@ -322,7 +322,7 @@ public class DARApplier implements BeanModelAlterer {
       while (true) {
         String headpath = PathUtil.getHeadPathEncoded(dar.path);
         if (headpath.equals(dar.path)) {
-          tail = headpath;
+          tail = PathUtil.getHeadPath(headpath);
           break;
         }
         moveobj = BeanUtil.navigate(moveobj, headpath, mappingcontext);
