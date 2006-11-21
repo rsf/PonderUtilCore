@@ -3,6 +3,9 @@
  */
 package uk.org.ponder.beanutil;
 
+import java.util.Iterator;
+import java.util.Map;
+
 import uk.org.ponder.saxalizer.MethodAnalyser;
 import uk.org.ponder.saxalizer.SAXalizerMappingContext;
 import uk.org.ponder.stringutil.CharWrap;
@@ -50,6 +53,14 @@ public class BeanUtil {
     return togo.toString();
   }
 
+  public static void copyBeans(Map source, WriteableBeanLocator target) {
+    for (Iterator sit = source.keySet().iterator(); sit.hasNext();) {
+      String name = (String) sit.next();
+      Object bean = source.get(name);
+      target.set(name, bean);
+    }
+  }
+  
   public static Object navigate(Object rootobj, String path,
       SAXalizerMappingContext mappingcontext) {
     if (path == null || path.equals("")) {
