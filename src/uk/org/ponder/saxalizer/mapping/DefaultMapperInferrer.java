@@ -112,18 +112,18 @@ public class DefaultMapperInferrer implements SAXalizerMapperInferrer {
     togo.targetclass = clazz;
     SAMSList sams = togo.getSAMSList();
     Method[] methods = clazz.getMethods();
-    if (Logger.log.isDebugEnabled()) {
-      Logger.log.debug("Inferring default mapping for " + clazz);
-    }
+//    if (Logger.log.isDebugEnabled()) {
+//      Logger.log.debug("Inferring default mapping for " + clazz);
+//    }
     for (int i = 0; i < methods.length; ++i) {
       int modifiers = methods[i].getModifiers(); 
       if (!isPublicNonStatic(modifiers)) continue;
       String methodname = methods[i].getName();
       if (methodname.equals("getClass")) continue;
       int methodtype = accessorType(methods[i]);
-      if (Logger.log.isDebugEnabled()) {
-        Logger.log.debug("Method " + methodname + " access type " + methodtype);
-      }
+//      if (Logger.log.isDebugEnabled()) {
+//        Logger.log.debug("Method " + methodname + " access type " + methodtype);
+//      }
       if (methodtype != -1) {
         String basename = deBean(methodname);
         SAXAccessMethodSpec spec = byXMLNameSafe(sams, basename, methods[i].getReturnType());
@@ -133,9 +133,9 @@ public class DefaultMapperInferrer implements SAXalizerMapperInferrer {
         else {
           spec.setmethodname = methodname;
         }
-        if (Logger.log.isDebugEnabled()) {
-          Logger.log.debug("Method gave access method " + spec);
-        }
+//        if (Logger.log.isDebugEnabled()) {
+//          Logger.log.debug("Method gave access method " + spec);
+//        }
         spec.xmlname += "*"; // better make everything polymorphic
         togo.addNonDuplicate(spec);
       }
@@ -149,9 +149,9 @@ public class DefaultMapperInferrer implements SAXalizerMapperInferrer {
       SAXAccessMethodSpec spec = byXMLNameSafe(sams, fieldname, fields[i].getType());
       spec.accesstype = SAXAccessMethodSpec.ACCESS_FIELD;
       spec.fieldname = fieldname;
-      if (Logger.log.isDebugEnabled()) {
-        Logger.log.debug("Field gave access method " + spec);
-      }
+//      if (Logger.log.isDebugEnabled()) {
+//        Logger.log.debug("Field gave access method " + spec);
+//      }
       spec.xmlname += "*"; // better make everything polymorphic
       togo.addNonDuplicate(spec);
     }
