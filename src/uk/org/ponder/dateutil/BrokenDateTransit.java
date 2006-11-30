@@ -105,7 +105,7 @@ public class BrokenDateTransit {
       year = formatted.substring(4);
     }
     else if (mode.equals(FULL_MODE)) {
-      SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyyHHmmss");
+      SimpleDateFormat sdf = LocalSDF.breakformat.get();
       String formatted = sdf.format(date);
       day = formatted.substring(0, 2);
       month = formatted.substring(2, 4);

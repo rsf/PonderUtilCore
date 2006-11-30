@@ -20,11 +20,15 @@ import uk.org.ponder.util.UniversalRuntimeException;
  * 
  */
 public class LocalSDF {
-  public static LocalSDF w3cformat = new LocalSDF();
-  
-  // this represents w3c standard dates as defined in 
-  // http://www.w3.org/TR/NOTE-datetime
+  /** this represents w3c standard dates as defined in 
+   * http://www.w3.org/TR/NOTE-datetime */
   public static final String W3C_DATE = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+  /** A format to easy breaking dates into field representations **/
+  public static final String BREAKER_DATE = "ddMMyyyyHHmmss";
+  
+  public static LocalSDF w3cformat = new LocalSDF();
+  public static LocalSDF breakformat = new LocalSDF(BREAKER_DATE);
+  
   private String formatstring;
   private ThreadLocal formatter = new ThreadLocal() {
     public Object initialValue() {
@@ -49,11 +53,6 @@ public class LocalSDF {
     return get().format(toformat);
   }
   public Date parse(String datestring) {
-    try {
-      return get().parse(datestring);
-    }
-    catch (ParseException e) {
-      throw UniversalRuntimeException.accumulate(e, "Error parsing date " + datestring);
-    }
+    return DateUtil.parse(get(), datestring);
   }
 }
