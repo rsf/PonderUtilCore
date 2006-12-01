@@ -49,7 +49,7 @@ public class FieldDateTransit extends LocaleReceiver {
     longtimeformat.setTimeZone(timezone);
     //breakformat = new SimpleDateFormat(LocalSDF.BREAKER_DATE, locale);
     // do not use new Date(0) because of TZ insanity!!!
-    date = LocalSDF.breakformat.parse("20000101000000");
+    date = LocalSDF.breakformat.parse("01012000000000");
   }
 
   public String getShort() {

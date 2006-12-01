@@ -3,12 +3,9 @@
  */
 package uk.org.ponder.dateutil;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
-
-import uk.org.ponder.util.UniversalRuntimeException;
 
 /**
  * A thread-local SimpleDateFormat wrapper. If the default constructor is
@@ -53,6 +50,7 @@ public class LocalSDF {
     return get().format(toformat);
   }
   public Date parse(String datestring) {
-    return DateUtil.parse(get(), datestring);
+    Date parsed =  DateUtil.parse(get(), datestring);
+    return parsed;
   }
 }
