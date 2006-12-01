@@ -160,6 +160,7 @@ public class DARApplier implements BeanModelAlterer {
       public void run() {
         Class leaftype = pa.getPropertyType(moveobj, tail);
         Object convert = dar.data;
+        if (convert == DataAlterationRequest.INAPPLICABLE_VALUE) return;
         // invalidate FIRST - since even if exception is thrown, we may
         // REQUIRE to perform a "guard" action to restore consistency.
         if (dar.type.equals(DataAlterationRequest.ADD)) {

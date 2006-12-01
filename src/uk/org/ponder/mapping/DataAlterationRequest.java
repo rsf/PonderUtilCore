@@ -13,6 +13,12 @@ package uk.org.ponder.mapping;
 public class DataAlterationRequest {
   public static final String ADD = "add";
   public static final String DELETE = "delete";
+  
+  /** A Distinguished value for the field "data" which determines that the
+   * the value will not apply. However the DAR will proceed through the applier
+   * in order that any guards may execute.
+   */
+  public static final Object INAPPLICABLE_VALUE = new String("Inapplicable Value");
   /** The EL path to which the object value is to be delivered, or to be 
    * deleted from.
    */
