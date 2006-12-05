@@ -18,7 +18,7 @@ import uk.org.ponder.localeutil.LocaleReceiver;
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
  */
 
-public class FieldDateTransit extends LocaleReceiver {
+public class StandardFieldDateTransit extends LocaleReceiver implements FieldDateTransit {
   private Date date;
 
   private SimpleDateFormat shortformat;
