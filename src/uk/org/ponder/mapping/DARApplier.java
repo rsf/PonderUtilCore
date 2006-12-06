@@ -121,7 +121,9 @@ public class DARApplier implements BeanModelAlterer {
   private static BeanInvalidationBracketer nullbib = new BeanInvalidationBracketer() {
     public void invalidate(String path, Runnable toinvoke) {
       toinvoke.run();
-    }};
+    }
+  };
+
   // a convenience method to have the effect of a "set" ValueBinding,
   // constructs a mini-DAR just for setting. Errors will be accumulated
   // into the supplied error list.
@@ -160,7 +162,8 @@ public class DARApplier implements BeanModelAlterer {
       public void run() {
         Class leaftype = pa.getPropertyType(moveobj, tail);
         Object convert = dar.data;
-        if (convert == DataAlterationRequest.INAPPLICABLE_VALUE) return;
+        if (convert == DataAlterationRequest.INAPPLICABLE_VALUE)
+          return;
         // invalidate FIRST - since even if exception is thrown, we may
         // REQUIRE to perform a "guard" action to restore consistency.
         if (dar.type.equals(DataAlterationRequest.ADD)) {
@@ -340,14 +343,20 @@ public class DARApplier implements BeanModelAlterer {
 
     }
     catch (Exception e) {
-      String emessage = "Error applying value " + dar.data + " to path " + dar.path; 
+      String emessage = "Error applying value " + dar.data + " to path "
+          + dar.path;
       if (messages != null) {
-        TargettedMessage message = new TargettedMessage(e.getMessage(), e,
-            oldpath);
+        Throwable wrapped = e;
+        if (e instanceof UniversalRuntimeException) {
+          wrapped = ((UniversalRuntimeException) e).getTargetException();
+        }
+        TargettedMessage message = new TargettedMessage(wrapped.getMessage(),
+            e, oldpath);
         messages.addMessage(message);
         Logger.log.info(emessage, e);
       }
-      else throw UniversalRuntimeException.accumulate(e, emessage);
+      else
+        throw UniversalRuntimeException.accumulate(e, emessage);
     }
   }
 
