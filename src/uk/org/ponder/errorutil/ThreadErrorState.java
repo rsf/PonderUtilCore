@@ -5,6 +5,7 @@ package uk.org.ponder.errorutil;
 
 import uk.org.ponder.hashutil.EighteenIDGenerator;
 import uk.org.ponder.hashutil.IDGenerator;
+import uk.org.ponder.messageutil.TargettedMessage;
 import uk.org.ponder.util.Logger;
 
 /**

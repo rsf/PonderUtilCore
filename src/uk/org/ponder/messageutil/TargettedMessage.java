@@ -1,7 +1,7 @@
 /*
  * Created on Nov 23, 2004
  */
-package uk.org.ponder.errorutil;
+package uk.org.ponder.messageutil;
 
 import java.io.Serializable;
 

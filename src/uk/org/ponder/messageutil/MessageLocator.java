@@ -1,7 +1,7 @@
 /*
  * Created on Dec 3, 2004
  */
-package uk.org.ponder.errorutil;
+package uk.org.ponder.messageutil;
 
 import uk.org.ponder.beanutil.BeanLocator;
 

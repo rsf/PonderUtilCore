@@ -1,7 +1,7 @@
 /*
  * Created on Nov 17, 2005
  */
-package uk.org.ponder.errorutil;
+package uk.org.ponder.messageutil;
 
 import uk.org.ponder.util.UniversalRuntimeException;
 

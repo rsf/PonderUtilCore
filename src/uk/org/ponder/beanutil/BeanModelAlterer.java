@@ -3,10 +3,10 @@
  */
 package uk.org.ponder.beanutil;
 
-import uk.org.ponder.errorutil.TargettedMessageList;
 import uk.org.ponder.mapping.BeanInvalidationBracketer;
 import uk.org.ponder.mapping.DARList;
 import uk.org.ponder.mapping.DataAlterationRequest;
+import uk.org.ponder.messageutil.TargettedMessageList;
 
 /** The base interface for RSF's expression language (EL) */
 

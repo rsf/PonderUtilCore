@@ -3,6 +3,8 @@
  */
 package uk.org.ponder.errorutil;
 
+import uk.org.ponder.messageutil.TargettedMessageList;
+
 public class ErrorStateEntry {
   /** A unique error ID, for easy location in logs.
    */

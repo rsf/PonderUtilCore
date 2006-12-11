@@ -1,7 +1,7 @@
 /*
  * Created on Aug 4, 2005
  */
-package uk.org.ponder.errorutil;
+package uk.org.ponder.messageutil;
 
 import java.io.Serializable;
 import java.util.ArrayList;
