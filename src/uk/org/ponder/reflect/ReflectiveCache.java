@@ -91,16 +91,17 @@ public abstract class ReflectiveCache {
     return null;
   }
 
-  /** Returns a no-arg constructor for the given class */
+  /**
+   * Get a no-argument constructor for a class
+   * @param clazz the class
+   * @return a no-arg constructor
+   */
   public static Constructor getConstructor(Class clazz) {
-    Constructor togo = null;
     try {
-      togo = clazz.getConstructor(SAXAccessMethod.emptyclazz);
-    }
-    catch (Exception e) {
+      return clazz.getConstructor(SAXAccessMethod.emptyclazz);
+    } catch (Exception e) {
       throw UniversalRuntimeException.accumulate(e, "Error getting constructor for " + clazz);
     }
-    return togo;
   }
 
   protected Map getClassMap(Class target) {
@@ -117,7 +118,7 @@ public abstract class ReflectiveCache {
   }
   
   public static Method getMethod(Class clazz, String name, Class[] argtypes) {
-    try {
+	try {
       return clazz.getMethod(name, argtypes);
     }
     catch (Exception e) {
@@ -131,7 +132,10 @@ public abstract class ReflectiveCache {
   public abstract Object invokeMethod(Object bean, String method);
   protected abstract Object invokeMethod(Object target, String name, Class[] infer, Object[] args);
 
-  /** This generic invocation method currently disused */
+  /**
+   * This generic invocation method currently unused, 
+   * for internal framework use only
+   */
   public Object invokeMethod(Object target, String name, Object[] args) {
     if (target instanceof MethodInvokingProxy) {
       return ((MethodInvokingProxy)target).invokeMethod(name, args);
