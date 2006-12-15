@@ -7,12 +7,15 @@ import uk.org.ponder.util.AssertionException;
 import uk.org.ponder.util.EnumerationConverter;
 import uk.org.ponder.util.UniversalRuntimeException;
 
-/*
+/**
  * SAXAccessMethod is a package private class that represents a
  * SAXAccessMethodSpec that the SAXalizer has resolved to an actual method by
  * means of reflection. For a set method, when the correct XML closing tag is
  * seen, the method will be invoked with the just-constructed tag as argument.
  * All construction of reflectors is done during the construction of this class.
+ * 
+ * @author Antranig Basman (antranig@caret.cam.ac.uk)
+ * @author Aaron Zeckoski (aaronz@vt.edu)
  */
 public class SAXAccessMethod implements AccessMethod {
   public static final Class[] emptyclazz = {};
@@ -22,29 +25,28 @@ public class SAXAccessMethod implements AccessMethod {
   Field field; 
   Method getmethod; // The actual Method object to be invoked
   Method setmethod;
-  /** The type of subobject (or superclass thereof) handled by this
-   method */
-  Class clazz; 
-  /** The actual (declared) return or field type in code (may
-                       be container) */
-  Class accessclazz; 
-  /**  The class that this is a method of, for convenience. */
-  Class parentclazz; 
+  /** The type of subobject (or superclass thereof) handled by this method */
+  Class clazz;
+  /** The actual (declared) return or field type in code (maybe container) */
+  Class accessclazz;
+  /** The owning class, an AccessMethod for some particular user-visible class */
+  Class parentclazz;
+  /** The class where the physical declaration of this access member appears */
+  Class declaringclazz;
+
   public String tagname;
   /** Uses the new "tag*" polymorphic nickname scheme */
   boolean ispolymorphic; 
- /** A collection rather than a single object is
-  being addressed */
+ /** A collection rather than a single object is being addressed */
   public boolean ismultiple; 
- /** A more specific set method has been supplied
-   than get method. */
+ /** A more specific set method has been supplied than get method. */
   public boolean isexactsetter;
   /** if "ismultiple" is this ONLY enumerable and not denumerable? */
   boolean isenumonly;
   /** Is this property typed either BeanLocator or Map? */
   boolean ismappable;
  /** if this is a "black hole" setter for ignoring properties */
-  boolean isdevnull; 
+  boolean isdevnull;
 
   // Note that enumerations are the only things which are enumerable but not
   // denumerable.
@@ -169,6 +171,21 @@ public class SAXAccessMethod implements AccessMethod {
     if (setmethod != null && getmethod != null) {
       isexactsetter = !setmethod.getParameterTypes()[0].equals(getmethod.getReturnType());
     }
+
+    // populate the declaringclazz variable in whichever method is appropriate
+    if (field != null) {
+    	declaringclazz = field.getDeclaringClass();
+    } else if (setmethod != null) {
+    	declaringclazz = setmethod.getDeclaringClass();
+    } else if (getmethod != null) {
+    	declaringclazz = getmethod.getDeclaringClass();
+    }
+
+// Antranig's version of the code block above which is more "understandable" -AZ
+//    declaringclazz = (field == null ? (setmethod == null ? 
+//    	getmethod.getDeclaringClass() : setmethod.getDeclaringClass() ) : 
+//    		field.getDeclaringClass() );
+
     // TODO: some weird code here for "default" tags - what on earth does this do?
     if (tagname != null && tagname.equals("")) {
       if (!canGet()) {
@@ -180,7 +197,7 @@ public class SAXAccessMethod implements AccessMethod {
             "Default mapped type does not map onto a mappable type");
       }
       // unless specified by now, remain mapped values as strings.
-      // QQQQQ make sure defaultinferring happens before now.
+      // TODO make sure defaultinferring happens before now.
       clazz = m.clazz == null ? String.class
           : m.clazz;
     }
