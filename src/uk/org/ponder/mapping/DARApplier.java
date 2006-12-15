@@ -118,12 +118,6 @@ public class DARApplier implements BeanModelAlterer {
     }
   }
 
-  private static BeanInvalidationBracketer nullbib = new BeanInvalidationBracketer() {
-    public void invalidate(String path, Runnable toinvoke) {
-      toinvoke.run();
-    }
-  };
-
   // a convenience method to have the effect of a "set" ValueBinding,
   // constructs a mini-DAR just for setting. Errors will be accumulated
   // into the supplied error list.
@@ -132,7 +126,7 @@ public class DARApplier implements BeanModelAlterer {
     DataAlterationRequest dar = new DataAlterationRequest(fullpath, value);
     // messages.pushNestedPath(headpath);
     // try {
-    applyAlteration(root, dar, messages, nullbib);
+    applyAlteration(root, dar, messages, null);
     // }
     // finally {
     // messages.popNestedPath();
@@ -157,6 +151,9 @@ public class DARApplier implements BeanModelAlterer {
       BeanInvalidationBracketer bib) {
     final PropertyAccessor pa = MethodAnalyser.getPropertyAccessor(moveobj,
         mappingcontext);
+    if (bib == null) {
+      bib = NullBeanInvalidationBracketer.instance;
+    }
 
     bib.invalidate(dar.path, new Runnable() {
       public void run() {
@@ -248,8 +245,7 @@ public class DARApplier implements BeanModelAlterer {
             }
 
             // this decision is not quite right for "Map" but we have no way
-            // to
-            // declare the type of the container.
+            // to declare the type of the container.
             if (removetarget instanceof WriteableBeanLocator
                 || removetarget instanceof Map) {
               leaftype = String.class;
