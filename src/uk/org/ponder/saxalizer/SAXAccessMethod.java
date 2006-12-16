@@ -302,4 +302,9 @@ public class SAXAccessMethod implements AccessMethod {
   public String getPropertyName() {
     return tagname;
   }
+
+  public Class getDeclaringClass() {
+	return declaringclazz;
+  }
+
 }

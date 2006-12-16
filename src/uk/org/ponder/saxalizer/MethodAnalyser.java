@@ -71,7 +71,7 @@ public class MethodAnalyser implements PropertyAccessor {
       method = attrmethods.get(tagname);
     }
     if (method == null && WriteableBeanLocator.class.isAssignableFrom(targetclass)) {
-      return new WBLAccessMethod(tagname);
+      return new WBLAccessMethod(WriteableBeanLocator.class, tagname);
     }
     return method;
   }

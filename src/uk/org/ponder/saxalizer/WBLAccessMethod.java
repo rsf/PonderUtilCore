@@ -8,9 +8,11 @@ import uk.org.ponder.beanutil.WriteableBeanLocator;
 
 public class WBLAccessMethod implements AccessMethod {
   private String propname;
+  private Class clazz;
 
-  public WBLAccessMethod(String propname) {
-    this.propname = propname;
+  public WBLAccessMethod(Class targetClass, String propname) {
+	this.propname = propname;
+	this.clazz = targetClass;
   }
 
   public String getPropertyName() {
@@ -47,6 +49,10 @@ public class WBLAccessMethod implements AccessMethod {
 
   public Class getDeclaredType() {
     return Object.class;
+  }
+
+  public Class getDeclaringClass() {
+	return clazz;
   }
 
 }

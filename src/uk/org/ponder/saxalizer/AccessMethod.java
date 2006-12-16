@@ -48,4 +48,9 @@ public interface AccessMethod {
 
   public Class getDeclaredType();
   
+  /**
+   * @return the declaring class for this method
+   */
+  public Class getDeclaringClass();
+  
 }
