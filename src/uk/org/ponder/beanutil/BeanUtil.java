@@ -19,9 +19,9 @@ import uk.org.ponder.util.UniversalRuntimeException;
 public class BeanUtil {
   /**
    * The String prefix used for the ID of a freshly created entity to an
-   * "obstinate" BeanLocator following the standard OTP system. 
-   * The text following the prefix is arbitrary. Custom OTP systems might use
-   * a different prefix. 
+   * "obstinate" BeanLocator following the standard OTP system. The text
+   * following the prefix is arbitrary. Custom OTP systems might use a different
+   * prefix.
    */
   public static String NEW_ENTITY_PREFIX = "new ";
 
@@ -36,12 +36,12 @@ public class BeanUtil {
     }
     return togo.toStringArray();
   }
- 
-  /** Compose head and tail paths, where escaping is unnecessary **/
+
+  /** Compose head and tail paths, where escaping is unnecessary * */
   public static String composeEL(String head, String tail) {
     return head + '.' + tail;
   }
-  
+
   public static String composeEL(StringList tocompose) {
     CharWrap togo = new CharWrap();
     for (int i = 0; i < tocompose.size(); ++i) {
@@ -60,7 +60,15 @@ public class BeanUtil {
       target.set(name, bean);
     }
   }
-  
+
+  public static void censorNullBean(String beanname, Object beanvalue) {
+    if (beanvalue == null) {
+      throw UniversalRuntimeException.accumulate(new BeanNotFoundException(),
+          "No bean with name " + beanname
+              + " could be found in RSAC or application context");
+    }
+  }
+
   public static Object navigate(Object rootobj, String path,
       SAXalizerMappingContext mappingcontext) {
     if (path == null || path.equals("")) {
@@ -71,8 +79,10 @@ public class BeanUtil {
     Object moveobj = rootobj;
     for (int comp = 0; comp < components.length; ++comp) {
       if (moveobj == null) {
-        throw UniversalRuntimeException.accumulate(new IllegalArgumentException(),
-            "Null value encounted in bean path at component " + components[comp - 1]);
+        throw UniversalRuntimeException.accumulate(
+            new IllegalArgumentException(),
+            "Null value encounted in bean path at component "
+                + components[comp - 1]);
       }
       else {
         PropertyAccessor pa = MethodAnalyser.getPropertyAccessor(moveobj,
@@ -102,9 +112,10 @@ public class BeanUtil {
   public static String stripELNoisy(String el) {
     String stripped = stripEL(el);
     if (stripped == null) {
-      throw new IllegalArgumentException("EL expression \"" + el + "\" is not bracketed with #{..}");
+      throw new IllegalArgumentException("EL expression \"" + el
+          + "\" is not bracketed with #{..}");
     }
     return stripped;
   }
-  
+
 }
