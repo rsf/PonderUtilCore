@@ -265,10 +265,10 @@ public class DARApplier implements BeanModelAlterer {
               // some point.
               if (toremove instanceof String) {
                 String string = (String) toremove;
-                convert = ConvertUtil.parse(string, xmlprovider, leaftype);
+                toremove = ConvertUtil.parse(string, xmlprovider, leaftype);
               }
               else if (leaftype == String.class) {
-                convert = ConvertUtil.render(toremove, xmlprovider);
+                toremove = ConvertUtil.render(toremove, xmlprovider);
               }
               if (removetarget instanceof WriteableBeanLocator) {
                 if (!((WriteableBeanLocator) removetarget)
@@ -287,7 +287,7 @@ public class DARApplier implements BeanModelAlterer {
                 }
               }
               else {
-                pa.setProperty(removetarget, (String) toremove, null);
+                pa.setProperty(removetarget, (String) convert, null);
               }
             }
 
