@@ -31,6 +31,9 @@ public class DataAlterationRequest {
    * equality semantics must have been provided. 
    */
   public Object data;
+  /** Whether any data conversions should be considered when applying the
+   * request */
+  public boolean applyconversions = true;
   /** The type of the request, either an ADD (default) or DELETE.
    */
   public String type = ADD;

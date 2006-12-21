@@ -122,8 +122,9 @@ public class DARApplier implements BeanModelAlterer {
   // constructs a mini-DAR just for setting. Errors will be accumulated
   // into the supplied error list.
   public void setBeanValue(String fullpath, Object root, Object value,
-      TargettedMessageList messages) {
+      TargettedMessageList messages, boolean applyconversions) {
     DataAlterationRequest dar = new DataAlterationRequest(fullpath, value);
+    dar.applyconversions = applyconversions;
     // messages.pushNestedPath(headpath);
     // try {
     applyAlteration(root, dar, messages, null);
@@ -220,7 +221,11 @@ public class DARApplier implements BeanModelAlterer {
             // Step 1 - attempt to convert the dar value if it is still a
             // String,
             // using our now knowledge of the target leaf type.
-            if (convert instanceof String) {
+            // TODO: this is ambiguous. We should simply have a new binding type
+            // for XML-encoded data. Should not attempt to reconvert String
+            // data!
+            // (case of guard invocation, for example)
+            if (convert instanceof String && dar.applyconversions) {
               String string = (String) convert;
               convert = ConvertUtil.parse(string, xmlprovider, leaftype);
             }
@@ -263,12 +268,14 @@ public class DARApplier implements BeanModelAlterer {
               Object toremove = values.nextElement();
               // copied code from "ADD" branch. Regularise this conversion at
               // some point.
-              if (toremove instanceof String) {
-                String string = (String) toremove;
-                toremove = ConvertUtil.parse(string, xmlprovider, leaftype);
-              }
-              else if (leaftype == String.class) {
-                toremove = ConvertUtil.render(toremove, xmlprovider);
+              if (dar.applyconversions) {
+                if (toremove instanceof String) {
+                  String string = (String) toremove;
+                  toremove = ConvertUtil.parse(string, xmlprovider, leaftype);
+                }
+                else if (leaftype == String.class) {
+                  toremove = ConvertUtil.render(toremove, xmlprovider);
+                }
               }
               if (removetarget instanceof WriteableBeanLocator) {
                 if (!((WriteableBeanLocator) removetarget)
@@ -344,7 +351,10 @@ public class DARApplier implements BeanModelAlterer {
       if (messages != null) {
         Throwable wrapped = e;
         if (e instanceof UniversalRuntimeException) {
-          wrapped = ((UniversalRuntimeException) e).getTargetException();
+          Throwable target = ((UniversalRuntimeException) e)
+              .getTargetException();
+          if (target != null)
+            wrapped = target;
         }
         TargettedMessage message = new TargettedMessage(wrapped.getMessage(),
             e, oldpath);

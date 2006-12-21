@@ -15,7 +15,7 @@ public interface BeanModelAlterer {
   public Object getBeanValue(String fullpath, Object root);
 
   public void setBeanValue(String fullpath, Object root, Object value,
-      TargettedMessageList messages);
+      TargettedMessageList messages, boolean applyconversion);
 
   public Object invokeBeanMethod(String fullpath, Object root);
 
