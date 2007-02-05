@@ -158,10 +158,11 @@ public class DARApplier implements BeanModelAlterer {
 
     bib.invalidate(dar.path, new Runnable() {
       public void run() {
-        Class leaftype = pa.getPropertyType(moveobj, tail);
         Object convert = dar.data;
         if (convert == DataAlterationRequest.INAPPLICABLE_VALUE)
           return;
+        Class leaftype = pa.getPropertyType(moveobj, tail);
+
         // invalidate FIRST - since even if exception is thrown, we may
         // REQUIRE to perform a "guard" action to restore consistency.
         if (dar.type.equals(DataAlterationRequest.ADD)) {
@@ -323,26 +324,32 @@ public class DARApplier implements BeanModelAlterer {
         + dar.data);
     String oldpath = dar.path;
     try {
-      Object moveobj = rootobj;
-      String tail = null;
+      // Do not check for receivers if this is an interceptor-only trigger
+      if (dar.data != DataAlterationRequest.INAPPLICABLE_VALUE) {
+        Object moveobj = rootobj;
+        String tail = null;
 
-      while (true) {
-        String headpath = PathUtil.getHeadPathEncoded(dar.path);
-        if (headpath.equals(dar.path)) {
-          tail = PathUtil.getHeadPath(headpath);
-          break;
+        while (true) {
+          String headpath = PathUtil.getHeadPathEncoded(dar.path);
+          if (headpath.equals(dar.path)) {
+            tail = PathUtil.getHeadPath(headpath);
+            break;
+          }
+          moveobj = BeanUtil.navigate(moveobj, headpath, mappingcontext);
+          dar.path = PathUtil.getFromHeadPath(dar.path);
+          if (moveobj instanceof DARReceiver) {
+            boolean accepted = ((DARReceiver) moveobj)
+                .addDataAlterationRequest(dar);
+            if (accepted)
+              return;
+          }
         }
-        moveobj = BeanUtil.navigate(moveobj, headpath, mappingcontext);
-        dar.path = PathUtil.getFromHeadPath(dar.path);
-        if (moveobj instanceof DARReceiver) {
-          boolean accepted = ((DARReceiver) moveobj)
-              .addDataAlterationRequest(dar);
-          if (accepted)
-            return;
-        }
+        dar.path = oldpath;
+        applyAlterationImpl(moveobj, tail, messages, dar, bib);
       }
-      dar.path = oldpath;
-      applyAlterationImpl(moveobj, tail, messages, dar, bib);
+      else {
+        applyAlterationImpl(rootobj, dar.path, messages, dar, bib);
+      }
 
     }
     catch (Exception e) {

@@ -85,6 +85,10 @@ public class SAXalXMLProvider implements MappableXMLProvider {
   }
 
   public String toString(Object towrite) {
+    return toString(towrite, true);
+  }
+
+  public String toString(Object towrite, boolean compactmode) {
     DeSAXalizer desaxalizer = getDeSAXalizer();
     String resourcename = mappingcontext.classnamemanager.getClassName(towrite.getClass());
     if (resourcename == null) {
@@ -92,14 +96,14 @@ public class SAXalXMLProvider implements MappableXMLProvider {
           + towrite.getClass() + " supplied to writeXML");
     }
     try {
-      return desaxalizer.toString(towrite, resourcename);
+      return desaxalizer.toString(towrite, resourcename, compactmode);
     }
     catch (Throwable t) {
       throw UniversalRuntimeException.accumulate(t,
           "Error writing object of class " + towrite.getClass());
     }
   }
-
+  
   private Class findClass(String classname) {
     Class objclass = mappingcontext.classnamemanager.findClazz(classname);
     if (objclass == null) {

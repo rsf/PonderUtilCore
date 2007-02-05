@@ -96,12 +96,12 @@ public class DeSAXalizer {
    *         tags, minus declaration.
    */
 
-  public String toString(Object root, String roottag) {
+  public String toString(Object root, String roottag, boolean compactmode) {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     if (root == null)
       return "null";
     try {
-      serializeSubtree(root, roottag, baos, COMPACT_MODE);
+      serializeSubtree(root, roottag, baos, compactmode? COMPACT_MODE : 0);
       baos.close();
       return baos.toString(XMLWriter.DEFAULT_ENCODING);
     }

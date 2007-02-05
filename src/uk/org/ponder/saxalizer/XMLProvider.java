@@ -15,5 +15,6 @@ public interface XMLProvider {
   public Object readXML(Object classorobject, InputStream is);
   
   public String toString(Object towrite);
+  public String toString(Object towrite, boolean compact);
   public Object fromString(String toread);
 }

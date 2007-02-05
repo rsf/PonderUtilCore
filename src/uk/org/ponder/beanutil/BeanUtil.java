@@ -82,7 +82,9 @@ public class BeanUtil {
         throw UniversalRuntimeException.accumulate(
             new IllegalArgumentException(),
             "Null value encounted in bean path at component "
-                + components[comp - 1]);
+                + (comp == 0 ? "<root>"
+                    : components[comp - 1] + " while traversing for "
+                        + components[comp]));
       }
       else {
         PropertyAccessor pa = MethodAnalyser.getPropertyAccessor(moveobj,
