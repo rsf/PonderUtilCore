@@ -4,18 +4,19 @@
 package uk.org.ponder.messageutil;
 
 import uk.org.ponder.beanutil.BeanLocator;
+import uk.org.ponder.beanutil.BeanResolver;
 
 /**
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
  * 
  */
-public abstract class MessageLocator implements BeanLocator {
-  public abstract String getMessage(String[] code, Object[] args);
+public abstract class MessageLocator implements BeanLocator, BeanResolver {
+  public abstract String getMessage(String[] bean, Object[] args);
   public String getMessage(String[] code) {
     return getMessage(code, null);
   }
   public String getMessage(String code) {
-    return getMessage(code, null);
+    return getMessage(code, (Object[])null);
   }
   public String getMessage(String code, Object[] args) {
     return getMessage(new String[] {code}, args);
@@ -28,6 +29,9 @@ public abstract class MessageLocator implements BeanLocator {
   }
   public Object locateBean(String path) {
     return getMessage(new String[] {path}, null);
+  }
+  public String resolveBean(Object bean) {
+    return getMessage((String)bean, null);
   }
   
 }
