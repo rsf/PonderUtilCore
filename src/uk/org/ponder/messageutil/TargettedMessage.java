@@ -6,6 +6,10 @@ package uk.org.ponder.messageutil;
 import java.io.Serializable;
 
 /**
+ * Represents a single message, for presentation to the user, targetted at a
+ * particular field or part of an interface. The message has not yet been 
+ * resolved onto its localised representation (generally to be performed via
+ * {@link MessageLocator}, and has an associated severity level. 
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
  * 
  */
@@ -41,6 +45,11 @@ public class TargettedMessage implements Serializable {
   public TargettedMessage() {
   }
 
+  /** Construct a simple targetted message
+   * @param messagecode The message key for resolving the message text.
+   * @param targetid The target field or path of the message, if <code>null</code>
+   * will be substituted with {@link #TARGET_NONE}.
+   */
   public TargettedMessage(String messagecode, String targetid) {
     updateMessageCode(messagecode);
     this.targetid = targetid == null ? TARGET_NONE
@@ -86,6 +95,14 @@ public class TargettedMessage implements Serializable {
     this.args = args;
   }
 
+  /** The fullest constructor for TargettedMessage.
+   * @param messagecodes Message codes to be used for resolution, in descending
+   * order of priority. See {@link MessageLocator}
+   * @param args Any arguments required for substitution in the resolved message.
+   * @param targetid The ID or path that the message is to be targetted at.
+   * @param severity The severity of the message, either {@link #SEVERITY_INFO} or
+   * {@link #SEVERITY_ERROR}
+   */
   public TargettedMessage(String[] messagecodes, Object[] args,
       String targetid, int severity) {
     updateTarget(targetid);
