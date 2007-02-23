@@ -11,9 +11,9 @@ import uk.org.ponder.beanutil.BeanResolver;
  * Spring's MessageSource, only with a greater flexibility of lookup, and the
  * dependency on the Locale has been factored off into a request-scope
  * dependency.
- * <p>
+ * <p/>
  * MessageLocator also supports use as either a BeanLocator (hence messages may
- * be addressed directly via EL as <code>#{messageLocator.message-key}</code>
+ * be addressed directly via EL as <code>#{messageLocator.message-key}</code>)
  * or as BeanResolver (hence messages may be automatically fetched during
  * component fixup stage in RSF by declaring the <code>resolver</code> field
  * in a <code>UIBound</code> to be targetted at the EL
