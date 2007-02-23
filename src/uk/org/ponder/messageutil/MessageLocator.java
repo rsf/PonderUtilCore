@@ -27,7 +27,8 @@ public abstract class MessageLocator implements BeanLocator, BeanResolver {
    * @see #getMessage(String, Object[])
    * @param code An array of potential message codes to be looked up, in order
    * of priority. Each code will be looked up in turn and the resolved message
-   * from the first which is found will be returned, if any.
+   * from the first which is found will be returned, if any. This strategy 
+   * matches that of Spring's MessageSourceResolvable.
    */
   public abstract String getMessage(String[] bean, Object[] args);
 
