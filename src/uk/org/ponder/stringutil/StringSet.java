@@ -7,9 +7,8 @@ import java.util.HashSet;
 
 import uk.org.ponder.util.UniversalRuntimeException;
 
-/**
+/** A convenience wrapper for a typesafe Set of <code>String</code> objects.
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
- * 
  */
 public class StringSet extends HashSet {
   public void addAll(String[] array) {
