@@ -16,4 +16,22 @@ public class StringUtil {
   public static final int hashCode(String a) {
     return a == null? 0 : a.hashCode();
   }
+  
+  /** JDK String.split is EXTREMELY slow and also has somewhat unclear
+   * semantics.
+   */
+  public static String[] split (String tosplit, char delim) {
+    StringList togo = new StringList();
+    CharWrap buffer = new CharWrap();
+    for (int i = 0; i < tosplit.length(); ++ i) {
+      char c = tosplit.charAt(i);
+      if (c == delim) {
+        togo.add(buffer.toString());
+        buffer.clear();
+      }
+      else buffer.append(c);
+    }
+    togo.add(buffer.toString());
+    return togo.toStringArray();
+  }
 }

@@ -39,6 +39,7 @@ public class StandardFieldDateTransit extends LocaleReceiver implements FieldDat
     // TODO: Think about sharing these, see LocalSDF for construction costs
     shortformat = (SimpleDateFormat) DateFormat.getDateInstance(
         DateFormat.SHORT, locale);
+    shortformat.setLenient(false);
     medformat = DateFormat.getDateInstance(DateFormat.MEDIUM, locale);
     longformat = DateFormat.getDateInstance(DateFormat.LONG, locale);
     timeformat = (SimpleDateFormat) DateFormat.getTimeInstance(

@@ -41,7 +41,7 @@ public class StringList extends ArrayList {
   }
 
   public boolean add(Object o) {
-    if (!(o instanceof String)) {
+    if (o != null && !(o instanceof String)) {
       throw new UniversalRuntimeException("Object " + o + " of " + o.getClass()
           + " added to StringList");
     }
