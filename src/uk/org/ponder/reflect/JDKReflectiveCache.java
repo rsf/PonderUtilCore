@@ -17,12 +17,12 @@ public class JDKReflectiveCache extends ReflectiveCache {
   }
   
   /** Invokes the supplied no-arg Method object on the supplied target */
-  private static Object invokeMethod(Method method, Object target) {
+  public static Object invokeMethod(Method method, Object target) {
     return invokeMethod(method, target, SAXAccessMethod.emptyobj);
   }
   
   /** Invokes the supplied no-arg Method object on the supplied target */
-  private static Object invokeMethod(Method method, Object target, Object[] args) {
+  public static Object invokeMethod(Method method, Object target, Object[] args) {
     try {
       return method.invoke(target, args);
     }
