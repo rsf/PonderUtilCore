@@ -7,15 +7,16 @@
   <name>PonderUtilCore</name>
   <groupId>uk.org.ponder</groupId>
   <artifactId>ponderutilcore</artifactId>
-  <version>1.1.4</version>
+  <properties>
+    <ponderutilcore.version>1.2.1RC2</ponderutilcore.version>
+  </properties>
+  <version>${ponderutilcore.version}</version>
   <description>
     PonderUtilCore is a low-level library for Serialization and
     Primitive type manipulation
   </description>
   <inceptionYear>2005</inceptionYear>
-  <properties>
-    <deploy.type>jar</deploy.type>
-  </properties>
+  <packaging>jar</packaging>
   <mailingLists>
     <mailingList>
       <name>${pom.name} Dev List</name>
