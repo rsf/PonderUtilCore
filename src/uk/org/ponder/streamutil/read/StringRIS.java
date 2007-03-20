@@ -26,6 +26,7 @@ public class StringRIS implements ReadInputStream {
     int remain = read.length() - pos;
     if (length > remain) length = remain;
     read.getChars(pos, pos + length, target, start);
+    pos += length;
     return length;
   }
   
