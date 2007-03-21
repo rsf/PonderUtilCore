@@ -30,8 +30,10 @@ public abstract class MessageLocator implements BeanLocator, BeanResolver {
    * from the first which is found will be returned, if any. This strategy 
    * matches that of Spring's MessageSourceResolvable.
    */
-  public abstract String getMessage(String[] bean, Object[] args);
+  public abstract String getMessage(String[] code, Object[] args);
 
+  /** Resolve a defaultible message which takes no arguments 
+   * @see #getMessage(String[], Object[]) **/
   public String getMessage(String[] code) {
     return getMessage(code, null);
   }
@@ -59,10 +61,15 @@ public abstract class MessageLocator implements BeanLocator, BeanResolver {
     return getMessage(new String[] { code }, new Object[] { param });
   }
 
+  /** @see BeanLocator#locateBean(String)
+   */
   public Object locateBean(String path) {
     return getMessage(new String[] { path }, null);
   }
 
+  /** @see BeanResolver#resolveBean(Object)
+   */
+  
   public String resolveBean(Object bean) {
     return getMessage((String) bean, null);
   }
