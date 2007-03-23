@@ -37,7 +37,7 @@ public class StringArrayParser implements LeafObjectParser {
         togo[i] = new String(readbuffer.storage, 0, length);
       }
       catch (Exception e) {
-        UniversalRuntimeException.accumulate(e,
+        throw UniversalRuntimeException.accumulate(e,
             "Error reading integer vector at position " + i + " of expected "
                 + size);
       }
