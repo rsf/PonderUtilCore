@@ -69,6 +69,18 @@ public class HTMLUtil {
     return togo.toString();
   }
 
+  /** Emits the text for a single Javascript call taking a single argument 
+   * @see #emitJavascriptCall(String, String[])
+   * **/
+  public static String emitJavascriptCall(String name, String argument) {
+    return emitJavascriptCall(name, new String[] {argument});
+  }
+
+  /** Emits the text for a single Javascript call, that is 
+   * <code>name(arguments[0], arguments[1]) ...)</code> 
+   * @param name The name of the JS function to be invoked
+   * @param arguments The function arguments to be applied.
+   */
   public static String emitJavascriptCall(String name, String[] arguments) {
     CharWrap togo = new CharWrap();
     togo.append("  ").append(name).append("(\"");

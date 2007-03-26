@@ -20,8 +20,8 @@ import uk.org.ponder.stringutil.CharWrap;
  */
 
 public class Logger {
-  // The ponder Logger is now deprecated. All new logging should be done
-  // via this commons standard logger.
+  // The ponder Logger is now deprecated. 
+  // All logging should be done using this standard Log4j logger.
   public static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger("PonderUtilCore");
   static {
     //FineFormatter.configureLogger(log);
