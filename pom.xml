@@ -12,8 +12,8 @@
   </properties>
   <version>${ponderutilcore.version}</version>
   <description>
-    PonderUtilCore is a low-level library for Serialization and
-    Primitive type manipulation
+    PonderUtilCore is a low-level library for Serialization and Primitive type
+    manipulation
   </description>
   <inceptionYear>2005</inceptionYear>
   <packaging>jar</packaging>
@@ -83,6 +83,14 @@
   <build>
     <sourceDirectory>src</sourceDirectory>
     <resources>
+      <resource>
+        <directory>.</directory>
+        <includes>
+          <include>*.TXT</include>
+          <include>src/**/*.java</include>
+        </includes>
+        <filtering>false</filtering>
+      </resource>
       <resource>
         <directory>src</directory>
         <includes>
