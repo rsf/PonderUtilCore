@@ -26,11 +26,16 @@ public class StandardFieldDateTransit extends LocaleReceiver implements FieldDat
   private DateFormat longformat;
   private SimpleDateFormat timeformat;
   private DateFormat longtimeformat;
+  private DateFormat iso8601tz;
   //private DateFormat breakformat;
   private TimeZone timezone = TimeZone.getDefault();
 
   public void setTimeZone(TimeZone timezone) {
     this.timezone = timezone;
+  }
+  
+  public int getTZOffset() {
+    return timezone.getOffset(date.getTime());
   }
   
   public void init() {
@@ -48,6 +53,7 @@ public class StandardFieldDateTransit extends LocaleReceiver implements FieldDat
     longtimeformat = DateFormat.getTimeInstance(
         DateFormat.LONG, locale);
     longtimeformat.setTimeZone(timezone);
+    iso8601tz = new SimpleDateFormat(LocalSDF.W3C_DATE_TZ);
     //breakformat = new SimpleDateFormat(LocalSDF.BREAKER_DATE, locale);
     // do not use new Date(0) because of TZ insanity!!!
     date = LocalSDF.breakformat.parse("01012000000000");
@@ -101,6 +107,14 @@ public class StandardFieldDateTransit extends LocaleReceiver implements FieldDat
     this.date = date;
   }
 
+  public String getISO8601TZ() {
+    return iso8601tz.format(date);
+  }
+  
+  public void setISO8601TZ(String isoform) throws ParseException {
+    date = iso8601tz.parse(isoform);
+  }
+  
   public String getShortFormat() {
     return shortformat.toLocalizedPattern();
   }
