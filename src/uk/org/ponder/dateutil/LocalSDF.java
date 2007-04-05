@@ -20,8 +20,10 @@ public class LocalSDF {
   /** this represents W3C (ISO-8601) standard dates as defined in 
    * http://www.w3.org/TR/NOTE-datetime */
   public static final String W3C_DATE = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-  /** An 8601 format with a variable timezons **/
+  /** An 8601 format with a variable timezone **/
   public static final String W3C_DATE_TZ = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+  /** An 8601 format with a truncated (forced) timezone **/
+  public static final String W3C_DATE_NOTZ = "yyyy-MM-dd'T'HH:mm:ss.SSS";
   /** A format to easy breaking dates into field representations **/
   public static final String BREAKER_DATE = "ddMMyyyyHHmmss";
   
