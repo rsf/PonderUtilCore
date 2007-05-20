@@ -31,9 +31,7 @@ public class StringList extends ArrayList {
   
   public StringList(String[] strings) {
     ensureCapacity(strings.length);
-    for (int i = 0; i < strings.length; ++i) {
-      add(strings[i]);
-    }
+    append(strings);
   }
 
   public String stringAt(int i) {
@@ -48,6 +46,21 @@ public class StringList extends ArrayList {
     return super.add(o);
   }
 
+  /**
+   * Appends the members of the supplied array to this list.
+   * 
+   * @param toappend The array of Strings to be appended, which may be
+   *          <code>null</code>.
+   */
+  
+  public void append(String[] toappend) {
+    if (toappend != null) {
+      for (int i = 0; i < toappend.length; ++i) {
+        add(toappend[i]);
+      }
+    }
+  }
+  
   /**
    * Appends the members of the supplied list to this list.
    * 
