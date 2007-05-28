@@ -62,6 +62,8 @@ public class DeepBeanCloner {
   public boolean areEqual(Object left, Object right) {
     if (left == null)
       return right == null;
+    if (right == null)
+      return false;
     if (left.getClass() != right.getClass())
       return false;
     Class objclass = left.getClass();
