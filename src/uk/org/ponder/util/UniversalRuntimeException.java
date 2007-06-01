@@ -141,7 +141,7 @@ public class UniversalRuntimeException extends RuntimeException implements
     return togo;
   }
 
-  public static Throwable unwrapException(Throwable tounwrap) {
+  private static Throwable unwrapExceptionInternal(Throwable tounwrap) {
     if (tounwrap instanceof InvocationTargetException) {
       return ((InvocationTargetException)tounwrap).getTargetException();
     }
@@ -157,6 +157,16 @@ public class UniversalRuntimeException extends RuntimeException implements
     return null;
   }
   
+  public static Throwable unwrapException(Throwable tounwrap) {
+    if (tounwrap instanceof UniversalRuntimeException) {
+      return ((UniversalRuntimeException)tounwrap).getTargetException();
+    }
+    else {
+      Throwable unwrapped = unwrapExceptionInternal(tounwrap);
+      return unwrapped == null? tounwrap: unwrapped;
+    }
+  }
+  
   // Problem: URE(ITE(URE)) will lose message.
   // SAXException eg RETAINS inner message, ITE wrapping layer
   // discards id. This suggests that unwrapException needs to be somehow
@@ -168,7 +178,7 @@ public class UniversalRuntimeException extends RuntimeException implements
     Throwable tounwrap;
     do {
       tounwrap = t;
-      t = unwrapException(tounwrap);
+      t = unwrapExceptionInternal(tounwrap);
     } while (t != null);
     t = tounwrap;
 
