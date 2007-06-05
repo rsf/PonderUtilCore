@@ -22,7 +22,7 @@ public class TestDateTransit extends TestCase {
     cal.set(2007, 4, 5, 1, 0, 0);
     cal.set(Calendar.MILLISECOND, 0);
     Date caltime = cal.getTime();
-    caltime.setTimeZone(offtz);
+    //caltime.setTimeZone(offtz);
     transit.setDate(cal.getTime());
     String tz8601 = transit.getISO8601TZ();
     assertEquals(tz8601, "2007-05-05T01:00:00.000+0100");
