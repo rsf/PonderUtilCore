@@ -8,7 +8,7 @@
   <groupId>uk.org.ponder</groupId>
   <artifactId>ponderutilcore</artifactId>
   <properties>
-    <ponderutilcore.version>1.2.2M1</ponderutilcore.version>
+    <ponderutilcore.version>1.2.2M2</ponderutilcore.version>
   </properties>
   <version>${ponderutilcore.version}</version>
   <description>
