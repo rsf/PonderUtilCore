@@ -42,6 +42,9 @@ public class BeanLocatorPropertyAccessor implements PropertyAccessor {
   }
 
   public Class getPropertyType(Object parent, String name) {
+    // The fact that this currently causes a fetch of the parent bean
+    // causes an anomaly with scoped beans, which are momentarily
+    // blank-constructed before they are replaced.
     Object located = ((BeanLocator)parent).locateBean(name);
     return located == null? Object.class : located.getClass(); 
   }
