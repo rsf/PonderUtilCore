@@ -65,7 +65,7 @@ public class EnumerationConverter {
     else if (o.getClass().isArray()) {
       return ((Object[]) o).length;
     }
-    return -1;
+    return 1;
   }
 
   /**
