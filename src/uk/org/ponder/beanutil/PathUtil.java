@@ -54,8 +54,13 @@ public class PathUtil {
   }
 
   /**
-   * Compose a prefix and suffix EL path, where the prefix is not escaped, and
-   * is not null.
+   * Compose a prefix and suffix EL path, where the prefix has not been escaped, 
+   * and is not null.
+   * @param prefix A single path segment (bean name) starting the path, may not
+   * be null or empty. This will be escaped.
+   * @param suffix A single path segment (property name) continuing the path,
+   * may not be null or empty. This will become escaped.
+   * @return A properly escaped full path, representing "prefix.suffix".
    */
   public static String buildPath(String prefix, String suffix) {
     CharWrap toappend = new CharWrap();
