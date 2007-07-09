@@ -52,12 +52,15 @@ public class UniversalRuntimeException extends RuntimeException implements
   static {
     for (int i = 0; i < unwrapclasses.length; ++i) {
       try {
-        Class unwrapclass = Class.forName(unwrapclasses[i]);
-        Object unwrapper = unwrapclass.newInstance();
-        addUnwrapper((ExceptionUnwrapper) unwrapper);
+        Class unwrapclass = 
+          Thread.currentThread().getContextClassLoader().loadClass(unwrapclasses[i]);
+        ExceptionUnwrapper unwrapper = (ExceptionUnwrapper) unwrapclass.newInstance();
+        if (unwrapper.isValid()) {
+          addUnwrapper(unwrapper);
+        }
       }
       catch (Throwable t) {
-        Logger.log.warn("Couldn't load unwrapper " + unwrapclasses[i]);
+        Logger.log.debug("Couldn't load unwrapper " + unwrapclasses[i]);
       }
     }
   }
