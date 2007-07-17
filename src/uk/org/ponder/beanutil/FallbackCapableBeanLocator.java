@@ -7,6 +7,15 @@ import java.util.ArrayList;
 
 import uk.org.ponder.stringutil.StringList;
 
+/**
+ * A BeanLocator which accepts a set of "Fallback Locators", which are request
+ * beans of type {@link FallbackBeanLocator}, whose contained beans will be
+ * exported up to the root level - such paths are automatically permitted.
+ * Fallback locators are only initialised on the first query to this locator
+ * (probably via an EL expression) in order to minimise the possibility
+ * construct-time cycles.
+ */
+
 public class FallbackCapableBeanLocator implements WriteableBeanLocator {
 
   private WriteableBeanLocator wbl;
