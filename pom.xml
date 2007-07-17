@@ -25,6 +25,13 @@
       <name>${pom.name} User List</name>
     </mailingList>
   </mailingLists>
+  <distributionManagement>
+    <repository>
+      <id>CARET-Maven2-dev</id>
+      <name>CARET Maven 2 Dev repository</name>
+      <url>scp://amb26@catnep.caret.cam.ac.uk/home/www2/htdocs/maven2dev</url>
+    </repository>
+  </distributionManagement>
   <!-- 
     <gumpRepositoryId>caret-saffron-svn</gumpRepositoryId>
     <siteAddress>saffron.caret.cam.ac.uk</siteAddress>
