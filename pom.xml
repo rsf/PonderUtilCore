@@ -1,111 +1,242 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
                       http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <name>PonderUtilCore</name>
-  <groupId>uk.org.ponder</groupId>
-  <artifactId>ponderutilcore</artifactId>
-  <properties>
-    <ponderutilcore.version>1.2.2M5-SNAPSHOT</ponderutilcore.version>
-  </properties>
-  <version>${ponderutilcore.version}</version>
-  <description>
-    PonderUtilCore is a low-level library for Serialization and Primitive type
-    manipulation
-  </description>
-  <inceptionYear>2005</inceptionYear>
-  <packaging>jar</packaging>
-  <mailingLists>
-    <mailingList>
-      <name>${pom.name} Dev List</name>
-    </mailingList>
-    <mailingList>
-      <name>${pom.name} User List</name>
-    </mailingList>
-  </mailingLists>
-  <distributionManagement>
-    <repository>
-      <id>CARET-Maven2-dev</id>
-      <name>CARET Maven 2 Dev repository</name>
-      <url>scp://amb26@catnep.caret.cam.ac.uk/home/www2/htdocs/maven2dev</url>
-    </repository>
-  </distributionManagement>
-  <!-- 
-    <gumpRepositoryId>caret-saffron-svn</gumpRepositoryId>
-    <siteAddress>saffron.caret.cam.ac.uk</siteAddress>
-    <siteDirectory>
-    /home/gump/project-websites/PonderUtilCore/
-    </siteDirectory>
-    <distributionSite>saffron.caret.cam.ac.uk</distributionSite>
-    <distributionDirectory>
-    /home/gump/project-downloads/PonderUtilCore
-    </distributionDirectory>
-  -->
-  <developers>
-    <developer>
-      <id>amb26</id>
-      <name>Antranig Basman</name>
-      <email>antranig@caret.cam.ac.uk</email>
-      <url></url>
-      <organization>CARET</organization>
-      <organizationUrl>http://www.caret.cam.ac.uk/</organizationUrl>
-    </developer>
-  </developers>
-  <licenses>
-    <license>
-      <name>University of Cambridge, Open Source License</name>
-      <url></url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
-  <scm>
-    <connection>
-      scm:svn:https://saffron.caret.cam.ac.uk/svn/projects/PonderUtilCore/trunk
-    </connection>
-    <developerConnection>
-      scm:svn:https://saffron.caret.cam.ac.uk/svn/projects/PonderUtilCore/trunk
-    </developerConnection>
-    <url>https://saffron.caret.cam.ac.uk/cgi-bin/viewcvs.cgi/</url>
-  </scm>
-  <organization>
-    <name>CARET, University of Cambridge</name>
-    <url>http://www.caret.cam.ac.uk/</url>
-  </organization>
-  <dependencies>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.9</version>
-      <type>jar</type>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <sourceDirectory>src</sourceDirectory>
-    <resources>
-      <resource>
-        <directory>.</directory>
-        <includes>
-          <include>*.TXT</include>
-          <include>src/**/*.java</include>
-        </includes>
-        <filtering>false</filtering>
-      </resource>
-      <resource>
-        <directory>src</directory>
-        <includes>
-          <include>*.xml</include>
-        </includes>
-        <filtering>false</filtering>
-      </resource>
-    </resources>
-  </build>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>uk.org.ponder</groupId>
+	<artifactId>ponderutilcore</artifactId>
+	<properties>
+		<ponderutilcore.version>
+			1.2.2M5-SNAPSHOT
+		</ponderutilcore.version>
+	</properties>
+	<version>${ponderutilcore.version}</version>
+	<name>PonderUtilCore</name>
+	<url>http://ponder.org.uk/</url>
+	<description>
+		PonderUtilCore is a low-level Java library for Serialization and
+		Primitive type manipulation
+	</description>
+	<inceptionYear>2005</inceptionYear>
+	<organization>
+		<name>CARET, University of Cambridge</name>
+		<url>http://www.caret.cam.ac.uk/</url>
+	</organization>
+
+	<packaging>jar</packaging>
+
+	<!-- development team -->
+	<developers>
+		<developer>
+			<id>amb26</id>
+			<name>Antranig Basman</name>
+			<email>antranig@caret.cam.ac.uk</email>
+			<roles>
+				<role>Project Manager</role>
+				<role>Architect</role>
+				<role>Developer</role>
+			</roles>
+			<url>http://ponder.org.uk/</url>
+			<organization>CARET</organization>
+			<organizationUrl>
+				http://www.caret.cam.ac.uk/
+			</organizationUrl>
+			<timezone>0</timezone>
+		</developer>
+	</developers>
+
+	<distributionManagement>
+		<repository>
+			<id>CARET-Maven2-dev</id>
+			<name>CARET Maven 2 Dev repository</name>
+			<url>
+				scp://amb26@catnep.caret.cam.ac.uk/home/www2/htdocs/maven2dev
+			</url>
+		</repository>
+	</distributionManagement>
+
+	<issueManagement>
+		<system>JIRA</system>
+		<url>http://www.caret.cam.ac.uk/jira/browse/RSF</url>
+	</issueManagement>
+
+	<ciManagement>
+		<system>Continuum</system>
+		<url>http://saffron.caret.cam.ac.uk/continuum</url>
+		<notifiers>
+			<notifier>
+				<type>mail</type>
+				<address>antranig@caret.cam.ac.uk</address>
+			</notifier>
+		</notifiers>
+	</ciManagement>
+
+
+	<!-- define the license -->
+	<licenses>
+		<license>
+			<name>BSD License</name>
+			<url>
+				http://www.opensource.org/licenses/bsd-license.php
+			</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<!-- define source code repository -->
+	<scm>
+		<connection>
+			scm:svn:https://saffron.caret.cam.ac.uk/svn/projects/PonderUtilCore/trunk
+		</connection>
+		<developerConnection>
+			scm:svn:https://saffron.caret.cam.ac.uk/svn/projects/PonderUtilCore/trunk
+		</developerConnection>
+		<url>
+			https://saffron.caret.cam.ac.uk/svn/projects/PonderUtilCore/trunk/
+		</url>
+	</scm>
+
+	<!-- define javadocs and jxr docs -->
+	<reporting>
+		<plugins>
+			<plugin>
+				<!-- javadocs -->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<!-- junit test reports -->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<!-- unit test coverage reporting -->
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>cobertura-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<!-- Code analysis report -->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<configuration>
+					<targetjdk>1.5</targetjdk>
+					<rulesets>
+						<ruleset>/rulesets/basic.xml</ruleset>
+						<ruleset>/rulesets/codesize.xml</ruleset>
+						<ruleset>/rulesets/design.xml</ruleset>
+						<ruleset>/rulesets/finalizers.xml</ruleset>
+						<ruleset>/rulesets/imports.xml</ruleset>
+						<ruleset>/rulesets/logging-java.xml</ruleset>
+						<ruleset>/rulesets/migrating.xml</ruleset>
+						<ruleset>/rulesets/strings.xml</ruleset>
+						<ruleset>/rulesets/typeresolution.xml</ruleset>
+						<ruleset>/rulesets/unusedcode.xml</ruleset>
+					</rulesets>
+					<format>xml</format>
+					<linkXref>true</linkXref>
+					<sourceEncoding>utf-8</sourceEncoding>
+					<minimumTokens>100</minimumTokens>
+				</configuration>
+			</plugin>
+			<plugin>
+				<!-- Changelog report -->
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>changelog-maven-plugin</artifactId>
+				<configuration>
+					<type>range</type>
+					<range>90</range><!-- days -->
+				</configuration>
+			</plugin>
+			<plugin>
+				<!-- TODO tags report -->
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>taglist-maven-plugin</artifactId>
+				<configuration>
+					<tags>
+						<tag>TODO</tag>
+						<tag>FIXME</tag>
+						<tag>@deprecated</tag>
+					</tags>
+				</configuration>
+			</plugin>
+			<plugin>
+				<!-- jdepend code analysis -->
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jdepend-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<!-- jxr source code cross linking -->
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jxr-maven-plugin</artifactId>
+				<configuration>
+					<linkJavadoc>true</linkJavadoc>
+					<javadocDir>apidocs</javadocDir>
+				</configuration>
+			</plugin>
+		</plugins>
+	</reporting>
+
+	<profiles>
+		<profile>
+			<id>release</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.9</version>
+			<type>jar</type>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<sourceDirectory>src</sourceDirectory>
+		<resources>
+			<resource>
+				<directory>.</directory>
+				<includes>
+					<include>*.TXT</include>
+					<include>src/**/*.java</include>
+				</includes>
+				<filtering>false</filtering>
+			</resource>
+			<resource>
+				<directory>src</directory>
+				<includes>
+					<include>*.xml</include>
+				</includes>
+				<filtering>false</filtering>
+			</resource>
+		</resources>
+	</build>
+
 </project>
 
