@@ -39,6 +39,21 @@ public class PathUtil {
     int lastdot = lastDotIndex(path);
     return getPathSegment(path, lastdot + 1);
   }
+  
+  /** Builds an EL path of variable length. Particulary good when using
+   *  strings of BeanLocators, Maps, and friends. Assumes none of the segments
+   *  have been escaped yet.
+   */
+  public static String composePath(String [] segments) {
+    CharWrap toappend = new CharWrap();
+    for (int i = 0; i < segments.length; i++) {
+      if (toappend.size != 0) {
+        toappend.append('.');
+      }
+      composeSegment(toappend, segments[i]);
+    }
+    return toappend.toString();
+  }
 
   /**
    * Compose a prefix and suffix EL path, where the prefix is already escaped.
