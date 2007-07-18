@@ -67,11 +67,11 @@
 		<notifiers>
 			<notifier>
 				<type>mail</type>
-				<sendOnError>true</sendOnError>
-				<sendOnFailure>true</sendOnFailure>
-				<!-- <sendOnSuccess>true</sendOnSuccess> -->
-				<!-- <sendOnWarning>true</sendOnWarning> -->
 				<configuration>
+					<sendOnError>true</sendOnError>
+					<sendOnFailure>true</sendOnFailure>
+					<!-- <sendOnSuccess>true</sendOnSuccess> -->
+					<!-- <sendOnWarning>true</sendOnWarning> -->
 					<address>antranig@caret.cam.ac.uk</address>
 				</configuration>
 			</notifier>
