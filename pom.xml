@@ -75,6 +75,12 @@
 					<address>antranig@caret.cam.ac.uk</address>
 				</configuration>
 			</notifier>
+			<notifier>
+				<type>mail</type>
+				<configuration>
+					<address>sgithens@caret.cam.ac.uk</address>
+				</configuration>
+			</notifier>
 		</notifiers>
 	</ciManagement>
 
