@@ -4,27 +4,25 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
                       http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>uk.org.ponder</groupId>
 	<artifactId>ponderutilcore</artifactId>
-	<properties>
-		<ponderutilcore.version>
-			1.2.2M5-SNAPSHOT
-		</ponderutilcore.version>
-	</properties>
-	<version>${ponderutilcore.version}</version>
+	<packaging>jar</packaging>
 	<name>PonderUtilCore</name>
+	<groupId>uk.org.ponder</groupId>
+	<properties>
+		<ponderutilcore.version>1.2.2M5-SNAPSHOT</ponderutilcore.version>
+	</properties>
+	<organization>
+		<name>CARET, University of Cambridge</name>
+		<url>http://www.caret.cam.ac.uk/</url>
+	</organization>
+	<inceptionYear>2005</inceptionYear>
 	<url>http://ponder.org.uk/</url>
 	<description>
 		PonderUtilCore is a low-level Java library for Serialization and
 		Primitive type manipulation
 	</description>
-	<inceptionYear>2005</inceptionYear>
-	<organization>
-		<name>CARET, University of Cambridge</name>
-		<url>http://www.caret.cam.ac.uk/</url>
-	</organization>
+	<version>${ponderutilcore.version}</version>
 
-	<packaging>jar</packaging>
 
 	<!-- development team -->
 	<developers>
