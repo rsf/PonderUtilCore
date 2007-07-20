@@ -14,13 +14,15 @@ import uk.org.ponder.stringutil.CharWrap;
 
 /**
  * The root of unchecked runtime exceptions thrown by the libraries. There is a
- * general movement to make most exceptions runtime exceptions (by not only
- * me!), since exception specifications often add verbosity without facility.
+ * general movement to make most exceptions runtime exceptions, 
+ * since exception specifications often add verbosity without facility.
  * <p>
  * Checked exceptions are most appropriate for signalling problems between
  * libraries with a wide degree of separation. Within a single body of code,
  * unchecked exceptions should be used to propagate error conditions to the next
- * boundary. * http://c2.com/cgi/wiki?CheckedExceptionsConsideredHarmful
+ * boundary.
+ * 
+ * <a href="http://www.mindview.net/Etc/Discussions/CheckedExceptions/">Does Java need Checked Exceptions?</a>
  * <p>
  * This class has a useful (and growing) body of schemes for absorbing the
  * target exceptions from other types of wrapping exceptions and rewrapping
@@ -29,7 +31,15 @@ import uk.org.ponder.stringutil.CharWrap;
  * What we wish to preserve is a) the ultimate stack trace from the cause of the
  * problem and b) a set of increasingly detailed messages that can be accreted
  * onto the exception as it winds up the stack.
- * <p>
+ * <p>The typical usage in client code looks as follows:
+ * <xmp>
+ * try {
+ *    .... block generated checked or unchecked exceptions 
+ *  }
+ * catch (Exception e) {
+ *   throw UniversalRuntimeException.accumulate(e, "What I learned in this catch block" );
+ *   }
+ * </xmp>
  * A UniversalRuntimeException also contains a Class representing its
  * "category", a point in the inheritance hierarchy that may be used to classify
  * the nature of exceptions, as being distinct from the wrapped target exception
@@ -172,7 +182,7 @@ public class UniversalRuntimeException extends RuntimeException implements
   
   // Problem: URE(ITE(URE)) will lose message.
   // SAXException eg RETAINS inner message, ITE wrapping layer
-  // discards id. This suggests that unwrapException needs to be somehow
+  // discards it. This suggests that unwrapException needs to be somehow
   // stateful in that it signals when it unwraps, whether a *NEW* message
   // might have been uncovered. The hack below is no good.
   
