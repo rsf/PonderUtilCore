@@ -11,6 +11,8 @@ import java.util.StringTokenizer;
 import uk.org.ponder.util.Logger;
 import uk.org.ponder.util.UniversalRuntimeException;
 
+/** Utilities for operating on URLs */
+
 public class URLUtil {
   
   public static boolean isAbsolute(String url) {
@@ -28,9 +30,22 @@ public class URLUtil {
    */
   
   public static String appendAttribute(String url, String name, String value) {
+    CharWrap togo = new CharWrap(url);
     int qpos = url.indexOf('?');
-    char sep = qpos == -1? '?' : '&';
-    return url + sep + URLEncoder.encode(name) + '=' + URLEncoder.encode(value);
+    appendAttribute(togo, qpos == -1, name, value);
+    return togo.toString();
+  }
+
+  /** Append the supplied name/value pair to the end of the supplied URL, 
+   * after URLencoding name and value. The attribute will use the ? or &amp; 
+   * character according to whether <code>isfirst</code> is true or false.
+   */
+  
+  public static void appendAttribute(CharWrap togo, boolean isfirst, String name, String value) {
+    togo.append(isfirst ? '?' : '&');
+    togo.append(URLEncoder.encode(name));
+    togo.append("=");
+    togo.append(URLEncoder.encode(value));
   }
   
   /** Convert list of URL-form name/value pairs into a Map representation */
