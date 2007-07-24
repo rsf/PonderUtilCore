@@ -11,6 +11,7 @@ import uk.org.ponder.arrayutil.ArrayUtil;
 import uk.org.ponder.beanutil.BeanModelAlterer;
 import uk.org.ponder.beanutil.BeanResolver;
 import uk.org.ponder.beanutil.BeanUtil;
+import uk.org.ponder.beanutil.ELReference;
 import uk.org.ponder.beanutil.PathUtil;
 import uk.org.ponder.beanutil.PropertyAccessor;
 import uk.org.ponder.beanutil.WriteableBeanLocator;
@@ -318,10 +319,13 @@ public class DARApplier implements BeanModelAlterer {
     });
   }
 
-  public void applyAlteration(Object rootobj, final DataAlterationRequest dar,
+  public void applyAlteration(Object rootobj, DataAlterationRequest dar,
       TargettedMessageList messages, BeanInvalidationBracketer bib) {
     Logger.log.debug("Applying DAR " + dar.type + " to path " + dar.path + ": "
         + dar.data);
+    if (dar.data instanceof ELReference) {
+      dar.data = getBeanValue((String) dar.data, rootobj);
+    }
     String oldpath = dar.path;
     try {
       // Do not check for receivers if this is an interceptor-only trigger
