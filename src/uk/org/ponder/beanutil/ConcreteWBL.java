@@ -4,9 +4,22 @@
 package uk.org.ponder.beanutil;
 
 import java.util.HashMap;
+import java.util.Map;
+
+/** A concrete manifestation of a WriteableBeanLocator, backed by a standard
+ * {@link Map}.
+ * @author Antranig Basman (antranig@caret.cam.ac.uk)
+ */
 
 public class ConcreteWBL implements WriteableBeanLocator {
-  private HashMap beans = new HashMap();
+  private Map beans;
+  
+  public ConcreteWBL() {
+    beans = new HashMap();
+  }
+  public ConcreteWBL(Map beans) {
+    this.beans = beans;
+  }
   public boolean remove(String beanname) {
     return beans.remove(beanname) != null;
   }
