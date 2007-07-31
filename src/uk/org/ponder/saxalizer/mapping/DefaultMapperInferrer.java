@@ -56,23 +56,32 @@ public class DefaultMapperInferrer implements SAXalizerMapperInferrer {
   public static int accessorType(Method method) {
     String methodname = method.getName();
     if (methodname.length() <= 3) return -1;
+    Class returntype = method.getReturnType();
+    int paramlen = method.getParameterTypes().length;
     if (methodname.startsWith("get")) {
-      if (method.getParameterTypes().length == 0) {
+      if (paramlen == 0) {
+        return SAXAccessMethodSpec.GET_METHOD;
+      }
+    }
+    if (methodname.startsWith("is")) {
+      if (paramlen == 0 && (returntype.equals(Boolean.TYPE) || 
+          returntype.equals(Boolean.class))) {
         return SAXAccessMethodSpec.GET_METHOD;
       }
     }
     if (methodname.startsWith("set") || methodname.startsWith("add")) {
-      if (method.getParameterTypes().length == 1 && method.getReturnType().equals(Void.TYPE))
+      if (paramlen == 1 && returntype.equals(Void.TYPE))
       return SAXAccessMethodSpec.SET_METHOD;
     }
     return -1;
   }
+  
 // TODO: check that this actually agrees with beans spec!
-// implement "isXxxx" methods for pedants.
   public static String deBean(String methodname) {
-    boolean isupperstart = Character.isUpperCase(methodname.charAt(4));
-    return (isupperstart? methodname.charAt(3) : Character.toLowerCase(methodname.charAt(3)))
-        + methodname.substring(4);
+    int plen = methodname.startsWith("is")? 2 : 3;
+    boolean isupperstart = Character.isUpperCase(methodname.charAt(plen + 1));
+    return (isupperstart? methodname.charAt(plen) : Character.toLowerCase(methodname.charAt(plen)))
+        + methodname.substring(plen + 1);
   }
 
   public static final String dePluralize(String accessname, Class returntype) {
