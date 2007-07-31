@@ -44,7 +44,7 @@ public class PathUtil {
    *  strings of BeanLocators, Maps, and friends. Assumes none of the segments
    *  have been escaped yet.
    */
-  public static String composePath(String [] segments) {
+  public static String composePath(String[] segments) {
     CharWrap toappend = new CharWrap();
     for (int i = 0; i < segments.length; i++) {
       if (toappend.size != 0) {
