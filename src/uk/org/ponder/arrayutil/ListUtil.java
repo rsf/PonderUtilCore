@@ -30,6 +30,12 @@ public class ListUtil {
     };
   } 
   
+  public static List instance(Object entry) {
+    List togo = new ArrayList();
+    togo.add(entry);
+    return togo;
+  }
+  
   public static void append(List list, Object[] toappend) {
     if (toappend != null) {
       for (int i = 0; i < toappend.length; ++ i) {

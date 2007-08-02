@@ -130,7 +130,8 @@ public class DARApplier implements BeanModelAlterer {
     dar.applyconversions = applyconversions;
     // messages.pushNestedPath(headpath);
     // try {
-    applyAlteration(root, dar, messages, null);
+    DAREnvironment darenv = messages == null? null : new DAREnvironment(messages);
+    applyAlteration(root, dar, darenv);
     // }
     // finally {
     // messages.popNestedPath();
@@ -151,13 +152,11 @@ public class DARApplier implements BeanModelAlterer {
   }
 
   private void applyAlterationImpl(final Object moveobj, final String tail,
-      final TargettedMessageList messages, final DataAlterationRequest dar,
-      BeanInvalidationBracketer bib) {
+      final DataAlterationRequest dar, final DAREnvironment darenv) {
     final PropertyAccessor pa = MethodAnalyser.getPropertyAccessor(moveobj,
         mappingcontext);
-    if (bib == null) {
-      bib = NullBeanInvalidationBracketer.instance;
-    }
+    BeanInvalidationBracketer bib = darenv == null?
+      bib = NullBeanInvalidationBracketer.instance : darenv.bib;
 
     bib.invalidate(dar.path, new Runnable() {
       public void run() {
@@ -308,10 +307,10 @@ public class DARApplier implements BeanModelAlterer {
             }
           }
           catch (Exception e) {
-            if (messages != null) {
+            if (darenv != null) {
               TargettedMessage message = new TargettedMessage(
                   CoreMessages.MISSING_DATA_ERROR, dar.path);
-              messages.addMessage(message);
+              darenv.messages.addMessage(message);
             }
             Logger.log.warn("Couldn't remove object " + convert + " from path "
                 + dar.path, e);
@@ -322,7 +321,7 @@ public class DARApplier implements BeanModelAlterer {
   }
 
   public void applyAlteration(Object rootobj, DataAlterationRequest dar,
-      TargettedMessageList messages, BeanInvalidationBracketer bib) {
+      DAREnvironment darenv) {
     Logger.log.debug("Applying DAR " + dar.type + " to path " + dar.path + ": "
         + dar.data);
     if (dar.data instanceof ELReference) {
@@ -353,17 +352,17 @@ public class DARApplier implements BeanModelAlterer {
           }
         }
         dar.path = oldpath;
-        applyAlterationImpl(moveobj, tail, messages, dar, bib);
+        applyAlterationImpl(moveobj, tail, dar, darenv);
       }
       else {
-        applyAlterationImpl(rootobj, dar.path, messages, dar, bib);
+        applyAlterationImpl(rootobj, dar.path, dar, darenv);
       }
 
     }
     catch (Exception e) {
       String emessage = "Error applying value " + dar.data + " to path "
           + dar.path;
-      if (messages != null) {
+      if (dar != null) {
         Throwable wrapped = e;
         if (e instanceof UniversalRuntimeException) {
           Throwable target = ((UniversalRuntimeException) e)
@@ -373,7 +372,7 @@ public class DARApplier implements BeanModelAlterer {
         }
         TargettedMessage message = new TargettedMessage(wrapped.getMessage(),
             e, oldpath);
-        messages.addMessage(message);
+        darenv.messages.addMessage(message);
         Logger.log.info(emessage, e);
       }
       else
@@ -395,10 +394,10 @@ public class DARApplier implements BeanModelAlterer {
    *          costs of ThreadLocal gets.
    */
   public void applyAlterations(Object rootobj, DARList toapply,
-      TargettedMessageList messages, BeanInvalidationBracketer bib) {
+      DAREnvironment darenv) {
     for (int i = 0; i < toapply.size(); ++i) {
       DataAlterationRequest dar = toapply.DARAt(i);
-      applyAlteration(rootobj, dar, messages, bib);
+      applyAlteration(rootobj, dar, darenv);
     }
 
   }

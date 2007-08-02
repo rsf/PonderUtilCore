@@ -4,6 +4,7 @@
 package uk.org.ponder.beanutil;
 
 import uk.org.ponder.stringutil.CharWrap;
+import uk.org.ponder.stringutil.StringList;
 
 /**
  * A set of utility methods to operate on dot-separated bean paths.
@@ -38,6 +39,21 @@ public class PathUtil {
   public static String getTailPath(String path) {
     int lastdot = lastDotIndex(path);
     return getPathSegment(path, lastdot + 1);
+  }
+  
+  /** Parses a path into an array of decoded EL segments **/
+  public static String[] parsePath(String path) {
+    StringList togo = new StringList();
+    CharWrap buffer = new CharWrap();
+    int pos = 0;
+    while (true) {
+      buffer.size = 0;
+      int firstdot = getPathSegment(buffer, path, pos);
+      togo.add(buffer.toString());
+      pos = firstdot + 1;
+      if (pos >= path.length()) break;
+    }
+    return togo.toStringArray();
   }
   
   /** Builds an EL path of variable length. Particulary good when using
