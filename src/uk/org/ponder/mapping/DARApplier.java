@@ -3,8 +3,10 @@
  */
 package uk.org.ponder.mapping;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
 
 import uk.org.ponder.arrayutil.ArrayUtil;
@@ -332,6 +334,7 @@ public class DARApplier implements BeanModelAlterer {
       if (dar.data != DataAlterationRequest.INAPPLICABLE_VALUE) {
         Object moveobj = rootobj;
         String tail = null;
+        List shells = new ArrayList();
 
         while (true) {
           String headpath = PathUtil.getHeadPathEncoded(dar.path);
@@ -340,6 +343,7 @@ public class DARApplier implements BeanModelAlterer {
             break;
           }
           moveobj = BeanUtil.navigate(moveobj, headpath, mappingcontext);
+          shells.add(moveobj);
           dar.path = PathUtil.getFromHeadPath(dar.path);
           if (moveobj instanceof DARReceiver) {
             boolean accepted = ((DARReceiver) moveobj)

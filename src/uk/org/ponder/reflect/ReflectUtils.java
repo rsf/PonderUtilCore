@@ -27,6 +27,36 @@ public class ReflectUtils {
     return Modifier.isPublic(modifiers) && Modifier.isStatic(modifiers);
   }
   
+  /** Returns a list of all superclasses and implemented interfaces by the
+   * supplied class, recursively to the base, up to but excluding Object.class.
+   * These will be listed in order from the supplied class, all concrete 
+   * superclasses in ascending order, and then finally all interfaces in
+   * recursive ascending order.
+   */
+  
+  public static List getSuperclasses(Class clazz) {
+    List togo = new ArrayList();
+    while (clazz != Object.class) {
+      togo.add(clazz);
+      clazz = clazz.getSuperclass();
+    }
+    int supers = togo.size();
+    for (int i = 0; i < supers; ++ i) {
+      appendSuperclasses((Class) togo.get(i), togo);
+    }
+    return togo;
+  }
+  
+  private static void appendSuperclasses(Class clazz, List accrete) {
+    Class[] interfaces = clazz.getInterfaces();
+    for (int i = 0; i < interfaces.length; ++ i) {
+      accrete.add(interfaces[i]);
+    }
+    for (int i = 0; i < interfaces.length; ++ i) {
+      appendSuperclasses(interfaces[i], accrete);
+    }
+  }
+  
   public static final int UNKNOWN_SIZE = -1;
   /** Instantiates a "default" type of container conforming to a given interface
    * and of a given size. If asked to create an array of unknown size, will return
