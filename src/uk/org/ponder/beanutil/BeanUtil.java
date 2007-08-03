@@ -8,8 +8,6 @@ import java.util.Map;
 
 import uk.org.ponder.saxalizer.MethodAnalyser;
 import uk.org.ponder.saxalizer.SAXalizerMappingContext;
-import uk.org.ponder.stringutil.CharWrap;
-import uk.org.ponder.stringutil.StringList;
 import uk.org.ponder.util.UniversalRuntimeException;
 
 /**
@@ -24,34 +22,6 @@ public class BeanUtil {
    * prefix.
    */
   public static String NEW_ENTITY_PREFIX = "new ";
-
-  public static String[] splitEL(String path) {
-    StringList togo = new StringList();
-    CharWrap build = new CharWrap();
-    int index = 0;
-    while (index < path.length()) {
-      index = PathUtil.getPathSegment(build, path, index) + 1;
-      togo.add(build.toString());
-      build.clear();
-    }
-    return togo.toStringArray();
-  }
-
-  /** Compose head and tail paths, where escaping is unnecessary * */
-  public static String composeEL(String head, String tail) {
-    return head + '.' + tail;
-  }
-
-  public static String composeEL(StringList tocompose) {
-    CharWrap togo = new CharWrap();
-    for (int i = 0; i < tocompose.size(); ++i) {
-      PathUtil.composeSegment(togo, tocompose.stringAt(i));
-      if (i != tocompose.size() - 1) {
-        togo.append(".");
-      }
-    }
-    return togo.toString();
-  }
 
   public static void copyBeans(Map source, WriteableBeanLocator target) {
     for (Iterator sit = source.keySet().iterator(); sit.hasNext();) {
@@ -69,13 +39,30 @@ public class BeanUtil {
     }
   }
 
+  public static Object navigateOne(Object moveobj, String path,
+      SAXalizerMappingContext mappingcontext) {
+    if (path == null || path.equals("")) {
+      return moveobj;
+    }
+    if (moveobj == null) {
+      throw UniversalRuntimeException.accumulate(
+          new IllegalArgumentException(),
+          "Null value encounted in bean path at component " + path);
+    }
+    else {
+      PropertyAccessor pa = MethodAnalyser.getPropertyAccessor(moveobj,
+          mappingcontext);
+      return pa.getProperty(moveobj, path);
+    }
+  }
+  
   public static Object navigate(Object rootobj, String path,
       SAXalizerMappingContext mappingcontext) {
     if (path == null || path.equals("")) {
       return rootobj;
     }
 
-    String[] components = splitEL(path);
+    String[] components = PathUtil.splitPath(path);
     Object moveobj = rootobj;
     for (int comp = 0; comp < components.length; ++comp) {
       if (moveobj == null) {
@@ -87,9 +74,7 @@ public class BeanUtil {
                         + components[comp]));
       }
       else {
-        PropertyAccessor pa = MethodAnalyser.getPropertyAccessor(moveobj,
-            mappingcontext);
-        moveobj = pa.getProperty(moveobj, components[comp]);
+        navigateOne(moveobj, path, mappingcontext);
       }
     }
     return moveobj;

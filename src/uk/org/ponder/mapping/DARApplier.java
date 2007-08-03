@@ -80,6 +80,7 @@ public class DARApplier implements BeanModelAlterer {
     this.springmode = springmode;
   }
 
+  
   public Object getFlattenedValue(String fullpath, Object root,
       Class targetclass, BeanResolver resolver) {
     Object toconvert = getBeanValue(fullpath, root);
@@ -320,6 +321,23 @@ public class DARApplier implements BeanModelAlterer {
     });
   }
 
+  public ShellInfo fetchShells(String fullpath, Object rootobj) {
+    Object moveobj = rootobj;
+    List shells = new ArrayList();
+    String[] segments = PathUtil.splitPath(fullpath);
+    for (int i = 0; i < segments.length; ++ i) { 
+      moveobj = BeanUtil.navigateOne(moveobj, segments[i], mappingcontext);
+      shells.add(moveobj);
+      if (moveobj instanceof DARReceiver) {
+      break;
+      }
+    }
+    ShellInfo togo = new ShellInfo();
+    togo.segments = segments;
+    togo.shells = shells.toArray();
+    return togo; 
+  }
+  
   public void applyAlteration(Object rootobj, DataAlterationRequest dar,
       DAREnvironment darenv) {
     Logger.log.debug("Applying DAR " + dar.type + " to path " + dar.path + ": "
@@ -332,27 +350,19 @@ public class DARApplier implements BeanModelAlterer {
       // Do not check for receivers if this is an interceptor-only trigger
       if (dar.data != DataAlterationRequest.INAPPLICABLE_VALUE) {
         Object moveobj = rootobj;
-        String tail = null;
-        List shells = new ArrayList();
-
-        while (true) {
-          String headpath = PathUtil.getHeadPathEncoded(dar.path);
-          if (headpath.equals(dar.path)) {
-            tail = PathUtil.getHeadPath(headpath);
-            break;
-          }
-          moveobj = BeanUtil.navigate(moveobj, headpath, mappingcontext);
-          shells.add(moveobj);
-          dar.path = PathUtil.getFromHeadPath(dar.path);
+        String[] segments = PathUtil.splitPath(oldpath);
+        for (int i = 0; i < segments.length - 1; ++ i) {
+          moveobj = BeanUtil.navigateOne(moveobj, segments[i], mappingcontext);
           if (moveobj instanceof DARReceiver) {
-            boolean accepted = ((DARReceiver) moveobj)
+          dar.path = PathUtil.composePath((String[]) ArrayUtil.subArray(segments, i + 1, segments.length));
+          boolean accepted = ((DARReceiver) moveobj)
                 .addDataAlterationRequest(dar);
             if (accepted)
               return;
+            else dar.path = oldpath;
           }
         }
-        dar.path = oldpath;
-        applyAlterationImpl(moveobj, tail, dar, darenv);
+        applyAlterationImpl(moveobj, segments[segments.length - 1], dar, darenv);
       }
       else {
         applyAlterationImpl(rootobj, dar.path, dar, darenv);

@@ -44,6 +44,7 @@ public class DataConverterRegistry {
   private Map byClass = new HashMap();
 
   public void init() {
+    if (converters == null) return;
     for (int i = 0; i < converters.size(); ++i) {
       DataConverter converter = (DataConverter) converters.get(i);
       if (converter.getConverterEL() != null) {
@@ -65,19 +66,19 @@ public class DataConverterRegistry {
     public ConverterCandidate(DataConverter converter) {
       this.converter = converter;
       if (converter.getTargetPath() != null) {
-        segments = PathUtil.parsePath(converter.getTargetPath());
+        segments = PathUtil.splitPath(converter.getTargetPath());
       }
     }
   }
 
-  private Object fetchConverter(String path, List shells) {
-    String[] segments = PathUtil.parsePath(path);
+  public Object fetchConverter(ShellInfo shellinfo) {
+    String[] segments = shellinfo.segments;
     List candidates = new ArrayList();
     List rootconverters = fetchConverters(ListUtil.instance(ROOT_CLASS));
     accreteCandidates(candidates, rootconverters);
     for (int i = 0; i < segments.length; ++i) {
-      Object shell = i >= shells.size() ? null
-          : shells.get(i);
+      Object shell = i >= shellinfo.shells.length ? null
+          : shellinfo.shells[i];
       List clazzes = shell == null ? new ArrayList()
           : ReflectUtils.getSuperclasses(shell.getClass());
       filterCandidates(candidates, segments[i]);
@@ -87,7 +88,7 @@ public class DataConverterRegistry {
     if (candidates.size() == 0) return null;
     if (candidates.size() > 1) {
       Logger.log.warn("Warning: duplicate DataConverter candidates discovered for EL path " 
-          + path + " only the last (probably the most specific) entry will be applied.");
+          + PathUtil.composePath(shellinfo.segments) + " only the last (probably the most specific) entry will be applied.");
     }
     ConverterCandidate candidate = (ConverterCandidate) candidates.get(candidates.size() - 1);
     return candidate.converter.getConverter();
@@ -124,14 +125,16 @@ public class DataConverterRegistry {
     }
     return togo;
   }
-
+  
   // If there is a DARReceiver in the way, we will not be able to process any
   // by-Class matches - however, we *will* be able to process by-Path matches.
   // the list of shells will therefore be incomplete.
-  public DataAlterationRequest reshapeDAR(DataAlterationRequest toshape,
-      List shells) {
-    // TODO Auto-generated method stub
-    return null;
+  public DARReshaper fetchReshaper(ShellInfo shellinfo) {
+    Object converter = fetchConverter(shellinfo);
+    if (converter != null) {
+      return ConverterConverter.toReshaper(converter);
+    }
+    else return null;
   }
 
 }

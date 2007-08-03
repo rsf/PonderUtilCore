@@ -17,7 +17,7 @@ public class PathUtil {
   public static String getHeadPath(String path) {
     return getPathSegment(path, 0);
   }
-  
+  /** Returns the first path segment, without performing unescaping **/
   public static String getHeadPathEncoded(String path) {
     int firstdot = getPathSegment(null, path, 0);
     return path.substring(0, firstdot);
@@ -42,16 +42,14 @@ public class PathUtil {
   }
   
   /** Parses a path into an array of decoded EL segments **/
-  public static String[] parsePath(String path) {
+  public static String[] splitPath(String path) {
     StringList togo = new StringList();
-    CharWrap buffer = new CharWrap();
-    int pos = 0;
-    while (true) {
-      buffer.size = 0;
-      int firstdot = getPathSegment(buffer, path, pos);
-      togo.add(buffer.toString());
-      pos = firstdot + 1;
-      if (pos >= path.length()) break;
+    CharWrap build = new CharWrap();
+    int index = 0;
+    while (index < path.length()) {
+      index = PathUtil.getPathSegment(build, path, index) + 1;
+      togo.add(build.toString());
+      build.clear();
     }
     return togo.toStringArray();
   }
@@ -84,6 +82,11 @@ public class PathUtil {
     return toappend.toString();
   }
 
+  /** Compose head and tail paths, where escaping is unnecessary * */
+  public static String composePathEncoded(String head, String tail) {
+    return head + '.' + tail;
+  }
+  
   /**
    * Compose a prefix and suffix EL path, where the prefix has not been escaped, 
    * and is not null.

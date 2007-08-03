@@ -6,6 +6,7 @@ package uk.org.ponder.beanutil;
 import uk.org.ponder.mapping.DAREnvironment;
 import uk.org.ponder.mapping.DARList;
 import uk.org.ponder.mapping.DataAlterationRequest;
+import uk.org.ponder.mapping.ShellInfo;
 import uk.org.ponder.messageutil.TargettedMessageList;
 
 /** The base interface for RSF's expression language (EL) */
@@ -37,6 +38,8 @@ public interface BeanModelAlterer {
   public void applyAlteration(Object rootobj, DataAlterationRequest dar,
       DAREnvironment darenv);
 
+  public ShellInfo fetchShells(String fullpath, Object rootobj);
+  
   /**
    * Converts the object currently present at the supplied bean path into the
    * specified target class, which must be one of the classes handled by the

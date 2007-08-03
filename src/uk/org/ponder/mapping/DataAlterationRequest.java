@@ -47,4 +47,9 @@ public class DataAlterationRequest {
     this.data = data;
     this.type = type;
   }
+  
+  public static String flattenData(Object data) {
+    String leafdata = data instanceof String[] ? ((String[])data)[0] : (String)data;
+    return leafdata;
+  }
 }
