@@ -74,7 +74,7 @@ public class BeanUtil {
                         + components[comp]));
       }
       else {
-        navigateOne(moveobj, path, mappingcontext);
+        moveobj = navigateOne(moveobj, path, mappingcontext);
       }
     }
     return moveobj;
