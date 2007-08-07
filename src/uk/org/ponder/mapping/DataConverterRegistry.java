@@ -99,7 +99,8 @@ public class DataConverterRegistry {
       ConverterCandidate candidate = (ConverterCandidate) candidates.get(i);
       if (candidate.segments != null
           && candidate.consumed < candidate.segments.length) {
-        String matchseg = candidate.segments[i];
+        String matchseg = candidate.segments[candidate.consumed];
+        candidate.consumed ++;
         if (matchseg.equals("*") || matchseg.equals(segment))
           continue;
       }

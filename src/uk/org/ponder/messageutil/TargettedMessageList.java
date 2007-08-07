@@ -71,7 +71,6 @@ public class TargettedMessageList implements Serializable {
   private String nestedpath = null;
   
   /** Push the supplied path segment onto the hidden path base **/
-  
   public void pushNestedPath(String extrapath) {
     if (extrapath == null) {
 		extrapath = "";
@@ -82,8 +81,8 @@ public class TargettedMessageList implements Serializable {
     if (pathstack == null) {
       pathstack = new StringList();
     }
-    pathstack.add(extrapath);
-	this.nestedpath = extrapath;
+    pathstack.add(nestedpath);
+	this.nestedpath = nestedpath + extrapath;
   }
   
   /** Pops one path segment off the hidden path base **/
