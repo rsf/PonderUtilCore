@@ -156,7 +156,7 @@ public class DARApplier implements BeanModelAlterer {
       final DataAlterationRequest dar, final DAREnvironment darenv) {
     final PropertyAccessor pa = MethodAnalyser.getPropertyAccessor(moveobj,
         mappingcontext);
-    BeanInvalidationBracketer bib = darenv == null?
+    BeanInvalidationBracketer bib = darenv == null || darenv.bib == null ?
       NullBeanInvalidationBracketer.instance : darenv.bib;
 
     bib.invalidate(dar.path, new Runnable() {
