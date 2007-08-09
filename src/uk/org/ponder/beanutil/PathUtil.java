@@ -54,19 +54,26 @@ public class PathUtil {
     return togo.toStringArray();
   }
   
-  /** Builds an EL path of variable length. Particulary good when using
-   *  strings of BeanLocators, Maps, and friends. Assumes none of the segments
+  /** Builds an EL path of from an array of path segments. Particulary good when using
+   *  Strings of BeanLocators, Maps, and friends. Assumes none of the segments
    *  have been escaped yet.
    */
   public static String composePath(String[] segments) {
+    return composePath(segments, 0, segments.length);
+  }
+  
+  /** Builds an EL path of variable length, from a subsection of an array of
+   * segments. 
+   */
+  public static String composePath(String[] segments, int start, int finish) {
     CharWrap toappend = new CharWrap();
-    for (int i = 0; i < segments.length; i++) {
+    for (int i = start; i < finish; i++) {
       if (toappend.size != 0) {
         toappend.append('.');
       }
       composeSegment(toappend, segments[i]);
     }
-    return toappend.toString();
+    return toappend.toString(); 
   }
 
   /**

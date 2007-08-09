@@ -77,8 +77,8 @@ public class DataConverterRegistry {
     List rootconverters = fetchConverters(ListUtil.instance(ROOT_CLASS));
     accreteCandidates(candidates, rootconverters);
     for (int i = 0; i < segments.length; ++i) {
-      Object shell = i >= shellinfo.shells.length ? null
-          : shellinfo.shells[i];
+      Object shell = (i + 1) >= shellinfo.shells.length ? null
+          : shellinfo.shells[i + 1];
       List clazzes = shell == null ? new ArrayList()
           : ReflectUtils.getSuperclasses(shell.getClass());
       filterCandidates(candidates, segments[i]);

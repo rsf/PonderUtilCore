@@ -3,45 +3,23 @@
  */
 package uk.org.ponder.mapping;
 
-import uk.org.ponder.beanutil.PathUtil;
-import uk.org.ponder.stringutil.StringList;
+import uk.org.ponder.beanutil.ListBeanPredicateModel;
 
+/** A BeanInvalidationModel implemented as a list of predicates **/
 
 public class ListBeanInvalidationModel implements BeanInvalidationModel {
-  private StringList invalidpaths = new StringList();
-  
-  
+  private ListBeanPredicateModel model = new ListBeanPredicateModel();
+
   public void clear() {
-    invalidpaths.clear();
+    model.clear();
   }
-  
-  public static String matchPath(String spec, String path) {
-    String togo = "";
-    while (true) {
-      if (spec == null || spec.equals("")) break;
-      if (path == null || path.equals("")) return null;
-      String spechead = PathUtil.getHeadPath(spec);
-      String pathhead = PathUtil.getHeadPath(path);
-      // if we fail to match on a specific component, fail.
-      if (!(spechead.equals("*") || spechead.equals(pathhead))) return null;
-      togo = PathUtil.composePath(togo, pathhead);
-      spec = PathUtil.getFromHeadPath(spec);
-      path = PathUtil.getFromHeadPath(path);
-    }
-    return togo;
-  }
-  
+
   public String invalidPathMatch(String spec) {
-    for (int i = 0; i < invalidpaths.size(); ++ i) {
-      String tocheck = invalidpaths.stringAt(i);
-      String match = matchPath(spec, tocheck);
-      if (match != null) return match;
-    }
-    return null;
+    return model.findMatch(spec, true);
   }
 
   public void invalidate(String path) {
-    invalidpaths.add(path);
+    model.addPath(path);
   }
-  
+ 
 }

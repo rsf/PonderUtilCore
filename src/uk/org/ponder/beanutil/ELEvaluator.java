@@ -17,7 +17,7 @@ public class ELEvaluator implements BeanGetter {
   }
   
   public Object getBean(String beanpath) {
-    return bma.getBeanValue(beanpath, beanlocator);
+    return bma.getBeanValue(beanpath, beanlocator, null);
   }
   
 }

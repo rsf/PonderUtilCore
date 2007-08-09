@@ -31,7 +31,7 @@ public class StreamCloseUtil {
       }
       catch (Throwable t) {
         try {
-          Logger.log.warn("Unhandled exception while closing Writer", t);
+          Logger.log.info("Unhandled exception while closing Writer", t);
         }
         catch (Throwable t2) {
         }
@@ -51,7 +51,7 @@ public class StreamCloseUtil {
       }
       catch (Throwable t) {
         try {
-          Logger.log.warn("Unhandled exception while closing OutputStream", t);
+          Logger.log.info("Unhandled exception while closing OutputStream", t);
         }
         catch (Throwable t2) {
         }
@@ -71,7 +71,7 @@ public class StreamCloseUtil {
       }
       catch (Throwable t) {
         try {
-          Logger.log.warn("Unhandled exception while closing InputStream", t);
+          Logger.log.info("Unhandled exception while closing InputStream", t);
         }
         catch (Throwable t2) {
         }
@@ -89,7 +89,7 @@ public class StreamCloseUtil {
       }
       catch (Throwable t) {
         try {
-          Logger.log.warn("Unhandled exception while closing Reader", t);
+          Logger.log.info("Unhandled exception while closing Reader", t);
         }
         catch (Throwable t2) {
         }

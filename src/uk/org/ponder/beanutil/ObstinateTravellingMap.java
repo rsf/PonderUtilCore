@@ -20,7 +20,7 @@ public class ObstinateTravellingMap extends ObstinateMap {
 
   public void init() {
     if (seedpath != null) {
-      seed = bma.getBeanValue(seedpath, seed);
+      seed = bma.getBeanValue(seedpath, seed, null);
     }
   }
 
@@ -45,7 +45,7 @@ public class ObstinateTravellingMap extends ObstinateMap {
   }
 
   public boolean containsKey(Object key) {
-    Object child = bma.getBeanValue((String) key, seed);
+    Object child = bma.getBeanValue((String) key, seed, null);
     return child != null;
   }
 
@@ -68,7 +68,7 @@ public class ObstinateTravellingMap extends ObstinateMap {
   }
 
   public Object get(Object key) {
-    Object child = bma.getBeanValue((String) key, seed);
+    Object child = bma.getBeanValue((String) key, seed, null);
     return wrapChild(child);
   }
 

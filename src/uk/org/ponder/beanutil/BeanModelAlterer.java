@@ -13,12 +13,28 @@ import uk.org.ponder.messageutil.TargettedMessageList;
 
 public interface BeanModelAlterer {
 
-  public Object getBeanValue(String fullpath, Object root);
+  /** Fetch a bean value by path from the supplied object root.
+   * @param fullpath The path of the bean to fetch
+   * @param root The root object which the path is relative to
+   * @param addressibleModel A model expressing permissible paths. May be <code>null</code>
+   * if the path requires no checking.
+   */
+  public Object getBeanValue(String fullpath, Object root, BeanPredicateModel addressibleModel);
 
   public void setBeanValue(String fullpath, Object root, Object value,
       TargettedMessageList messages, boolean applyconversion);
 
-  public Object invokeBeanMethod(String fullpath, Object root);
+  /** Invoke a bean method from a path in the model. 
+   * @param shells An encoding of the method to be invoked, assumed to be fetched from
+   * {@link #fetchShells(String, Object)} -  the section of the path
+   * referring to bean paths has terminated at the last bean present in the
+   * {@link ShellInfo#shells} array. The next path segment is assumed to be
+   * the method name, and the final section is filled with arguments.
+   * @param addressibleModel A model for the beans which are permissible to be
+   * addressed for this invocation. May be <code>null</code> if no security
+   * checks are required. 
+   */
+  public Object invokeBeanMethod(ShellInfo shells, BeanPredicateModel addressibleModel);
 
   /**
    * Apply the alterations mentioned in the enclosed DARList to the supplied
@@ -37,7 +53,12 @@ public interface BeanModelAlterer {
   /** @see #applyAlterations(Object, DARList, TargettedMessageList) * */
   public void applyAlteration(Object rootobj, DataAlterationRequest dar,
       DAREnvironment darenv);
-
+  
+  /** Fetch the "shells" for the specified path through the bean model, which
+   * is an array of Object, one for each path segment in the supplied path. The
+   * array will quietly terminate at the first bean which is either <code>null</code> or
+   * a DARApplier.
+   */
   public ShellInfo fetchShells(String fullpath, Object rootobj);
   
   /**

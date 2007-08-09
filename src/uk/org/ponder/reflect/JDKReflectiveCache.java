@@ -11,17 +11,13 @@ import uk.org.ponder.saxalizer.SAXAccessMethod;
 import uk.org.ponder.util.UniversalRuntimeException;
 
 public class JDKReflectiveCache extends ReflectiveCache {
-
-  public JDKReflectiveCache() {
-    ReflectiveCache.instance = this;
-  }
   
   /** Invokes the supplied no-arg Method object on the supplied target */
   public static Object invokeMethod(Method method, Object target) {
     return invokeMethod(method, target, SAXAccessMethod.emptyobj);
   }
   
-  /** Invokes the supplied no-arg Method object on the supplied target */
+  /** Invokes the supplied Method object on the supplied target */
   public static Object invokeMethod(Method method, Object target, Object[] args) {
     try {
       return method.invoke(target, args);
@@ -81,7 +77,8 @@ public class JDKReflectiveCache extends ReflectiveCache {
     return invokeMethod(method, target);
   }
   
-  // Implement some caching for this if it looks conceivably worthwhile.
+  // This method currently bypassed - lookup of multi-arg methods is assumed
+  // slow and in ReflectiveCache
   protected Object invokeMethod(Object target, String name, Class[] argtypes, Object[] args) {
     Class clazz = target.getClass();
     Method toinvoke = ReflectiveCache.getMethod(clazz, name, argtypes);

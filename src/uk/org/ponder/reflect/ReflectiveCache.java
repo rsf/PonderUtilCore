@@ -7,6 +7,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Map;
 
+import uk.org.ponder.arrayutil.ArrayUtil;
+import uk.org.ponder.conversion.StaticLeafParser;
 import uk.org.ponder.saxalizer.SAXAccessMethod;
 import uk.org.ponder.util.Logger;
 import uk.org.ponder.util.UniversalRuntimeException;
@@ -15,14 +17,13 @@ import uk.org.ponder.util.UniversalRuntimeException;
  * A cache for simple no-arg methods and constructors, of the sort that are
  * typically used in bean environments, that are not suitable to be considered
  * as "bean properties" and hence handled by a SAXAccessMethod.
+ *
+ * The class is capable of resolving methods and constructors with arguments,
+ * but accessors for these members are not cached or accelerated.
  * 
  * The intention is that **ALL** application-wide reflection will be done either
  * in this class, or in SAXAccessMethod.
  * 
- * This class is full of static state and methods, in the belief that all 
- * reflective objects will have the same lifetime as their parent ClassLoader.
- * This militates that <b>PonderUtilCore MUST NEVER be placed at a shared
- * ClassLoader level </b>
  * 
  * This implementation will probably shortly be replaced by a FastClass variant.
  * 
@@ -30,11 +31,6 @@ import uk.org.ponder.util.UniversalRuntimeException;
  * 
  */
 public abstract class ReflectiveCache {
-  /** The globality of a ReflectiveCache is expected to be ClassLoader wide.
-   * This instance will be set by any constructor that executes, through Spring
-   * configuration or otherwise.
-   */
-  public static ReflectiveCache instance;
   private Map rootmap;
   private static Class concurrent1mapclass;
 // The constructor for the oswego n-concurrent map class - we need to handle
@@ -127,24 +123,47 @@ public abstract class ReflectiveCache {
     } 
   }
   
-  
   public abstract Object construct(Class clazz);
   public abstract Object invokeMethod(Object bean, String method);
   protected abstract Object invokeMethod(Object target, String name, Class[] infer, Object[] args);
 
+  private static String getInvokeError(Object target, String name, Object[] args) {
+    return name + " in object " + target.getClass() + " with " + args.length + " arguments: "
+    + ArrayUtil.toString(args);
+  }
+  
   /**
    * This generic invocation method currently unused, 
    * for internal framework use only
    */
   public Object invokeMethod(Object target, String name, Object[] args) {
+    if (args == null || args.length == 0) {
+      return invokeMethod(target, name);
+    }
     if (target instanceof MethodInvokingProxy) {
       return ((MethodInvokingProxy)target).invokeMethod(name, args);
     }
+    Method[] matching = ReflectUtils.getMatchingMethods(target.getClass(), name, args);
+    if (matching.length == 0) {
+      throw new IllegalArgumentException("Could not find method named " + 
+          getInvokeError(target, name, args));
+         
+    }
+    if (matching.length >= 2) {
+      throw new IllegalArgumentException("Found ambiguous match with " + matching.length 
+          + " equally good matches for " + getInvokeError(target, name, args));
+    }
+    Method match = matching[0];
     Class[] infer = new Class[args.length];
     for (int i = 0; i < args.length; ++ i) {
+      Class argclazz = match.getParameterTypes()[i];
+      // proved to be the only case, by definition of getMatchingMethods
+      if (!ReflectUtils.isAssignable(argclazz, args[i])) {
+        args[i] = StaticLeafParser.instance().parse(argclazz, (String) args[i]);
+      }
       infer[i] = args[i].getClass();
     }
-    return invokeMethod(target, name, infer, args);
+    return JDKReflectiveCache.invokeMethod(match, target, args);
   }
 
   /**

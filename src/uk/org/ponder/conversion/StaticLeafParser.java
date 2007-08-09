@@ -3,6 +3,7 @@ package uk.org.ponder.conversion;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import uk.org.ponder.arrayutil.ArrayUtil;
 import uk.org.ponder.matrix.Matrix;
@@ -73,17 +74,22 @@ class LongParser implements LeafObjectParser {
 
 public class StaticLeafParser {
 
+  private static final Map primitiveWrapperTypeMap = new HashMap(16);
+
+  static {
+      primitiveWrapperTypeMap.put(Boolean.TYPE, Boolean.class);
+      primitiveWrapperTypeMap.put(Byte.TYPE, Byte.class);
+      primitiveWrapperTypeMap.put(Character.TYPE, Character.class);
+      primitiveWrapperTypeMap.put(Double.TYPE, Double.class);
+      primitiveWrapperTypeMap.put(Float.TYPE, Float.class);
+      primitiveWrapperTypeMap.put(Integer.TYPE, Integer.class);
+      primitiveWrapperTypeMap.put(Long.TYPE, Long.class);
+      primitiveWrapperTypeMap.put(Short.TYPE, Short.class);
+  }
+  
   public static Class wrapClass(Class towrap) {
-    if (towrap.equals(Double.TYPE))
-      return Double.class;
-    else if (towrap.equals(Long.TYPE))
-      return Long.class;
-    else if (towrap.equals(Integer.TYPE))
-      return Integer.class;
-    else if (towrap.equals(Boolean.TYPE))
-      return Boolean.class;
-    else
-      return towrap;
+    Class wrapper = (Class) primitiveWrapperTypeMap.get(towrap);
+    return wrapper == null? towrap : wrapper;
   }
 
   // This is a hashtable of classes to SAXLeafTypeParsers

@@ -52,7 +52,10 @@ public class BeanUtil {
     else {
       PropertyAccessor pa = MethodAnalyser.getPropertyAccessor(moveobj,
           mappingcontext);
-      return pa.getProperty(moveobj, path);
+      if (pa.canGet(path)) {
+        return pa.getProperty(moveobj, path);
+      }
+      else return null;
     }
   }
   

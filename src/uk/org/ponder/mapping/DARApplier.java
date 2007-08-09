@@ -11,6 +11,7 @@ import java.util.Map;
 
 import uk.org.ponder.arrayutil.ArrayUtil;
 import uk.org.ponder.beanutil.BeanModelAlterer;
+import uk.org.ponder.beanutil.BeanPredicateModel;
 import uk.org.ponder.beanutil.BeanResolver;
 import uk.org.ponder.beanutil.BeanUtil;
 import uk.org.ponder.beanutil.ELReference;
@@ -80,10 +81,9 @@ public class DARApplier implements BeanModelAlterer {
     this.springmode = springmode;
   }
 
-  
   public Object getFlattenedValue(String fullpath, Object root,
       Class targetclass, BeanResolver resolver) {
-    Object toconvert = getBeanValue(fullpath, root);
+    Object toconvert = getBeanValue(fullpath, root, null);
     if (toconvert == null)
       return null;
     if (targetclass == null) {
@@ -111,8 +111,19 @@ public class DARApplier implements BeanModelAlterer {
     }
   }
 
-  public Object getBeanValue(String fullpath, Object rbl) {
+  private void checkAccess(String fullpath, BeanPredicateModel addressibleModel, String key) {
+    if (addressibleModel != null && !addressibleModel.isMatch(fullpath)) {
+      throw UniversalRuntimeException
+          .accumulate(
+              new SecurityException(), key + " path " + fullpath
+                  + " is not permissible - make sure to mark this path as request addressible - http://www2.caret.cam.ac.uk/rsfwiki/Wiki.jsp?page=RequestWriteableBean");
+    }
+  }
+  
+  public Object getBeanValue(String fullpath, Object rbl,
+      BeanPredicateModel addressibleModel) {
     try {
+      checkAccess(fullpath, addressibleModel, "Reading from");
       Object togo = BeanUtil.navigate(rbl, fullpath, mappingcontext);
       return togo;
     }
@@ -131,7 +142,8 @@ public class DARApplier implements BeanModelAlterer {
     dar.applyconversions = applyconversions;
     // messages.pushNestedPath(headpath);
     // try {
-    DAREnvironment darenv = messages == null? null : new DAREnvironment(messages);
+    DAREnvironment darenv = messages == null ? null
+        : new DAREnvironment(messages);
     applyAlteration(root, dar, darenv);
     // }
     // finally {
@@ -139,16 +151,36 @@ public class DARApplier implements BeanModelAlterer {
     // }
   }
 
-  public Object invokeBeanMethod(String fullpath, Object rbl) {
-    String totail = PathUtil.getToTailPath(fullpath);
-    String method = PathUtil.getTailPath(fullpath);
+  private Object fetchArgument(Object root, String string,
+      BeanPredicateModel addressibleModel) {
+    int len = string.length();
+    if (len >= 2 && string.charAt(0) == '\'' && string.charAt(len - 1) == '\'') {
+      return string.substring(1, len - 1);
+    }
+    return len == 0 ? null
+        : getBeanValue(string, root, addressibleModel);
+  }
+
+  // 0 1 2
+  // segments: bean.method.arg = 3
+  // shells: rbl (bean) = 2 = lastshell
+  public Object invokeBeanMethod(ShellInfo shells,
+      BeanPredicateModel addressibleModel) {
+    int lastshell = shells.shells.length;
+    Object[] args = new Object[shells.segments.length - lastshell];
+    for (int i = 0; i < args.length; ++i) {
+      args[i] = fetchArgument(shells.shells[0], shells.segments[i + lastshell],
+          addressibleModel);
+    }
+    Object bean = shells.shells[lastshell - 1];
+    String methodname = shells.segments[lastshell - 1];
     try {
-      Object bean = BeanUtil.navigate(rbl, totail, mappingcontext);
-      return reflectivecache.invokeMethod(bean, method);
+      return reflectivecache.invokeMethod(bean, methodname, args);
     }
     catch (Throwable t) { // Need to grab "NoSuchMethodError"
       throw UniversalRuntimeException.accumulate(t, "Error invoking method "
-          + method + " in bean at path " + totail);
+          + methodname + " in bean at path "
+          + PathUtil.composePath(shells.segments, 0, lastshell));
     }
   }
 
@@ -156,8 +188,8 @@ public class DARApplier implements BeanModelAlterer {
       final DataAlterationRequest dar, final DAREnvironment darenv) {
     final PropertyAccessor pa = MethodAnalyser.getPropertyAccessor(moveobj,
         mappingcontext);
-    BeanInvalidationBracketer bib = darenv == null || darenv.bib == null ?
-      NullBeanInvalidationBracketer.instance : darenv.bib;
+    BeanInvalidationBracketer bib = darenv == null || darenv.bib == null ? NullBeanInvalidationBracketer.instance
+        : darenv.bib;
 
     bib.invalidate(dar.path, new Runnable() {
       public void run() {
@@ -324,26 +356,32 @@ public class DARApplier implements BeanModelAlterer {
   public ShellInfo fetchShells(String fullpath, Object rootobj) {
     Object moveobj = rootobj;
     List shells = new ArrayList();
+    shells.add(rootobj);
     String[] segments = PathUtil.splitPath(fullpath);
-    for (int i = 0; i < segments.length; ++ i) { 
+    for (int i = 0; i < segments.length; ++i) {
       moveobj = BeanUtil.navigateOne(moveobj, segments[i], mappingcontext);
+      if (moveobj == null) {
+        break;
+      }
       shells.add(moveobj);
       if (moveobj instanceof DARReceiver) {
-      break;
+        break;
       }
     }
     ShellInfo togo = new ShellInfo();
     togo.segments = segments;
     togo.shells = shells.toArray();
-    return togo; 
+    return togo;
   }
-  
+
   public void applyAlteration(Object rootobj, DataAlterationRequest dar,
       DAREnvironment darenv) {
     Logger.log.debug("Applying DAR " + dar.type + " to path " + dar.path + ": "
         + dar.data);
+    checkAccess(dar.path, darenv == null? null : darenv.addressibleModel, "Writing to");
     if (dar.data instanceof ELReference) {
-      dar.data = getBeanValue((String) dar.data, rootobj);
+      dar.data = getBeanValue((String) dar.data, rootobj,
+          darenv.addressibleModel);
     }
     String oldpath = dar.path;
     try {
@@ -351,15 +389,16 @@ public class DARApplier implements BeanModelAlterer {
       if (dar.data != DataAlterationRequest.INAPPLICABLE_VALUE) {
         Object moveobj = rootobj;
         String[] segments = PathUtil.splitPath(oldpath);
-        for (int i = 0; i < segments.length - 1; ++ i) {
+        for (int i = 0; i < segments.length - 1; ++i) {
           moveobj = BeanUtil.navigateOne(moveobj, segments[i], mappingcontext);
           if (moveobj instanceof DARReceiver) {
-          dar.path = PathUtil.composePath((String[]) ArrayUtil.subArray(segments, i + 1, segments.length));
-          boolean accepted = ((DARReceiver) moveobj)
+            dar.path = PathUtil.composePath(segments, i + 1, segments.length);
+            boolean accepted = ((DARReceiver) moveobj)
                 .addDataAlterationRequest(dar);
             if (accepted)
               return;
-            else dar.path = oldpath;
+            else
+              dar.path = oldpath;
           }
         }
         applyAlterationImpl(moveobj, segments[segments.length - 1], dar, darenv);
@@ -399,9 +438,9 @@ public class DARApplier implements BeanModelAlterer {
    * @param rootobj The object to which alterations are to be applied
    * @param toapply The list of alterations
    * @param messages The list to which error messages accreted during
-   *          application are to be appended. This is probably the same as that
-   *          in the ThreadErrorState, but is supplied as an argument to reduce
-   *          costs of ThreadLocal gets.
+   *            application are to be appended. This is probably the same as
+   *            that in the ThreadErrorState, but is supplied as an argument to
+   *            reduce costs of ThreadLocal gets.
    */
   public void applyAlterations(Object rootobj, DARList toapply,
       DAREnvironment darenv) {
