@@ -3,7 +3,15 @@
  */
 package uk.org.ponder.mapping;
 
+import uk.org.ponder.beanutil.BeanModelAlterer;
+
 /**
+ * Implemented by a bean which wishes to take full manual control of application
+ * of {@link DataAlterationRequest} values, rather than having these applied
+ * immediately and reflectively. These may be pent up, and then applied later
+ * using a {@link BeanModelAlterer}, or filtered and introspected in some other
+ * manner.
+ * 
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
  * 
  */
