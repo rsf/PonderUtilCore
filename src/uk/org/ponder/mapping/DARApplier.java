@@ -380,7 +380,7 @@ public class DARApplier implements BeanModelAlterer {
         + dar.data);
     checkAccess(dar.path, darenv == null? null : darenv.addressibleModel, "Writing to");
     if (dar.data instanceof ELReference) {
-      dar.data = getBeanValue((String) dar.data, rootobj,
+      dar.data = getBeanValue(((ELReference) dar.data).value, rootobj,
           darenv.addressibleModel);
     }
     String oldpath = dar.path;
