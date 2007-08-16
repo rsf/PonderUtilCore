@@ -22,6 +22,10 @@ import uk.org.ponder.stringutil.StringList;
  */
 
 public class TargettedMessageList implements Serializable {
+  /** A nestedpath ending with this String will consume the following path
+   * segments
+   */
+  public static final String BACKUP_PATH = "..";
   // NB - this class is ALMOST identical to the Spring "Errors" interface,
   // which I was put off since the only implementation there is "BindException"
   // which couples to all sorts of other greasy stuff, including the dreaded
@@ -42,7 +46,12 @@ public class TargettedMessageList implements Serializable {
   public void addMessage(TargettedMessage message) {
     if (nestedpath.length() != 0
         && !message.targetid.equals(TargettedMessage.TARGET_NONE)) {
-      message.targetid = nestedpath + message.targetid;
+      if (nestedpath.endsWith(BACKUP_PATH)) {
+        message.targetid = nestedpath.substring(0, nestedpath.length() - BACKUP_PATH.length());
+      }
+      else {
+        message.targetid = nestedpath + message.targetid;
+      }
     }
     errors.add(message);
   }
