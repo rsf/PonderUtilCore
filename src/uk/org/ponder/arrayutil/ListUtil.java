@@ -30,12 +30,22 @@ public class ListUtil {
     };
   } 
   
+  /** Construct a new List instance comprised of the single supplied entry **/
+  
   public static List instance(Object entry) {
     List togo = new ArrayList();
     togo.add(entry);
     return togo;
   }
+
+  /** Construct a new List instance filled with the supplied array of objects **/
+  public static List instance(Object[] init) {
+    List togo = new ArrayList();
+    append(togo, init);
+    return togo;    
+  }
   
+  /** Append the elements in the supplied array to the end of the supplied list **/
   public static void append(List list, Object[] toappend) {
     if (toappend != null) {
       for (int i = 0; i < toappend.length; ++ i) {
