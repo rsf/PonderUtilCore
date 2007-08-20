@@ -60,8 +60,8 @@ public class URLUtil {
       while (st.hasMoreTokens()) {
         String token = st.nextToken();
         int eqpos = token.indexOf("=");
-        String key = token.substring(0, eqpos);
-        String value = token.substring(eqpos + 1);
+        String key = decodeURL(token.substring(0, eqpos));
+        String value = decodeURL(token.substring(eqpos + 1));
         target.put(key, value);
       }
       return target;
