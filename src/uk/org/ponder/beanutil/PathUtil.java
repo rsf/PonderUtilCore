@@ -58,14 +58,14 @@ public class PathUtil {
    *  Strings of BeanLocators, Maps, and friends. Assumes none of the segments
    *  have been escaped yet.
    */
-  public static String composePath(String[] segments) {
-    return composePath(segments, 0, segments.length);
+  public static String buildPath(String[] segments) {
+    return buildPath(segments, 0, segments.length);
   }
   
   /** Builds an EL path of variable length, from a subsection of an array of
    * segments. 
    */
-  public static String composePath(String[] segments, int start, int finish) {
+  public static String buildPath(String[] segments, int start, int finish) {
     CharWrap toappend = new CharWrap();
     for (int i = start; i < finish; i++) {
       if (toappend.size != 0) {
@@ -78,7 +78,7 @@ public class PathUtil {
 
   /**
    * Compose a prefix and suffix EL path, where the prefix is already escaped.
-   * Prefix may be empty, but not null.
+   * Prefix may be empty, but not null. The suffix will become escaped.
    */
   public static String composePath(String prefix, String suffix) {
     CharWrap toappend = new CharWrap(prefix);
@@ -98,7 +98,7 @@ public class PathUtil {
    * Compose a prefix and suffix EL path, where the prefix has not been escaped, 
    * and is not null.
    * @param prefix A single path segment (bean name) starting the path, may not
-   * be null or empty. This will be escaped.
+   * be null or empty. This will become escaped.
    * @param suffix A single path segment (property name) continuing the path,
    * may not be null or empty. This will become escaped.
    * @return A properly escaped full path, representing "prefix.suffix".

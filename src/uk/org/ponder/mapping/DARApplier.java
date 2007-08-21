@@ -180,7 +180,7 @@ public class DARApplier implements BeanModelAlterer {
     catch (Throwable t) { // Need to grab "NoSuchMethodError"
       throw UniversalRuntimeException.accumulate(t, "Error invoking method "
           + methodname + " in bean at path "
-          + PathUtil.composePath(shells.segments, 0, lastshell));
+          + PathUtil.buildPath(shells.segments, 0, lastshell));
     }
   }
 
@@ -392,7 +392,7 @@ public class DARApplier implements BeanModelAlterer {
         for (int i = 0; i < segments.length - 1; ++i) {
           moveobj = BeanUtil.navigateOne(moveobj, segments[i], mappingcontext);
           if (moveobj instanceof DARReceiver) {
-            dar.path = PathUtil.composePath(segments, i + 1, segments.length);
+            dar.path = PathUtil.buildPath(segments, i + 1, segments.length);
             boolean accepted = ((DARReceiver) moveobj)
                 .addDataAlterationRequest(dar);
             if (accepted)
@@ -449,6 +449,11 @@ public class DARApplier implements BeanModelAlterer {
       applyAlteration(rootobj, dar, darenv);
     }
 
+  }
+
+  public Object invokeBeanMethod(String methodEL, Object rootobj) {
+    ShellInfo shells = fetchShells(methodEL, rootobj);
+    return invokeBeanMethod(shells, null);
   }
 
 }

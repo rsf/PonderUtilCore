@@ -88,7 +88,7 @@ public class DataConverterRegistry {
     if (candidates.size() == 0) return null;
     if (candidates.size() > 1) {
       Logger.log.warn("Warning: duplicate DataConverter candidates discovered for EL path " 
-          + PathUtil.composePath(shellinfo.segments) + " only the last (probably the most specific) entry will be applied.");
+          + PathUtil.buildPath(shellinfo.segments) + " only the last (probably the most specific) entry will be applied.");
     }
     ConverterCandidate candidate = (ConverterCandidate) candidates.get(candidates.size() - 1);
     return candidate.converter.getConverter();

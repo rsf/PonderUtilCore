@@ -36,6 +36,9 @@ public interface BeanModelAlterer {
    */
   public Object invokeBeanMethod(ShellInfo shells, BeanPredicateModel addressibleModel);
 
+  /** Invoke a bean method from a path in the model. */
+  public Object invokeBeanMethod(String methodEL, Object rootobj);
+  
   /**
    * Apply the alterations mentioned in the enclosed DARList to the supplied
    * bean. Note that this method assumes that the TargettedMessageList is
