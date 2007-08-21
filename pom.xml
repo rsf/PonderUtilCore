@@ -14,7 +14,7 @@
   <name>PonderUtilCore</name>
   <groupId>uk.org.ponder</groupId>
   <properties>
-    <ponderutilcore.version>1.2.2M5-SNAPSHOT</ponderutilcore.version>
+    <ponderutilcore.version>1.2.2RC1</ponderutilcore.version>
   </properties>
   <organization>
     <name>CARET, University of Cambridge</name>
