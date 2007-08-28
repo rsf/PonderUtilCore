@@ -60,9 +60,10 @@ public interface BeanModelAlterer {
   /** Fetch the "shells" for the specified path through the bean model, which
    * is an array of Object, one for each path segment in the supplied path. The
    * array will quietly terminate at the first bean which is either <code>null</code> or
-   * a DARApplier.
+   * a DARApplier. If <code>expectMethod</code> is true, it will also stop at
+   * any segment which is an exact match for a method name, or a MethodInvokingProxy.
    */
-  public ShellInfo fetchShells(String fullpath, Object rootobj);
+  public ShellInfo fetchShells(String fullpath, Object rootobj, boolean expectMethod);
   
   /**
    * Converts the object currently present at the supplied bean path into the

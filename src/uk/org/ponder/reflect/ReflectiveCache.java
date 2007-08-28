@@ -133,8 +133,7 @@ public abstract class ReflectiveCache {
   }
   
   /**
-   * This generic invocation method currently unused, 
-   * for internal framework use only
+   * Somewhat inefficient, but this scheme applies 
    */
   public Object invokeMethod(Object target, String name, Object[] args) {
     if (args == null || args.length == 0) {

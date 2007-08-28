@@ -131,6 +131,20 @@ public class ReflectUtils {
     return (Method[]) togo.toArray(new Method[togo.size()]);
   }
   
+  /** Determines whether an object is capable of supporting a method invocation
+   * with a given name. Used primarily to resolve potential ambiguity in EL
+   * expressions that are being interpreted as method bindings.
+   */
+  public static boolean hasMethod(Object obj, String methodname) {
+    if (obj instanceof MethodInvokingProxy) return true;
+    Method[] allMethods = obj.getClass().getMethods();
+    for (int i = 0; i < allMethods.length; ++ i) {
+      Method method = allMethods[i];
+      if (method.getName().equals(methodname)) return true;
+    }
+    return false;
+  }
+  
   /**
    * Returns a list of all superclasses and implemented interfaces by the
    * supplied class, recursively to the base, up to but excluding Object.class.

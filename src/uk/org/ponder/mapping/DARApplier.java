@@ -353,12 +353,15 @@ public class DARApplier implements BeanModelAlterer {
     });
   }
 
-  public ShellInfo fetchShells(String fullpath, Object rootobj) {
+  public ShellInfo fetchShells(String fullpath, Object rootobj, boolean expectMethod) {
     Object moveobj = rootobj;
     List shells = new ArrayList();
     shells.add(rootobj);
     String[] segments = PathUtil.splitPath(fullpath);
     for (int i = 0; i < segments.length; ++i) {
+      if (expectMethod) {
+        if (ReflectUtils.hasMethod(moveobj, segments[i])) break;
+      }
       moveobj = BeanUtil.navigateOne(moveobj, segments[i], mappingcontext);
       if (moveobj == null) {
         break;
@@ -452,7 +455,7 @@ public class DARApplier implements BeanModelAlterer {
   }
 
   public Object invokeBeanMethod(String methodEL, Object rootobj) {
-    ShellInfo shells = fetchShells(methodEL, rootobj);
+    ShellInfo shells = fetchShells(methodEL, rootobj, true);
     return invokeBeanMethod(shells, null);
   }
 
