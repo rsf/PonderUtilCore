@@ -133,7 +133,8 @@ public abstract class ReflectiveCache {
   }
   
   /**
-   * Somewhat inefficient, but this scheme applies 
+   * Somewhat inefficient, but this scheme applies simple argument matching
+   * to be able to invoke multi-arg methods.
    */
   public Object invokeMethod(Object target, String name, Object[] args) {
     if (args == null || args.length == 0) {
