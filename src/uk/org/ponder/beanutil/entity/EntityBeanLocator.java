@@ -17,7 +17,7 @@ import uk.org.ponder.reflect.ReflectiveCache;
  * addressed by a unique ID convertible to String, which are already provided with
  * some form of (probably application-scope) "DAO"-type API. This implementation
  * allows the DAO API to be expressed by means of EL method bindings to its 
- * various methods, from which the managed entities are mapped into this 
+ * various methods, from which the managed entities are mapped into 
  * this request-scope cache.
  * </p>
  * Typically the user will provide a <code>fetchMethod</code> which will fetch
@@ -25,8 +25,8 @@ import uk.org.ponder.reflect.ReflectiveCache;
  * <code>entityClass</code> which is used to instantiate new entities which
  * are not persistent. <p/> At any time, the "cache" of currently addressed
  * entities within this request may be accessed through the map
- * <code>deliveredBeans</code> 
- * <p/> If the <code>saveEL</code> is also
+ * <code>deliveredBeans</code>.
+ * <p/> If the <code>saveMethod</code> is also
  * supplied, this locator will also implement a <code>saveAll()</code> method
  * which will return all the delivered entities back to persistence. If this is
  * not supplied, they are assumed to be persisted by some other means (perhaps
