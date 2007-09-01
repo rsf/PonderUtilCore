@@ -119,6 +119,7 @@ public class ReflectUtils {
     List togo = new ArrayList(); 
     for (int i = 0; i < allMethods.length; ++ i) {
       Method method = allMethods[i];
+      if (!method.getName().equals(methodname) || method.getParameterTypes().length != args.length) continue;
       int diff = getTypeDifferenceWeight(method.getParameterTypes(), args);
       if (diff < bestMatch) {
         togo.clear();

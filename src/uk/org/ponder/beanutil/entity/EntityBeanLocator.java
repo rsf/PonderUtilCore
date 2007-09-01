@@ -17,6 +17,9 @@ import uk.org.ponder.beanutil.WriteableBeanLocator;
  */
 
 public interface EntityBeanLocator extends WriteableBeanLocator {
+  /** A prefix used in for the key of the cached entities, representing a
+   * non-persistent entity, freshly created on this cycle.
+   */
   public static final String NEW_PREFIX = "new ";
  
   public Map getDeliveredBeans();
