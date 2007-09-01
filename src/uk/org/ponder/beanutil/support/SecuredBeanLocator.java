@@ -1,8 +1,9 @@
 /*
  * Created on 6 Aug 2006
  */
-package uk.org.ponder.beanutil;
+package uk.org.ponder.beanutil.support;
 
+import uk.org.ponder.beanutil.WriteableBeanLocator;
 import uk.org.ponder.stringutil.StringList;
 import uk.org.ponder.stringutil.StringSet;
 import uk.org.ponder.util.UniversalRuntimeException;
