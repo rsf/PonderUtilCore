@@ -1,8 +1,10 @@
 /*
  * Created on 9 Aug 2007
  */
-package uk.org.ponder.beanutil;
+package uk.org.ponder.beanutil.support;
 
+import uk.org.ponder.beanutil.BeanPredicateModel;
+import uk.org.ponder.beanutil.PathUtil;
 import uk.org.ponder.stringutil.StringList;
 
 public class ListBeanPredicateModel implements BeanPredicateModel {

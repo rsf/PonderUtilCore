@@ -1,7 +1,11 @@
 /*
  * Created on 27-Feb-2006
  */
-package uk.org.ponder.beanutil;
+package uk.org.ponder.beanutil.support;
+
+import uk.org.ponder.beanutil.BeanGetter;
+import uk.org.ponder.beanutil.BeanLocator;
+import uk.org.ponder.beanutil.BeanModelAlterer;
 
 /** Can fetch an EL value from a given (root) BeanLocator */
 

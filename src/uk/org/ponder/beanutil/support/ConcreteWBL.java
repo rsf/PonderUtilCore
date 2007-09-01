@@ -1,10 +1,12 @@
 /*
  * Created on Nov 16, 2005
  */
-package uk.org.ponder.beanutil;
+package uk.org.ponder.beanutil.support;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import uk.org.ponder.beanutil.WriteableBeanLocator;
 
 /** A concrete manifestation of a WriteableBeanLocator, backed by a standard
  * {@link Map}.

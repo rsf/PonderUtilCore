@@ -1,8 +1,11 @@
 /*
  * Created on Oct 22, 2005
  */
-package uk.org.ponder.beanutil;
+package uk.org.ponder.beanutil.support;
 
+import uk.org.ponder.beanutil.BeanLocator;
+import uk.org.ponder.beanutil.PropertyAccessor;
+import uk.org.ponder.beanutil.WriteableBeanLocator;
 import uk.org.ponder.util.AssertionException;
 import uk.org.ponder.util.EnumerationConverter;
 

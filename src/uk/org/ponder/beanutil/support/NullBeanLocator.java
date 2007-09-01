@@ -1,7 +1,9 @@
 /*
  * Created on 15-Jan-2006
  */
-package uk.org.ponder.beanutil;
+package uk.org.ponder.beanutil.support;
+
+import uk.org.ponder.beanutil.BeanLocator;
 
 /** A BeanLocator that returns no beans */
 

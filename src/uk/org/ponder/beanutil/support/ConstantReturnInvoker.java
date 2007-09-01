@@ -1,7 +1,7 @@
 /*
  * Created on 28 Aug 2007
  */
-package uk.org.ponder.beanutil;
+package uk.org.ponder.beanutil.support;
 
 import uk.org.ponder.reflect.MethodInvokingProxy;
 

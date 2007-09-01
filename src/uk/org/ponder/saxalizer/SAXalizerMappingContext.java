@@ -5,7 +5,7 @@ package uk.org.ponder.saxalizer;
 
 import java.util.Map;
 
-import uk.org.ponder.beanutil.IndexedPropertyAccessor;
+import uk.org.ponder.beanutil.support.IndexedPropertyAccessor;
 import uk.org.ponder.conversion.StaticLeafParser;
 import uk.org.ponder.reflect.JDKReflectiveCache;
 import uk.org.ponder.reflect.ReflectiveCache;

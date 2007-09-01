@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import uk.org.ponder.beanutil.BeanLocator;
-import uk.org.ponder.beanutil.ELEvaluator;
+import uk.org.ponder.beanutil.support.ELEvaluator;
 import uk.org.ponder.reflect.DeepBeanCloner;
 import uk.org.ponder.util.ObjectFactory;
 

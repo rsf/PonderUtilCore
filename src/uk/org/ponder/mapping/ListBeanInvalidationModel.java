@@ -3,7 +3,7 @@
  */
 package uk.org.ponder.mapping;
 
-import uk.org.ponder.beanutil.ListBeanPredicateModel;
+import uk.org.ponder.beanutil.support.ListBeanPredicateModel;
 
 /** A BeanInvalidationModel implemented as a list of predicates **/
 

@@ -1,11 +1,12 @@
 /*
  * Created on 6 Oct 2006
  */
-package uk.org.ponder.beanutil;
+package uk.org.ponder.beanutil.support;
 
 import java.lang.reflect.Array;
 import java.util.List;
 
+import uk.org.ponder.beanutil.PropertyAccessor;
 import uk.org.ponder.saxalizer.mapping.ContainerTypeRegistry;
 import uk.org.ponder.util.EnumerationConverter;
 

@@ -1,15 +1,26 @@
 /*
  * Created on Dec 3, 2006
  */
-package uk.org.ponder.beanutil;
+package uk.org.ponder.beanutil.support;
 
 import java.util.Iterator;
 import java.util.Set;
 
+import uk.org.ponder.beanutil.BeanLocator;
+import uk.org.ponder.beanutil.BeanModelAlterer;
+import uk.org.ponder.beanutil.IterableBeanLocator;
 import uk.org.ponder.conversion.StaticLeafParser;
 import uk.org.ponder.util.ObstinateMap;
 import uk.org.ponder.util.ObstinateSet;
 import uk.org.ponder.util.UniversalRuntimeException;
+
+/** Converts arbitrary EL-traversable material to standard Maps - that is,
+ * abstracts away the mechanism of property access, via by BeanLocator or
+ * physical bean properties/fields, and renders them all as Map key/values.
+ * 
+ * @author Antranig Basman (antranig@caret.cam.ac.uk)
+ *
+ */
 
 public class ObstinateTravellingMap extends ObstinateMap {
   private Object seed;
