@@ -422,9 +422,11 @@ public class DARApplier implements BeanModelAlterer {
           if (target != null)
             wrapped = target;
         }
-        TargettedMessage message = new TargettedMessage(wrapped.getMessage(),
+        if (darenv != null && darenv.messages != null) {
+          TargettedMessage message = new TargettedMessage(wrapped.getMessage(),
             e, oldpath);
-        darenv.messages.addMessage(message);
+          darenv.messages.addMessage(message);
+        }
         Logger.log.info(emessage, e);
       }
       else

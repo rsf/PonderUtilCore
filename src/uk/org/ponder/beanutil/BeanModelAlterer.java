@@ -47,8 +47,8 @@ public interface BeanModelAlterer {
    * 
    * @param rootobj The object to which alterations are to be applied
    * @param toapply The list of alterations
-   * @param messages The list to which error messages accreted during
-   *          application are to be appended.
+   * @param darenv A {@link DAREnvironment} record supplying any environment
+   * require for the application. May be <code>null</code>
    */
   public void applyAlterations(Object rootobj, DARList toapply,
       DAREnvironment darenv);
