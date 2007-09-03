@@ -114,6 +114,7 @@ public class StaticLeafParser {
     registerParser(java.sql.Date.class, new DateParser());
     registerParser(DateParser.class, new DateParserParser());
     registerParser(Class.class, new ClassParser());
+    // TODO: These are not suitable for some environments, for example Javascript
     registerParser(ArrayUtil.intArrayClass, new intArrayParser());
     registerParser(ArrayUtil.doubleArrayClass, new doubleArrayParser());
     registerParser(ArrayUtil.stringArrayClass, StringArrayParser.instance);
