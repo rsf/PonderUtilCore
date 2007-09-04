@@ -395,8 +395,8 @@ public class DARApplier implements BeanModelAlterer {
         for (int i = 0; i < segments.length - 1; ++i) {
           moveobj = BeanUtil.navigateOne(moveobj, segments[i], mappingcontext);
           if (moveobj == null) {
-            throw new NullPointerException("Null value in EL path at " + 
-                PathUtil.buildPath(segments, 0, i + 1));
+            throw new NullPointerException("Null value in EL path at path '" + 
+                PathUtil.buildPath(segments, 0, i + 1) + "'");
           }
           if (moveobj instanceof DARReceiver) {
             dar.path = PathUtil.buildPath(segments, i + 1, segments.length);
