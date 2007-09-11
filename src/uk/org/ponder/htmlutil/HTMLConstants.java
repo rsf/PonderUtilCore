@@ -10,7 +10,7 @@ public class HTMLConstants {
 
   public static String[][] tagtoURL = {
     {"href", "<a ", "<link "},
-    {"src", "<img ", "<frame ", "<script ", "<iframe ", "<style "},
+    {"src", "<img ", "<frame ", "<script ", "<iframe ", "<style ", "<input ", "<embed "},
     {"action", "<form "}
   };
 // Every tag may have a "background" attribute holding a URL
