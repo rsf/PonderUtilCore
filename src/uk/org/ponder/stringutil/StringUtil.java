@@ -20,18 +20,22 @@ public class StringUtil {
   /** JDK String.split is EXTREMELY slow and also has somewhat unclear
    * semantics.
    */
-  public static String[] split (String tosplit, char delim) {
+  public static String[] split (String tosplit, char delim, boolean trim) {
     StringList togo = new StringList();
     CharWrap buffer = new CharWrap();
     for (int i = 0; i < tosplit.length(); ++ i) {
       char c = tosplit.charAt(i);
       if (c == delim) {
-        togo.add(buffer.toString());
+        togo.add(trim? buffer.toString().trim() : buffer.toString());
         buffer.clear();
       }
       else buffer.append(c);
     }
-    togo.add(buffer.toString());
+    togo.add(trim? buffer.toString().trim() : buffer.toString());
     return togo.toStringArray();
+  }
+  
+  public static String[] parseArray(String tosplit) {
+    return split(tosplit, ',', true);
   }
 }

@@ -2,7 +2,6 @@ package uk.org.ponder.conversion;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 import uk.org.ponder.arrayutil.ArrayUtil;
@@ -77,19 +76,20 @@ public class StaticLeafParser {
   private static final Map primitiveWrapperTypeMap = new HashMap(16);
 
   static {
-      primitiveWrapperTypeMap.put(Boolean.TYPE, Boolean.class);
-      primitiveWrapperTypeMap.put(Byte.TYPE, Byte.class);
-      primitiveWrapperTypeMap.put(Character.TYPE, Character.class);
-      primitiveWrapperTypeMap.put(Double.TYPE, Double.class);
-      primitiveWrapperTypeMap.put(Float.TYPE, Float.class);
-      primitiveWrapperTypeMap.put(Integer.TYPE, Integer.class);
-      primitiveWrapperTypeMap.put(Long.TYPE, Long.class);
-      primitiveWrapperTypeMap.put(Short.TYPE, Short.class);
+    primitiveWrapperTypeMap.put(Boolean.TYPE, Boolean.class);
+    primitiveWrapperTypeMap.put(Byte.TYPE, Byte.class);
+    primitiveWrapperTypeMap.put(Character.TYPE, Character.class);
+    primitiveWrapperTypeMap.put(Double.TYPE, Double.class);
+    primitiveWrapperTypeMap.put(Float.TYPE, Float.class);
+    primitiveWrapperTypeMap.put(Integer.TYPE, Integer.class);
+    primitiveWrapperTypeMap.put(Long.TYPE, Long.class);
+    primitiveWrapperTypeMap.put(Short.TYPE, Short.class);
   }
-  
+
   public static Class wrapClass(Class towrap) {
     Class wrapper = (Class) primitiveWrapperTypeMap.get(towrap);
-    return wrapper == null? towrap : wrapper;
+    return wrapper == null ? towrap
+        : wrapper;
   }
 
   // This is a hashtable of classes to SAXLeafTypeParsers
@@ -102,7 +102,7 @@ public class StaticLeafParser {
   // in UTF-8, would appear as a-hat (unassigned) (unassigned) e29789. 11100010
   // 10010111 10001001
   // public static final char solidus = '\u25a9';
-  //public static String NULL_STRING = "\u25a9null\u25a9";
+  // public static String NULL_STRING = "\u25a9null\u25a9";
 
   private void registerDefaultParsers() {
     registerParser(Boolean.class, new BooleanParser());
@@ -114,7 +114,8 @@ public class StaticLeafParser {
     registerParser(java.sql.Date.class, new DateParser());
     registerParser(DateParser.class, new DateParserParser());
     registerParser(Class.class, new ClassParser());
-    // TODO: These are not suitable for some environments, for example Javascript
+    // TODO: These are not suitable for some environments, for example
+    // Javascript
     registerParser(ArrayUtil.intArrayClass, new intArrayParser());
     registerParser(ArrayUtil.doubleArrayClass, new doubleArrayParser());
     registerParser(ArrayUtil.stringArrayClass, StringArrayParser.instance);
@@ -139,47 +140,43 @@ public class StaticLeafParser {
    * particular class occurs as a leaf type during SAXalization or
    * DeSAXalization.
    * 
-   * @param toparse
-   *          The class type parsed by the supplied parser object.
-   * @param parser
-   *          A SAXLeafTypeParser parsing objects of the supplied class.
+   * @param toparse The class type parsed by the supplied parser object.
+   * @param parser A SAXLeafTypeParser parsing objects of the supplied class.
    */
 
   public void registerParser(Class toparse, LeafObjectParser parser) {
     parseabletypes.put(toparse, parser);
   }
 
-  // A HashSet of classes already tested and found not to be
-  // default-convertible.
-  // TODO: This is rubbish! replace with a concurrent version at least, or
-  // possibly remove this standing memory leak completely.
-  private HashSet nondefault = new HashSet();
-
   /**
    * This method determines whether the supplied Class object is registered with
    * the leaf parser.
    * 
-   * @param totest
-   *          The class type to look up.
+   * @param totest The class type to look up.
    * @return <code>true</code> if the class type is registered.
    */
   public boolean isLeafType(Class totest) {
+    return fetchParser(totest) != null;
+  }
+
+  private LeafObjectParser fetchParser(Class totest) {
     if (totest.isPrimitive()) {
       totest = wrapClass(totest);
     }
-    boolean registered = parseabletypes.get(totest) != null;
-    if (!registered && !nondefault.contains(totest)) {
-      StringableLeafTypeParser leafparser = StringableLeafTypeParser
-          .checkClass(totest);
-      if (leafparser != null) {
-        registerParser(totest, leafparser);
-        return true;
-      }
-      else {
-        nondefault.add(totest);
-      }
+    LeafObjectParser stored = (LeafObjectParser) parseabletypes.get(totest);
+    if (stored == null) {
+      stored = loadDefaultParser(totest);
     }
-    return registered;
+    return stored;
+  }
+  
+  private LeafObjectParser loadDefaultParser(Class clazz) {
+    StringableLeafTypeParser leafparser = StringableLeafTypeParser
+        .checkClass(clazz);
+    if (leafparser != null) {
+      registerParser(clazz, leafparser);
+    }
+    return leafparser;
   }
 
   /**
@@ -188,18 +185,13 @@ public class StaticLeafParser {
    * it called <code>parse</code> that takes an argument of type
    * <code>String</code>,
    * 
-   * @param returntype
-   *          The type of the required object.
-   * @param bulk
-   *          The data to be parsed.
+   * @param returntype The type of the required object.
+   * @param bulk The data to be parsed.
    * @return the data parsed into an object of the required type.
    */
 
   public Object parse(Class returntype, String bulk) {
-    if (returntype.isPrimitive()) {
-      returntype = wrapClass(returntype);
-    }
-    LeafObjectParser parser = (LeafObjectParser) parseabletypes.get(returntype);
+    LeafObjectParser parser = fetchParser(returntype);
     return parser.parse(bulk);
   }
 
@@ -208,28 +200,25 @@ public class StaticLeafParser {
    * rendering SAXLeafTypeParser class and calling its <code>render</code>
    * method.
    * 
-   * @param torender
-   *          The object to be rendered.
-   * @param renderinto
-   *          A vacant CharWrap object that the renderer may choose to use for
-   *          its rendering.
+   * @param torender The object to be rendered.
+   * @param renderinto A vacant CharWrap object that the renderer may choose to
+   *            use for its rendering.
    * @return a CharWrap object containing the rendered text.
    */
   public String render(Object torender) {
-    Class objtype = torender.getClass();
-    LeafObjectParser parser = (LeafObjectParser) parseabletypes.get(objtype);
+    LeafObjectParser parser = fetchParser(torender.getClass());
     if (parser == null) {
-      throw new AssertionException("LeafParser asked to render object of type "
-          + objtype.getName() + " which has no registered parser");
+      throw new AssertionException("LeafParser asked to render object of "
+          + torender.getClass() + " which has no registered parser");
     }
     return parser.render(torender);
   }
 
   public Object copy(Object tocopy) {
     Class objtype = tocopy.getClass();
-    LeafObjectParser parser = (LeafObjectParser) parseabletypes.get(objtype);
+    LeafObjectParser parser = fetchParser(objtype);
     if (parser == null) {
-      throw new AssertionException("LeafParser asked to render object of type "
+      throw new AssertionException("LeafParser asked to copy object of type "
           + objtype.getName() + " which has no registered parser");
     }
     return parser.copy(tocopy);
