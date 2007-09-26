@@ -10,7 +10,7 @@ import java.util.Calendar;
 import java.util.Locale;
 
 import uk.org.ponder.arrayutil.ArrayUtil;
-import uk.org.ponder.localeutil.LocaleReceiver;
+import uk.org.ponder.localeutil.LocaleHolder;
 import uk.org.ponder.stringutil.CharWrap;
 
 /**
@@ -20,7 +20,7 @@ import uk.org.ponder.stringutil.CharWrap;
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
  */
 
-public class DateSymbolJSEmitter extends LocaleReceiver {
+public class DateSymbolJSEmitter extends LocaleHolder {
   private String prefix = "PUC_";
 
   public void setArrayNamePrefix(String prefix) {

@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import uk.org.ponder.localeutil.LocaleReceiver;
+import uk.org.ponder.localeutil.LocaleHolder;
 
 /**
  * A transit bean parsing Date objects into their Locale-specific forms.
@@ -18,7 +18,7 @@ import uk.org.ponder.localeutil.LocaleReceiver;
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
  */
 
-public class StandardFieldDateTransit extends LocaleReceiver implements FieldDateTransit {
+public class StandardFieldDateTransit extends LocaleHolder implements FieldDateTransit {
   private Date date;
 
   private SimpleDateFormat shortformat;

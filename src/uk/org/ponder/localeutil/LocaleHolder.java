@@ -11,7 +11,7 @@ import java.util.Locale;
  *
  */
 
-public class LocaleReceiver implements LocaleSetter {
+public class LocaleHolder implements LocaleSetter {
   private Locale locale = Locale.getDefault();
   private LocaleGetter localegetter;
 
