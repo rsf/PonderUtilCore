@@ -74,9 +74,7 @@ public class TargettedMessageList implements Serializable {
    */
   public boolean isError() {
     for (int i = 0; i < size(); ++i) {
-      TargettedMessage mess = messageAt(i);
-      if ((mess.severity & 1) == TargettedMessage.SEVERITY_ERROR)
-        return true;
+      if (messageAt(i).isError()) return true;
     }
     return false;
   }
@@ -155,7 +153,8 @@ public class TargettedMessageList implements Serializable {
     StringList togo = new StringList();
     for (int i = 0; i < size(); ++i) {
       TargettedMessage message = messageAt(i);
-      togo.add(locator.getMessage(message.messagecodes, message.args));
+      togo.add(message.message != null? message.message : 
+        locator.getMessage(message.messagecodes, message.args));
     }
     return togo;
   }

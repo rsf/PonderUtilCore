@@ -15,6 +15,8 @@ import java.io.Serializable;
  */
 public class TargettedMessage implements Serializable {
   public static final String TARGET_NONE = "No specific target";
+  /** A fully resolved message, suitable for appearing to the user **/
+  public String message;
   /**
    * A list of possible message codes, in descending order of specificity. This
    * is the same semantics as Spring's "MessageSourceResolvable" system.
@@ -28,6 +30,10 @@ public class TargettedMessage implements Serializable {
   public static final int SEVERITY_ERROR = 1;
   public int severity = SEVERITY_ERROR;
 
+  public boolean isError() {
+    return ((severity & 1) == TargettedMessage.SEVERITY_ERROR);
+  }
+  
   public void updateMessageCode(String messagecode) {
     messagecodes = new String[] { messagecode };
   }
