@@ -10,8 +10,9 @@ public class HTMLConstants {
 
   public static String[][] tagtoURL = {
     {"href", "<a ", "<link "},
-    {"src", "<img ", "<frame ", "<script ", "<iframe ", "<style ", "<input ", "<embed "},
-    {"action", "<form "}
+    {"src", "<img ", "<frame ", "<script ", "<iframe ", "<style ", "<input ", "<embed ", },
+    {"action", "<form "},
+    {"codebase", "<applet ", "<object "}
   };
 // Every tag may have a "background" attribute holding a URL
   public static String[] ubiquitousURL = {"background"};
