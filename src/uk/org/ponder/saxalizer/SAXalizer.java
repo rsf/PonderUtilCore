@@ -536,6 +536,15 @@ public class SAXalizer extends HandlerBase {
       throw new SAXParseException("Unexpected closing tag for " + tagname
           + " seen when there was no active object being parsed", locator);
     }
+    try {
+      endElementImpl(tagname);
+    }
+    catch (Exception e) {
+      throw new SAXParseException(e.getMessage(), locator, e);
+    }
+  }
+  
+  private void endElementImpl(String tagname) {
     // Our task is now to deliver the object to its parent. Firstly take
     // care of three special cases before finishing up.
     ParseContext beingparsed = getSaxingObject();
@@ -605,8 +614,8 @@ public class SAXalizer extends HandlerBase {
     }
     else if (beingparsed.parentsetter.ismappable && !beingparsed.parentsetter.isexactsetter) {
       if (beingparsed.mapkey == null) {
-        throw new SAXParseException("Mappable type for tag " + tagname
-            + " did not supply a map key", locator);
+        throw new IllegalArgumentException("Mappable type for tag " + tagname
+            + " did not supply a map key");
       }
       PropertyAccessor pa = MethodAnalyser.getPropertyAccessor(
           beingparsed.objectpeer, mappingcontext);
