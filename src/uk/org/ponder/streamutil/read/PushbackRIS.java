@@ -21,7 +21,9 @@ public class PushbackRIS implements ReadInputStream {
   }
 
   public void unread(char c) {
-    pushback.append(c);
+    if (c != EOF) {
+      pushback.append(c);
+    }
   }
   
   public int read(char[] target, int start, int length) {

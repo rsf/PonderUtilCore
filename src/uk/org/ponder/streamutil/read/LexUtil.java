@@ -53,7 +53,9 @@ public class LexUtil {
       sb.append(c);
       c = pbr.get();
     }
-    pbr.unread(c);
+    if (c != ReadInputStream.EOF) {
+      pbr.unread(c);
+    }
     int togo = 0;
     try {
       togo = Integer.parseInt(sb.toString());
@@ -72,7 +74,9 @@ public class LexUtil {
       sb.append(c);
       c = lr.get();
     }
-    lr.unread(c);
+    if (c != ReadInputStream.EOF) {
+      lr.unread(c);
+    }
     return Double.parseDouble(sb.toString());
   }
 
