@@ -23,4 +23,6 @@ public interface EntityBeanLocator extends WriteableBeanLocator {
   public static final String NEW_PREFIX = "new ";
  
   public Map getDeliveredBeans();
+  
+  public void saveAll();
 }
