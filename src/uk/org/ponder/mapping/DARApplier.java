@@ -34,6 +34,7 @@ import uk.org.ponder.stringutil.StringList;
 import uk.org.ponder.util.Denumeration;
 import uk.org.ponder.util.EnumerationConverter;
 import uk.org.ponder.util.Logger;
+import uk.org.ponder.util.ObjectFactory;
 import uk.org.ponder.util.SingleEnumeration;
 import uk.org.ponder.util.UniversalRuntimeException;
 
@@ -196,6 +197,9 @@ public class DARApplier implements BeanModelAlterer {
         Object convert = dar.data;
         if (convert == DataAlterationRequest.INAPPLICABLE_VALUE)
           return;
+        while (convert instanceof ObjectFactory) {
+          convert = ((ObjectFactory)convert).getObject();
+        }
         Class leaftype = pa.getPropertyType(moveobj, tail);
 
         // invalidate FIRST - since even if exception is thrown, we may
@@ -377,14 +381,17 @@ public class DARApplier implements BeanModelAlterer {
     return togo;
   }
 
-  public void applyAlteration(Object rootobj, DataAlterationRequest dar,
-      DAREnvironment darenv) {
+  public void applyAlteration(final Object rootobj, final DataAlterationRequest dar,
+      final DAREnvironment darenv) {
     Logger.log.debug("Applying DAR " + dar.type + " to path " + dar.path + ": "
         + dar.data);
     checkAccess(dar.path, darenv == null? null : darenv.addressibleModel, "Writing to");
     if (dar.data instanceof ELReference) {
-      dar.data = getBeanValue(((ELReference) dar.data).value, rootobj,
-          darenv.addressibleModel);
+      final ELReference elref = (ELReference) dar.data;
+      dar.data = new ObjectFactory() {
+        public Object getObject() {
+            return getBeanValue(elref.value, rootobj, darenv.addressibleModel);
+        }};
     }
     String oldpath = dar.path;
     try {
