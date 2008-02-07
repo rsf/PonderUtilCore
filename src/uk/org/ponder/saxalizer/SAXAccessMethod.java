@@ -3,8 +3,8 @@ package uk.org.ponder.saxalizer;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import uk.org.ponder.iterationutil.EnumerationConverter;
 import uk.org.ponder.util.AssertionException;
-import uk.org.ponder.util.EnumerationConverter;
 import uk.org.ponder.util.UniversalRuntimeException;
 
 /**

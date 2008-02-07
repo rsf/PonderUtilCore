@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.Vector;
 
-import uk.org.ponder.util.EnumerationConverter;
+import uk.org.ponder.iterationutil.EnumerationConverter;
 
 //import uk.org.ponder.stringutil.CharWrap;
 

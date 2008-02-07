@@ -7,11 +7,11 @@ import java.util.Enumeration;
 
 import uk.org.ponder.arrayutil.ArrayUtil;
 import uk.org.ponder.beanutil.BeanResolver;
+import uk.org.ponder.iterationutil.Denumeration;
+import uk.org.ponder.iterationutil.EnumerationConverter;
 import uk.org.ponder.reflect.ReflectiveCache;
 import uk.org.ponder.saxalizer.mapping.ContainerTypeRegistry;
 import uk.org.ponder.stringutil.StringList;
-import uk.org.ponder.util.Denumeration;
-import uk.org.ponder.util.EnumerationConverter;
 import uk.org.ponder.util.Logger;
 
 /**

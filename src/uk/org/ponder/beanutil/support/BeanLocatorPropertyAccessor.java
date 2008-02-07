@@ -6,8 +6,8 @@ package uk.org.ponder.beanutil.support;
 import uk.org.ponder.beanutil.BeanLocator;
 import uk.org.ponder.beanutil.PropertyAccessor;
 import uk.org.ponder.beanutil.WriteableBeanLocator;
+import uk.org.ponder.iterationutil.EnumerationConverter;
 import uk.org.ponder.util.AssertionException;
-import uk.org.ponder.util.EnumerationConverter;
 
 public class BeanLocatorPropertyAccessor implements PropertyAccessor {
   // This class is completely immutable, can universally use this instance.

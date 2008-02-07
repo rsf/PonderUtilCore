@@ -6,7 +6,7 @@ package uk.org.ponder.beanutil.support;
 import java.util.Map;
 
 import uk.org.ponder.beanutil.PropertyAccessor;
-import uk.org.ponder.util.EnumerationConverter;
+import uk.org.ponder.iterationutil.EnumerationConverter;
 
 public class MapPropertyAccessor implements PropertyAccessor {
   // This class is completely immutable, can universally use this instance.

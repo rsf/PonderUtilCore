@@ -9,11 +9,11 @@ import java.util.Iterator;
 import java.util.Map;
 
 import uk.org.ponder.arrayutil.ArrayUtil;
+import uk.org.ponder.iterationutil.EnumerationConverter;
 import uk.org.ponder.saxalizer.AccessMethod;
 import uk.org.ponder.saxalizer.MethodAnalyser;
 import uk.org.ponder.saxalizer.SAXAccessMethod;
 import uk.org.ponder.saxalizer.SAXalizerMappingContext;
-import uk.org.ponder.util.EnumerationConverter;
 
 /**
  * A moderately capable deep cloner of beans. Will not cope with anything

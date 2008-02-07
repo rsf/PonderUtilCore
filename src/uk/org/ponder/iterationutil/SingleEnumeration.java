@@ -1,4 +1,4 @@
-package uk.org.ponder.util;
+package uk.org.ponder.iterationutil;
 
 import java.util.Enumeration;
 

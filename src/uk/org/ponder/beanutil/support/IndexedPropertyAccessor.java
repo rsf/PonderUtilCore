@@ -7,8 +7,8 @@ import java.lang.reflect.Array;
 import java.util.List;
 
 import uk.org.ponder.beanutil.PropertyAccessor;
+import uk.org.ponder.iterationutil.EnumerationConverter;
 import uk.org.ponder.saxalizer.mapping.ContainerTypeRegistry;
-import uk.org.ponder.util.EnumerationConverter;
 
 /** Accessor for numeric indexed properties (held in Arrays or Lists) * */
 

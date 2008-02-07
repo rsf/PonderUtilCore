@@ -14,7 +14,7 @@ import uk.org.ponder.beanutil.BeanModelAlterer;
 import uk.org.ponder.beanutil.BeanPredicateModel;
 import uk.org.ponder.beanutil.BeanResolver;
 import uk.org.ponder.beanutil.BeanUtil;
-import uk.org.ponder.beanutil.ELReference;
+import uk.org.ponder.beanutil.CoreELReference;
 import uk.org.ponder.beanutil.PathUtil;
 import uk.org.ponder.beanutil.PropertyAccessor;
 import uk.org.ponder.beanutil.WriteableBeanLocator;
@@ -22,6 +22,9 @@ import uk.org.ponder.conversion.ConvertUtil;
 import uk.org.ponder.conversion.VectorCapableParser;
 import uk.org.ponder.errorutil.CoreMessages;
 import uk.org.ponder.errorutil.PropertyException;
+import uk.org.ponder.iterationutil.Denumeration;
+import uk.org.ponder.iterationutil.EnumerationConverter;
+import uk.org.ponder.iterationutil.SingleEnumeration;
 import uk.org.ponder.messageutil.TargettedMessage;
 import uk.org.ponder.messageutil.TargettedMessageList;
 import uk.org.ponder.reflect.ReflectUtils;
@@ -31,11 +34,8 @@ import uk.org.ponder.saxalizer.MethodAnalyser;
 import uk.org.ponder.saxalizer.SAXalXMLProvider;
 import uk.org.ponder.saxalizer.SAXalizerMappingContext;
 import uk.org.ponder.stringutil.StringList;
-import uk.org.ponder.util.Denumeration;
-import uk.org.ponder.util.EnumerationConverter;
 import uk.org.ponder.util.Logger;
 import uk.org.ponder.util.ObjectFactory;
-import uk.org.ponder.util.SingleEnumeration;
 import uk.org.ponder.util.UniversalRuntimeException;
 
 /**
@@ -386,8 +386,8 @@ public class DARApplier implements BeanModelAlterer {
     Logger.log.debug("Applying DAR " + dar.type + " to path " + dar.path + ": "
         + dar.data);
     checkAccess(dar.path, darenv == null? null : darenv.addressibleModel, "Writing to");
-    if (dar.data instanceof ELReference) {
-      final ELReference elref = (ELReference) dar.data;
+    if (dar.data instanceof CoreELReference) {
+      final CoreELReference elref = (CoreELReference) dar.data;
       dar.data = new ObjectFactory() {
         public Object getObject() {
             return getBeanValue(elref.value, rootobj, darenv.addressibleModel);

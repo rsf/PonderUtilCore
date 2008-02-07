@@ -16,14 +16,14 @@ import org.xml.sax.SAXParseException;
 import uk.org.ponder.arrayutil.ListUtil;
 import uk.org.ponder.beanutil.PropertyAccessor;
 import uk.org.ponder.conversion.StaticLeafParser;
+import uk.org.ponder.iterationutil.CompletableDenumeration;
+import uk.org.ponder.iterationutil.Denumeration;
+import uk.org.ponder.iterationutil.EnumerationConverter;
 import uk.org.ponder.reflect.ClassGetter;
 import uk.org.ponder.reflect.ReflectUtils;
 import uk.org.ponder.reflect.ReflectiveCache;
 import uk.org.ponder.stringutil.CharWrap;
 import uk.org.ponder.util.AssertionException;
-import uk.org.ponder.util.CompletableDenumeration;
-import uk.org.ponder.util.Denumeration;
-import uk.org.ponder.util.EnumerationConverter;
 import uk.org.ponder.util.Logger;
 import uk.org.ponder.util.UniversalRuntimeException;
 

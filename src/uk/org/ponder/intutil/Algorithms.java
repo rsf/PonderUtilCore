@@ -3,7 +3,6 @@
  */
 package uk.org.ponder.intutil;
 
-import java.util.Arrays;
 import java.util.Random;
 
 import uk.org.ponder.arrayutil.ArrayUtil;

@@ -1,7 +1,7 @@
 /*
  * Created on Sep 22, 2004
  */
-package uk.org.ponder.util;
+package uk.org.ponder.iterationutil;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,6 +15,8 @@ import uk.org.ponder.arrayutil.ArrayEnumeration;
 import uk.org.ponder.beanutil.BeanLocator;
 import uk.org.ponder.reflect.ReflectUtils;
 import uk.org.ponder.reflect.ReflectiveCache;
+import uk.org.ponder.util.AssertionException;
+import uk.org.ponder.util.UniversalRuntimeException;
 
 /**
  * Utilities for converting Java multiple-valued types (arrays, collections,
