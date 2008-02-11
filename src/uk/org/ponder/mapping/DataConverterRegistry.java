@@ -28,7 +28,9 @@ import uk.org.ponder.util.Logger;
  * 
  */
 public class DataConverterRegistry {
-  private static final Class ROOT_CLASS = BeanLocator.class;
+  // A false key representing the converters which are registered at the root
+  // EL path, not associated with any particular Class
+  private static final Class ROOT_CLASS = Math.class;
   private List converters;
 
   public void setBeanLocator(BeanLocator beanLocator) {
@@ -85,6 +87,7 @@ public class DataConverterRegistry {
       List converters = fetchConverters(clazzes);
       accreteCandidates(candidates, converters);
     }
+    filterCandidates(candidates, null);
     if (candidates.size() == 0) return null;
     if (candidates.size() > 1) {
       Logger.log.warn("Warning: duplicate DataConverter candidates discovered for EL path " 
@@ -97,14 +100,19 @@ public class DataConverterRegistry {
   private void filterCandidates(List candidates, String segment) {
     for (int i = candidates.size() - 1; i >= 0; --i) {
       ConverterCandidate candidate = (ConverterCandidate) candidates.get(i);
-      if (candidate.segments != null
-          && candidate.consumed < candidate.segments.length) {
+      boolean incomplete = candidate.segments != null
+        && candidate.consumed < candidate.segments.length; 
+      if (incomplete && segment != null) {
         String matchseg = candidate.segments[candidate.consumed];
         candidate.consumed ++;
         if (matchseg.equals("*") || matchseg.equals(segment))
           continue;
       }
-      candidates.remove(i);
+      // if there is no segment, we need to have consumed all the segments
+      // at this point.
+      if (segment != null || incomplete) {
+        candidates.remove(i);
+      }
     }
   }
 

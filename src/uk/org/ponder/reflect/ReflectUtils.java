@@ -170,7 +170,9 @@ public class ReflectUtils {
   private static void appendSuperclasses(Class clazz, List accrete) {
     Class[] interfaces = clazz.getInterfaces();
     for (int i = 0; i < interfaces.length; ++i) {
-      accrete.add(interfaces[i]);
+      if (!accrete.contains(interfaces[i])) {
+        accrete.add(interfaces[i]);
+      }
     }
     for (int i = 0; i < interfaces.length; ++i) {
       appendSuperclasses(interfaces[i], accrete);
