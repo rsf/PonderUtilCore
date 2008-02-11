@@ -4,16 +4,17 @@
 package uk.org.ponder.beanutil.support;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
-import uk.org.ponder.beanutil.WriteableBeanLocator;
+import uk.org.ponder.beanutil.IterableWriteableBeanLocator;
 
 /** A concrete manifestation of a WriteableBeanLocator, backed by a standard
  * {@link Map}.
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
  */
 
-public class ConcreteWBL implements WriteableBeanLocator {
+public class ConcreteWBL implements IterableWriteableBeanLocator {
   private Map beans;
   
   public ConcreteWBL() {
@@ -36,5 +37,9 @@ public class ConcreteWBL implements WriteableBeanLocator {
   
   public void clear() {
     beans.clear();
+  }
+  
+  public Iterator iterator() {
+    return beans.keySet().iterator();
   }
 }
