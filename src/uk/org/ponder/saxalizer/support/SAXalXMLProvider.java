@@ -1,12 +1,15 @@
 /*
  * Created on Oct 6, 2004
  */
-package uk.org.ponder.saxalizer;
+package uk.org.ponder.saxalizer.support;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
 
+import uk.org.ponder.saxalizer.DeSAXalizer;
+import uk.org.ponder.saxalizer.SAXalizerHelper;
+import uk.org.ponder.saxalizer.SAXalizerMappingContext;
 import uk.org.ponder.saxalizer.mapping.MappableXMLProvider;
 import uk.org.ponder.saxalizer.mapping.SAXalizerMapperEntry;
 import uk.org.ponder.util.UniversalRuntimeException;
@@ -43,7 +46,7 @@ public class SAXalXMLProvider implements MappableXMLProvider {
     this.mappingcontext = mappingcontext;
   }
 
-  public void writeXML(Object towrite, OutputStream os) {
+  public void writeObject(Object towrite, OutputStream os) {
     DeSAXalizer desaxalizer = getDeSAXalizer();
     String resourcename = mappingcontext.classnamemanager.getClassName(towrite.getClass());
     if (resourcename == null) {
@@ -59,7 +62,7 @@ public class SAXalXMLProvider implements MappableXMLProvider {
     }
   }
 
-  public Object readXML(Object classorobject, InputStream is) {
+  public Object readObject(Object classorobject, InputStream is) {
     SAXalizerHelper saxalizer = (SAXalizerHelper) saxalizergetter.get();
     Class objclass = classorobject == null? null : classorobject instanceof Class? (Class)classorobject : classorobject.getClass();
     try {
@@ -76,7 +79,7 @@ public class SAXalXMLProvider implements MappableXMLProvider {
   }
 
   public void loadMapping(InputStream is) {
-    SAXalizerMapperEntry entry = (SAXalizerMapperEntry)readXML(SAXalizerMapperEntry.class, is);
+    SAXalizerMapperEntry entry = (SAXalizerMapperEntry)readObject(SAXalizerMapperEntry.class, is);
     mappingcontext.mapper.addEntry(entry);
   }
 

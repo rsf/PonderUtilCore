@@ -1,10 +1,12 @@
-package uk.org.ponder.saxalizer;
+package uk.org.ponder.saxalizer.support;
+
+import uk.org.ponder.saxalizer.SAMSList;
 
 /* SAXAccessMethodHash provides a quick lookup of an XML tag name to a
  * SAXAccessMethod object corresponding to the tag, for a particular 
  * SAXalizable class.
  */
-class SAXAccessMethodHash {
+public class SAXAccessMethodHash {
   /** Class <code>SAXAccessMethodHash</code> stores a hashtable of
    *   <code>set</code> methods that have been
    *   discovered in a class to allow them to be easily invoked when

@@ -366,7 +366,7 @@ public class CharWrap {
   }
 
   public CharWrap appendHexChar(char toappend) {
-    int itohex = (int) toappend;
+    int itohex = toappend;
     append(ByteWrap.toHex((itohex & 0xf000) >> 12));
     append(ByteWrap.toHex((itohex & 0xf00) >> 8));
     append(ByteWrap.toHex((itohex & 0xf0) >> 4));

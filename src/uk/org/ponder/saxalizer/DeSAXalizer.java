@@ -10,6 +10,9 @@ import java.util.Map;
 
 import uk.org.ponder.arrayutil.ListUtil;
 import uk.org.ponder.iterationutil.EnumerationConverter;
+import uk.org.ponder.saxalizer.support.MethodAnalyser;
+import uk.org.ponder.saxalizer.support.SAMIterator;
+import uk.org.ponder.saxalizer.support.SAXAccessMethod;
 import uk.org.ponder.util.Logger;
 import uk.org.ponder.util.UniversalRuntimeException;
 import uk.org.ponder.xml.XMLWriter;

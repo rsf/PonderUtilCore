@@ -6,8 +6,8 @@ package uk.org.ponder.beanutil;
 import java.util.Iterator;
 import java.util.Map;
 
-import uk.org.ponder.saxalizer.MethodAnalyser;
 import uk.org.ponder.saxalizer.SAXalizerMappingContext;
+import uk.org.ponder.saxalizer.support.MethodAnalyser;
 import uk.org.ponder.util.UniversalRuntimeException;
 
 /**

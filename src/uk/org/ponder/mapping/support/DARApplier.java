@@ -1,13 +1,10 @@
 /*
  * Created on Nov 22, 2004
  */
-package uk.org.ponder.mapping;
+package uk.org.ponder.mapping.support;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.Map;
 
 import uk.org.ponder.arrayutil.ArrayUtil;
 import uk.org.ponder.beanutil.BeanModelAlterer;
@@ -17,23 +14,21 @@ import uk.org.ponder.beanutil.BeanUtil;
 import uk.org.ponder.beanutil.CoreELReference;
 import uk.org.ponder.beanutil.PathUtil;
 import uk.org.ponder.beanutil.PropertyAccessor;
-import uk.org.ponder.beanutil.WriteableBeanLocator;
-import uk.org.ponder.conversion.ConvertUtil;
+import uk.org.ponder.conversion.GeneralConverter;
 import uk.org.ponder.conversion.VectorCapableParser;
-import uk.org.ponder.errorutil.CoreMessages;
-import uk.org.ponder.errorutil.PropertyException;
-import uk.org.ponder.iterationutil.Denumeration;
 import uk.org.ponder.iterationutil.EnumerationConverter;
-import uk.org.ponder.iterationutil.SingleEnumeration;
+import uk.org.ponder.mapping.BeanInvalidationBracketer;
+import uk.org.ponder.mapping.DAREnvironment;
+import uk.org.ponder.mapping.DARList;
+import uk.org.ponder.mapping.DARReceiver;
+import uk.org.ponder.mapping.DataAlterationRequest;
+import uk.org.ponder.mapping.ShellInfo;
 import uk.org.ponder.messageutil.TargettedMessage;
 import uk.org.ponder.messageutil.TargettedMessageList;
 import uk.org.ponder.reflect.ReflectUtils;
 import uk.org.ponder.reflect.ReflectiveCache;
-import uk.org.ponder.saxalizer.AccessMethod;
-import uk.org.ponder.saxalizer.MethodAnalyser;
-import uk.org.ponder.saxalizer.SAXalXMLProvider;
 import uk.org.ponder.saxalizer.SAXalizerMappingContext;
-import uk.org.ponder.stringutil.StringList;
+import uk.org.ponder.saxalizer.support.MethodAnalyser;
 import uk.org.ponder.util.Logger;
 import uk.org.ponder.util.ObjectFactory;
 import uk.org.ponder.util.UniversalRuntimeException;
@@ -46,18 +41,18 @@ import uk.org.ponder.util.UniversalRuntimeException;
  * 
  */
 public class DARApplier implements BeanModelAlterer {
-  private SAXalXMLProvider xmlprovider;
   private SAXalizerMappingContext mappingcontext;
   private VectorCapableParser vcp;
   private ReflectiveCache reflectivecache;
-  private boolean springmode;
+  private DARApplierImpl impl = new DARApplierImpl();
 
-  public void setSAXalXMLProvider(SAXalXMLProvider saxal) {
-    xmlprovider = saxal;
+  public void setGeneralConverter(GeneralConverter generalConverter) {
+    impl.setGeneralConverter(generalConverter);
   }
-
+  
   public void setMappingContext(SAXalizerMappingContext mappingcontext) {
     this.mappingcontext = mappingcontext;
+    impl.setMappingContext(mappingcontext);
   }
 
   public SAXalizerMappingContext getMappingContext() {
@@ -66,10 +61,12 @@ public class DARApplier implements BeanModelAlterer {
 
   public void setReflectiveCache(ReflectiveCache reflectivecache) {
     this.reflectivecache = reflectivecache;
+    impl.setReflectiveCache(reflectivecache);
   }
 
   public void setVectorCapableParser(VectorCapableParser vcp) {
     this.vcp = vcp;
+    impl.setVectorCapableParser(vcp);
   }
 
   /**
@@ -79,7 +76,7 @@ public class DARApplier implements BeanModelAlterer {
    * vector-valued beans.
    */
   public void setSpringMode(boolean springmode) {
-    this.springmode = springmode;
+    impl.setSpringMode(springmode);
   }
 
   public Object getFlattenedValue(String fullpath, Object root,
@@ -201,162 +198,21 @@ public class DARApplier implements BeanModelAlterer {
           convert = ((ObjectFactory)convert).getObject();
         }
         Class leaftype = pa.getPropertyType(moveobj, tail);
+        
+        DARApplyEnvironment daraenv = 
+          new DARApplyEnvironment(dar, darenv, moveobj, convert, tail, pa, leaftype);
 
-        // invalidate FIRST - since even if exception is thrown, we may
-        // REQUIRE to perform a "guard" action to restore consistency.
         if (dar.type.equals(DataAlterationRequest.ADD)) {
-
-          // If we got a list of Strings in from the UI, they may be
-          // "cryptic" leaf types without proper packaging.
-          // This implies we MUST know the element type of the collection.
-          // For now we must assume collection is of leaf types.
-          if (pa.isMultiple(moveobj, tail)) {
-            Object lastobj = pa.getProperty(moveobj, tail);
-
-            AccessMethod sam = mappingcontext.getAnalyser(moveobj.getClass())
-                .getAccessMethod(tail);
-            if (convert instanceof String && springmode) {
-              // deference to Spring "auto-convert from comma-separated list"
-              // NB this is currently disused, RSACBeanLocator does not use
-              // DARApplier yet.
-              convert = StringList.fromString((String) convert);
-            }
-            int incomingsize = EnumerationConverter.getEnumerableSize(convert);
-            if (lastobj == null
-                || lastobj.getClass().isArray()
-                && EnumerationConverter.getEnumerableSize(lastobj) != incomingsize) {
-              lastobj = ReflectUtils.instantiateContainer(
-                  sam.getDeclaredType(), incomingsize, reflectivecache);
-              pa.setProperty(moveobj, tail, lastobj);
-            }
-            if (VectorCapableParser.isLOSType(convert)) {
-              if (lastobj instanceof Collection) {
-                ((Collection) lastobj).clear();
-              }
-              // TODO: for JDK collections, "leaftype" will be equal to the
-              // collection type unless we have got type info from elsewhere.
-              // for now, use arrays.
-              vcp.parse(convert, lastobj, leaftype, reflectivecache);
-            }
-            else { // must be a single item, or else a collection
-              Denumeration den = EnumerationConverter.getDenumeration(lastobj,
-                  reflectivecache);
-              // TODO: use CompletableDenumeration here to support extensible
-              // arrays.
-              if (EnumerationConverter.isEnumerable(convert.getClass())) {
-                for (Enumeration enumm = EnumerationConverter
-                    .getEnumeration(convert); enumm.hasMoreElements();) {
-                  den.add(enumm.nextElement());
-                }
-              }
-              else {
-                den.add(convert);
-              }
-            }
-          }
-          else { // property is a scalar type, possibly composite.
-            if (convert instanceof String[]) {
-              convert = ((String[]) convert)[0];
-            }
-            // Step 1 - attempt to convert the dar value if it is still a
-            // String,
-            // using our now knowledge of the target leaf type.
-            // TODO: this is ambiguous. We should simply have a new binding type
-            // for XML-encoded data. Should not attempt to reconvert String
-            // data!
-            // (case of guard invocation, for example)
-            if (convert instanceof String && dar.applyconversions) {
-              String string = (String) convert;
-              convert = ConvertUtil.parse(string, xmlprovider, leaftype);
-            }
-            // this case also deals with Maps and WBLs.
-            pa.setProperty(moveobj, tail, convert);
-          }
+          impl.processAddition(daraenv);
         }
-        // at this point, moveobj contains the object BEFORE the final path
-        // section.
-
         else if (dar.type.equals(DataAlterationRequest.DELETE)) {
-          try {
-            boolean failedremove = false;
-            Object removetarget = null;
-            // if we have data, we can try to remove it by value
-            if (convert == null) {
-              removetarget = moveobj;
-              convert = tail;
-            }
-            else {
-              removetarget = pa.getProperty(moveobj, tail);
-            }
-
-            // this decision is not quite right for "Map" but we have no way
-            // to declare the type of the container.
-            if (removetarget instanceof WriteableBeanLocator
-                || removetarget instanceof Map) {
-              leaftype = String.class;
-            }
-            Enumeration values = null;
-            if (EnumerationConverter.isEnumerable(convert.getClass())) {
-              values = EnumerationConverter.getEnumeration(convert);
-            }
-            else {
-              values = new SingleEnumeration(convert);
-            }
-
-            while (values.hasMoreElements()) {
-
-              Object toremove = values.nextElement();
-              // copied code from "ADD" branch. Regularise this conversion at
-              // some point.
-              if (dar.applyconversions) {
-                if (toremove instanceof String) {
-                  String string = (String) toremove;
-                  toremove = ConvertUtil.parse(string, xmlprovider, leaftype);
-                }
-                else if (leaftype == String.class) {
-                  toremove = ConvertUtil.render(toremove, xmlprovider);
-                }
-              }
-              if (removetarget instanceof WriteableBeanLocator) {
-                if (!((WriteableBeanLocator) removetarget)
-                    .remove((String) toremove)) {
-                  failedremove = true;
-                }
-              }
-              else if (removetarget instanceof Collection) {
-                if (!((Collection) removetarget).remove(toremove)) {
-                  failedremove = true;
-                }
-              }
-              else if (removetarget instanceof Map) {
-                if (((Map) removetarget).remove(toremove) == null) {
-                  failedremove = true;
-                }
-              }
-              else {
-                pa.setProperty(removetarget, (String) convert, null);
-              }
-            }
-
-            if (failedremove) {
-              throw UniversalRuntimeException
-                  .accumulate(new PropertyException());
-            }
-          }
-          catch (Exception e) {
-            if (darenv != null) {
-              TargettedMessage message = new TargettedMessage(
-                  CoreMessages.MISSING_DATA_ERROR, dar.path);
-              darenv.messages.addMessage(message);
-            }
-            Logger.log.warn("Couldn't remove object " + convert + " from path "
-                + dar.path, e);
-          }
+          impl.processDeletion(daraenv); 
         }
       }
     });
   }
-
+  
+  
   public ShellInfo fetchShells(String fullpath, Object rootobj, boolean expectMethod) {
     Object moveobj = rootobj;
     List shells = new ArrayList();

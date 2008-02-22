@@ -36,7 +36,24 @@ public class DataAlterationRequest {
   public boolean applyconversions = true;
   /** The type of the request, either an ADD (default) or DELETE.
    */
+  
   public String type = ADD;
+  
+  /** The encoding which has been applied to the {@link #data} object, if it is
+   * not already in the Java-native form. 
+   */
+  public String encoding = DEFAULT_ENCODING;
+  /** Value for {@link #encoding}, indicating that non-leaf data should be
+   * encoded in JSON.
+   */
+  public static final String JSON_ENCODING = "JSON";
+  /** Value for {@link #encoding}, indicating that non-leaf data should be
+   * encoded in XML.
+   */
+  public static final String XML_ENCODING = "XML";
+  
+  /** Default encoding value where none is specified **/
+  public static final String DEFAULT_ENCODING = JSON_ENCODING;
   
   public DataAlterationRequest(String path, Object data) {
     this.path = path;

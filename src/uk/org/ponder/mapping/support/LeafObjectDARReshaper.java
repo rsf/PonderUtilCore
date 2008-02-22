@@ -1,9 +1,11 @@
 /*
  * Created on Apr 11, 2006
  */
-package uk.org.ponder.mapping;
+package uk.org.ponder.mapping.support;
 
 import uk.org.ponder.conversion.LeafObjectParser;
+import uk.org.ponder.mapping.DARReshaper;
+import uk.org.ponder.mapping.DataAlterationRequest;
 
 public class LeafObjectDARReshaper implements DARReshaper {
 

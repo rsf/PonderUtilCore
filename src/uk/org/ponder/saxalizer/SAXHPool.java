@@ -1,5 +1,6 @@
 package uk.org.ponder.saxalizer;
 
+import uk.org.ponder.saxalizer.support.EntityResolverStash;
 import uk.org.ponder.util.Logger;
 
 import uk.org.ponder.intutil.intVector;

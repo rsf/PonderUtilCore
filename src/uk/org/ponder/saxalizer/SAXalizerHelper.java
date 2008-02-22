@@ -12,6 +12,8 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import uk.org.ponder.saxalizer.mapping.ClassNameManager;
+import uk.org.ponder.saxalizer.support.EntityResolverStash;
+import uk.org.ponder.saxalizer.support.SAXalizer;
 import uk.org.ponder.streamutil.StreamCloseUtil;
 import uk.org.ponder.util.UniversalRuntimeException;
 
@@ -54,7 +56,7 @@ public class SAXalizerHelper extends HandlerBase {
     saxer.setEntityResolverStash(entityresolverstash);
   }
 
-  public Object produceSubtree(Object rootobj, Reader reader) throws SAXException {
+  public Object produceSubtree(Object rootobj, Reader reader) {
     InputSource i = new InputSource(reader);
     //i.setSystemId("SAXalizing page");
     try {
@@ -75,7 +77,7 @@ public class SAXalizerHelper extends HandlerBase {
    * @return An object representing the XML root node.
    */
   // Currently closes the stream
-  public Object produceSubtree(Object rootobj, InputStream stream) throws SAXException {
+  public Object produceSubtree(Object rootobj, InputStream stream) {
     InputSource i = new InputSource(stream);
     //i.setSystemId("SAXalizing page");
     try {
@@ -87,7 +89,7 @@ public class SAXalizerHelper extends HandlerBase {
   }
 
   
-  private Object produceSubtreeInternal(Object rootobj, InputSource i) throws SAXException {
+  private Object produceSubtreeInternal(Object rootobj, InputSource i) {
     parserstash.setDocumentHandler(this);
     parserstash.setEntityResolver(this);
     try {

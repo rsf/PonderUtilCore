@@ -1,4 +1,4 @@
-package uk.org.ponder.saxalizer;
+package uk.org.ponder.saxalizer.support;
 
 import org.xml.sax.InputSource;
 

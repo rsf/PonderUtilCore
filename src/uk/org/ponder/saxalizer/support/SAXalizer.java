@@ -1,4 +1,4 @@
-package uk.org.ponder.saxalizer;
+package uk.org.ponder.saxalizer.support;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,13 +15,20 @@ import org.xml.sax.SAXParseException;
 
 import uk.org.ponder.arrayutil.ListUtil;
 import uk.org.ponder.beanutil.PropertyAccessor;
-import uk.org.ponder.conversion.StaticLeafParser;
+import uk.org.ponder.conversion.GeneralLeafParser;
 import uk.org.ponder.iterationutil.CompletableDenumeration;
 import uk.org.ponder.iterationutil.Denumeration;
 import uk.org.ponder.iterationutil.EnumerationConverter;
 import uk.org.ponder.reflect.ClassGetter;
 import uk.org.ponder.reflect.ReflectUtils;
 import uk.org.ponder.reflect.ReflectiveCache;
+import uk.org.ponder.saxalizer.AccessMethod;
+import uk.org.ponder.saxalizer.Constants;
+import uk.org.ponder.saxalizer.GenericSAX;
+import uk.org.ponder.saxalizer.GenericSAXImpl;
+import uk.org.ponder.saxalizer.SAXalizableExtraAttrs;
+import uk.org.ponder.saxalizer.SAXalizerCallback;
+import uk.org.ponder.saxalizer.SAXalizerMappingContext;
 import uk.org.ponder.stringutil.CharWrap;
 import uk.org.ponder.util.AssertionException;
 import uk.org.ponder.util.Logger;
@@ -91,7 +98,7 @@ import uk.org.ponder.util.UniversalRuntimeException;
 
 public class SAXalizer extends HandlerBase {
   private SAXalizerMappingContext mappingcontext;
-  private StaticLeafParser leafparser;
+  private GeneralLeafParser leafparser;
 
   public SAXalizer(SAXalizerMappingContext mappingcontext) {
     this.mappingcontext = mappingcontext;
@@ -198,7 +205,7 @@ public class SAXalizer extends HandlerBase {
   private void pushObject(Class topush, Object oldinstance,
       SAXAccessMethod parentsetter) {
     if (topush.isPrimitive()) {
-      topush = StaticLeafParser.wrapClass(topush);
+      topush = GeneralLeafParser.wrapClass(topush);
     }
     boolean isgeneric = GenericSAX.class.isAssignableFrom(topush);
     boolean isleaf = leafparser.isLeafType(topush);
@@ -254,8 +261,8 @@ public class SAXalizer extends HandlerBase {
   // if it does not support the SAXalizableAttrs interface,
   // the attributes will be simply thrown away.
   private static void tryBlastAttrs(AttributeList attrlist,
-      SAXAccessMethodHash attrmethods, Object obj, StaticLeafParser leafparser,
-      boolean waspolymorphic, boolean wasmap) throws SAXException {
+      SAXAccessMethodHash attrmethods, Object obj, GeneralLeafParser leafparser,
+      boolean waspolymorphic, boolean wasmap) {
     SAXalizableExtraAttrs extraattrs = obj instanceof SAXalizableExtraAttrs ? (SAXalizableExtraAttrs) obj
         : null;
     boolean takesextras = extraattrs != null;
@@ -330,7 +337,7 @@ public class SAXalizer extends HandlerBase {
    *              If an error occured while parsing the supplied input source.
    */
   public void produceSubtree(Object rootobj, AttributeList attrlist,
-      SAXalizerCallback callback) throws SAXException {
+      SAXalizerCallback callback) {
     if (!saxingobjects.isEmpty()) {
       throw new AssertionException(
           "Attempt to produce new Subtree whilst another"

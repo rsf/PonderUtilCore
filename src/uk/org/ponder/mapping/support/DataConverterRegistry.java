@@ -1,7 +1,7 @@
 /*
  * Created on 2 Aug 2007
  */
-package uk.org.ponder.mapping;
+package uk.org.ponder.mapping.support;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,6 +13,9 @@ import uk.org.ponder.arrayutil.MapUtil;
 import uk.org.ponder.beanutil.BeanLocator;
 import uk.org.ponder.beanutil.BeanResolver;
 import uk.org.ponder.beanutil.PathUtil;
+import uk.org.ponder.mapping.DARReshaper;
+import uk.org.ponder.mapping.DataConverter;
+import uk.org.ponder.mapping.ShellInfo;
 import uk.org.ponder.reflect.ReflectUtils;
 import uk.org.ponder.util.Logger;
 

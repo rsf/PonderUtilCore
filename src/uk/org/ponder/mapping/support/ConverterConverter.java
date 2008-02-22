@@ -1,12 +1,15 @@
 /*
  * Created on 3 Aug 2007
  */
-package uk.org.ponder.mapping;
+package uk.org.ponder.mapping.support;
 
 import java.beans.PropertyEditor;
 
 import uk.org.ponder.beanutil.BeanResolver;
 import uk.org.ponder.conversion.LeafObjectParser;
+import uk.org.ponder.mapping.DARReshaper;
+import uk.org.ponder.mapping.DataAlterationRequest;
+import uk.org.ponder.mapping.PropertyEditorFactory;
 
 /** Converts between various forms of data converters **/
 

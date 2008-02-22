@@ -1,4 +1,4 @@
-package uk.org.ponder.saxalizer;
+package uk.org.ponder.saxalizer.support;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,6 +14,15 @@ import uk.org.ponder.beanutil.support.IndexedPropertyAccessor;
 import uk.org.ponder.beanutil.support.MapPropertyAccessor;
 import uk.org.ponder.errorutil.PropertyException;
 import uk.org.ponder.reflect.ClassGetter;
+import uk.org.ponder.saxalizer.AccessMethod;
+import uk.org.ponder.saxalizer.DeSAXalizable;
+import uk.org.ponder.saxalizer.DeSAXalizableAttrs;
+import uk.org.ponder.saxalizer.SAMSList;
+import uk.org.ponder.saxalizer.SAXAccessMethodSpec;
+import uk.org.ponder.saxalizer.SAXalizable;
+import uk.org.ponder.saxalizer.SAXalizableAttrs;
+import uk.org.ponder.saxalizer.SAXalizerMappingContext;
+import uk.org.ponder.saxalizer.WBLAccessMethod;
 import uk.org.ponder.saxalizer.mapping.SAXalizerMapperEntry;
 import uk.org.ponder.util.Logger;
 import uk.org.ponder.util.UniversalRuntimeException;
@@ -153,7 +162,7 @@ public class MethodAnalyser implements PropertyAccessor {
    *          object will be created using newInstance() to be queried.
    */
 
-  static MethodAnalyser constructMethodAnalyser(Class objclass,
+  public static MethodAnalyser constructMethodAnalyser(Class objclass,
       SAXalizerMappingContext context) {
 
     SAXalizerMapperEntry entry = context.mapper.byClass(objclass);

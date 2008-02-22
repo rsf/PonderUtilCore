@@ -71,7 +71,7 @@ class LongParser implements LeafObjectParser {
  * Java objects for the purposes of representing leaf nodes of the XML tag tree.
  */
 
-public class StaticLeafParser {
+public class GeneralLeafParser {
 
   private static final Map primitiveWrapperTypeMap = new HashMap(16);
 
@@ -95,16 +95,16 @@ public class StaticLeafParser {
   // This is a hashtable of classes to SAXLeafTypeParsers
   HashMap parseabletypes = new HashMap();
 
-  private static StaticLeafParser instance = new StaticLeafParser();
+  private static GeneralLeafParser instance = new GeneralLeafParser(true);
 
   // cross-hatched square character in Unicode, should be entirely unused
   // in UTF-16, would appear as percent-sign copyright-symbol. 0010010111001001
   // in UTF-8, would appear as a-hat (unassigned) (unassigned) e29789. 11100010
   // 10010111 10001001
-  // public static final char solidus = '\u25a9';
-  // public static String NULL_STRING = "\u25a9null\u25a9";
+  public static final char solidus = '\u25a9';
+  public static String NULL_STRING = "\u25a9null\u25a9";
 
-  private void registerDefaultParsers() {
+  private void registerDefaultParsers(boolean historical) {
     registerParser(Boolean.class, new BooleanParser());
     registerParser(String.class, new StringParser());
     registerParser(Integer.class, new IntegerParser());
@@ -114,16 +114,21 @@ public class StaticLeafParser {
     registerParser(java.sql.Date.class, new DateParser());
     registerParser(DateParser.class, new DateParserParser());
     registerParser(Class.class, new ClassParser());
-    // TODO: These are not suitable for some environments, for example
-    // Javascript
-    registerParser(ArrayUtil.intArrayClass, new intArrayParser());
-    registerParser(ArrayUtil.doubleArrayClass, new doubleArrayParser());
-    registerParser(ArrayUtil.stringArrayClass, StringArrayParser.instance);
-    registerParser(Matrix.class, new MatrixParser());
+    
+    if (historical) {
+      registerParser(ArrayUtil.intArrayClass, new intArrayParser());
+      registerParser(ArrayUtil.doubleArrayClass, new doubleArrayParser());
+      registerParser(ArrayUtil.stringArrayClass, StringArrayParser.instance);
+      registerParser(Matrix.class, new MatrixParser());
+    }
   }
 
-  public StaticLeafParser() {
-    registerDefaultParsers();
+  public GeneralLeafParser(boolean historical) {
+    registerDefaultParsers(historical); 
+  }
+  
+  public GeneralLeafParser() {
+   this(false);
   }
 
   /**
@@ -131,7 +136,7 @@ public class StaticLeafParser {
    * 
    * @return The required SAXLeafParser.
    */
-  public static StaticLeafParser instance() {
+  public static GeneralLeafParser instance() {
     return instance;
   }
 

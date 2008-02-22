@@ -6,8 +6,8 @@ package uk.org.ponder.reflect;
 import java.util.Comparator;
 
 import uk.org.ponder.saxalizer.AccessMethod;
-import uk.org.ponder.saxalizer.MethodAnalyser;
 import uk.org.ponder.saxalizer.SAXalizerMappingContext;
+import uk.org.ponder.saxalizer.support.MethodAnalyser;
 import uk.org.ponder.util.UniversalRuntimeException;
 
 /**

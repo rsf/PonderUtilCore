@@ -7,7 +7,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-import uk.org.ponder.saxalizer.SAXAccessMethod;
+import uk.org.ponder.saxalizer.support.SAXAccessMethod;
 import uk.org.ponder.util.UniversalRuntimeException;
 
 public class JDKReflectiveCache extends ReflectiveCache {

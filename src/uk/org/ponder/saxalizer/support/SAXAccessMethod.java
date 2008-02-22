@@ -1,9 +1,11 @@
-package uk.org.ponder.saxalizer;
+package uk.org.ponder.saxalizer.support;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import uk.org.ponder.iterationutil.EnumerationConverter;
+import uk.org.ponder.saxalizer.AccessMethod;
+import uk.org.ponder.saxalizer.SAXAccessMethodSpec;
 import uk.org.ponder.util.AssertionException;
 import uk.org.ponder.util.UniversalRuntimeException;
 
@@ -36,7 +38,7 @@ public class SAXAccessMethod implements AccessMethod {
 
   public String tagname;
   /** Uses the new "tag*" polymorphic nickname scheme */
-  boolean ispolymorphic; 
+  public boolean ispolymorphic; 
  /** A collection rather than a single object is being addressed */
   public boolean ismultiple; 
  /** A more specific set method has been supplied than get method. */

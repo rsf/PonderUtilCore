@@ -3,7 +3,7 @@
  */
 package uk.org.ponder.mapping;
 
-/** Maps one DataAlterationRequest into another. This allows "filtering" of
+/** Maps one {@link DataAlterationRequest} into another. This allows "filtering" of
  * an incoming train of DARs (probably resulting from a user request) into
  * a different form prior to being applied to the data model. This reshaping
  * might, for example, apply a remapping in order to unapply an 

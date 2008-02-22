@@ -9,7 +9,7 @@ import java.util.Set;
 import uk.org.ponder.beanutil.BeanLocator;
 import uk.org.ponder.beanutil.BeanModelAlterer;
 import uk.org.ponder.beanutil.IterableBeanLocator;
-import uk.org.ponder.conversion.StaticLeafParser;
+import uk.org.ponder.conversion.GeneralLeafParser;
 import uk.org.ponder.util.ObstinateMap;
 import uk.org.ponder.util.ObstinateSet;
 import uk.org.ponder.util.UniversalRuntimeException;
@@ -25,7 +25,7 @@ import uk.org.ponder.util.UniversalRuntimeException;
 public class ObstinateTravellingMap extends ObstinateMap {
   private Object seed;
   private BeanModelAlterer bma;
-  private StaticLeafParser staticLeafParser;
+  private GeneralLeafParser generalLeafParser;
   private boolean wraptrunks;
   private String seedpath;
 
@@ -47,8 +47,8 @@ public class ObstinateTravellingMap extends ObstinateMap {
     this.bma = bma;
   }
 
-  public void setStaticLeafParser(StaticLeafParser staticLeafParser) {
-    this.staticLeafParser = staticLeafParser;
+  public void setGeneralLeafParser(GeneralLeafParser generalLeafParser) {
+    this.generalLeafParser = generalLeafParser;
   }
 
   public void setWrapTrunks(boolean wraptrunks) {
@@ -88,7 +88,7 @@ public class ObstinateTravellingMap extends ObstinateMap {
     if (child instanceof BeanLocator) {
       wrap = true;
     }
-    else if (staticLeafParser.isLeafType(child.getClass())) {
+    else if (generalLeafParser.isLeafType(child.getClass())) {
       wrap = false;
     }
     else
@@ -97,7 +97,7 @@ public class ObstinateTravellingMap extends ObstinateMap {
     if (wrap) {
       ObstinateTravellingMap togo = new ObstinateTravellingMap();
       togo.setBeanModelAlterer(bma);
-      togo.setStaticLeafParser(staticLeafParser);
+      togo.setGeneralLeafParser(generalLeafParser);
       togo.setWrapTrunks(wraptrunks);
       togo.setSeed(child);
       togo.init();

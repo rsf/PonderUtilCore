@@ -3,11 +3,7 @@
  */
 package uk.org.ponder.matrix;
 
-import java.io.IOException;
-import java.io.StringReader;
-
 import uk.org.ponder.conversion.LeafObjectParser;
-import uk.org.ponder.streamutil.read.LexReader;
 import uk.org.ponder.streamutil.read.LexUtil;
 import uk.org.ponder.streamutil.read.PushbackRIS;
 import uk.org.ponder.streamutil.read.StringRIS;

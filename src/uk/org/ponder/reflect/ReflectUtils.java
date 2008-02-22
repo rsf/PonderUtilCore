@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import uk.org.ponder.conversion.StaticLeafParser;
+import uk.org.ponder.conversion.GeneralLeafParser;
 import uk.org.ponder.stringutil.StringList;
 import uk.org.ponder.util.Logger;
 
@@ -58,7 +58,7 @@ public class ReflectUtils {
    * @return if the target type is assignable from the value type
    */
   public static boolean isAssignable(Class declaredType, Class objectType) {
-    return (declaredType.isAssignableFrom(objectType) || StaticLeafParser
+    return (declaredType.isAssignableFrom(objectType) || GeneralLeafParser
         .wrapClass(declaredType) == objectType);
   }
 
@@ -92,7 +92,7 @@ public class ReflectUtils {
     for (int i = 0; i < argTypes.length; i++) {
       Object arg = args[i];
       if (!isAssignable(argTypes[i], arg)) {
-        if (arg instanceof String && StaticLeafParser.instance().isLeafType(argTypes[i])) {
+        if (arg instanceof String && GeneralLeafParser.instance().isLeafType(argTypes[i])) {
           result += 1024;
         }
         else return Integer.MAX_VALUE;

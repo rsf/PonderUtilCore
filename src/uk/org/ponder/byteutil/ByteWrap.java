@@ -353,7 +353,6 @@ public class ByteWrap {
       }
     return build.toString();
     }
-  private static ByteWrap temphex = new ByteWrap(4);
   /** Converts an integer to a string containing a hexadecimal representation.
    * @param tohex THe integer to be represented.
    * @return A string representing the integer's value in hexadecimal.

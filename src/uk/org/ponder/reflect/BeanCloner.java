@@ -4,8 +4,8 @@
 package uk.org.ponder.reflect;
 
 import uk.org.ponder.saxalizer.AccessMethod;
-import uk.org.ponder.saxalizer.MethodAnalyser;
 import uk.org.ponder.saxalizer.SAXalizerMappingContext;
+import uk.org.ponder.saxalizer.support.MethodAnalyser;
 
 public class BeanCloner {
   // Cost of m-invoking bean factory:

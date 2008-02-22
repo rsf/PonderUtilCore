@@ -1,7 +1,8 @@
 /*
  * Created on Dec 14, 2004
  */
-package uk.org.ponder.saxalizer;
+package uk.org.ponder.saxalizer.support;
+
 
 /**
  * @author Antranig Basman (antranig@caret.cam.ac.uk)

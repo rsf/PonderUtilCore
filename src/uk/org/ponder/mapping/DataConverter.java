@@ -3,6 +3,8 @@
  */
 package uk.org.ponder.mapping;
 
+import uk.org.ponder.mapping.support.DARApplier;
+
 
 /** Declaration of a policy on data conversion, applicable by the 
  * {@link DARApplier} for incoming requests, as well as for calls to

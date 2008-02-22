@@ -6,7 +6,7 @@ package uk.org.ponder.saxalizer;
 import java.util.Map;
 
 import uk.org.ponder.beanutil.support.IndexedPropertyAccessor;
-import uk.org.ponder.conversion.StaticLeafParser;
+import uk.org.ponder.conversion.GeneralLeafParser;
 import uk.org.ponder.reflect.JDKReflectiveCache;
 import uk.org.ponder.reflect.ReflectiveCache;
 import uk.org.ponder.saxalizer.mapping.ClassNameManager;
@@ -14,6 +14,7 @@ import uk.org.ponder.saxalizer.mapping.ContainerTypeRegistry;
 import uk.org.ponder.saxalizer.mapping.DefaultMapperInferrer;
 import uk.org.ponder.saxalizer.mapping.SAXalizerMapper;
 import uk.org.ponder.saxalizer.mapping.SAXalizerMapperInferrer;
+import uk.org.ponder.saxalizer.support.MethodAnalyser;
 
 /**
  * A reflective mapping context used to infer mappings of Java objects
@@ -27,7 +28,7 @@ import uk.org.ponder.saxalizer.mapping.SAXalizerMapperInferrer;
  */
 public class SAXalizerMappingContext {
   public SAXalizerMapperInferrer inferrer;
-  public StaticLeafParser saxleafparser;
+  public GeneralLeafParser saxleafparser;
   public ClassNameManager classnamemanager = ClassNameManager.instance();
   private ReflectiveCache reflectivecache;
   private IndexedPropertyAccessor indexedPropertyAccessor;
@@ -41,7 +42,7 @@ public class SAXalizerMappingContext {
     this.indexedPropertyAccessor = indexedPropertyAccessor;
   }
 
-  public void setStaticLeafParser(StaticLeafParser saxleafparser) {
+  public void setGeneralLeafParser(GeneralLeafParser saxleafparser) {
     this.saxleafparser = saxleafparser;
   }
   
@@ -75,12 +76,9 @@ public class SAXalizerMappingContext {
     }
     return togo;
   }
-  private void putAnalyser(Class clazz, MethodAnalyser analyser) {
-    methodanalysers.put(clazz, analyser);
-  }
   
   private SAXalizerMappingContext(boolean systemwide) {
-    saxleafparser = StaticLeafParser.instance();
+    saxleafparser = GeneralLeafParser.instance();
     classnamemanager = ClassNameManager.instance();
     DefaultMapperInferrer definferrer = new DefaultMapperInferrer();
     definferrer.setContainerTypeRegistry(new ContainerTypeRegistry());
@@ -89,7 +87,7 @@ public class SAXalizerMappingContext {
   }
   
   public SAXalizerMappingContext() {
-    saxleafparser = new StaticLeafParser();
+    saxleafparser = new GeneralLeafParser();
     classnamemanager = new ClassNameManager();
   }
   private static SAXalizerMappingContext instance = new SAXalizerMappingContext(true);

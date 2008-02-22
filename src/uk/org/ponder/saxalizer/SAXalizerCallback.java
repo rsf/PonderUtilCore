@@ -6,7 +6,7 @@ package uk.org.ponder.saxalizer;
  *   SAX parsing process. That callback implements this interface,
  */
 
-interface SAXalizerCallback {
+public interface SAXalizerCallback {
  /** @param results The object created as a result of SAXalizing a SAX
    * event stream.*/
   void productionComplete(Object results);

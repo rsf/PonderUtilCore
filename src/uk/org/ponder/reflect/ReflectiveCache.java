@@ -8,8 +8,8 @@ import java.lang.reflect.Method;
 import java.util.Map;
 
 import uk.org.ponder.arrayutil.ArrayUtil;
-import uk.org.ponder.conversion.StaticLeafParser;
-import uk.org.ponder.saxalizer.SAXAccessMethod;
+import uk.org.ponder.conversion.GeneralLeafParser;
+import uk.org.ponder.saxalizer.support.SAXAccessMethod;
 import uk.org.ponder.util.Logger;
 import uk.org.ponder.util.UniversalRuntimeException;
 
@@ -159,7 +159,7 @@ public abstract class ReflectiveCache {
       Class argclazz = match.getParameterTypes()[i];
       // proved to be the only case, by definition of getMatchingMethods
       if (!ReflectUtils.isAssignable(argclazz, args[i])) {
-        args[i] = StaticLeafParser.instance().parse(argclazz, (String) args[i]);
+        args[i] = GeneralLeafParser.instance().parse(argclazz, (String) args[i]);
       }
       infer[i] = args[i].getClass();
     }

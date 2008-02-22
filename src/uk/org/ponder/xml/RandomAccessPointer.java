@@ -1,8 +1,8 @@
 package uk.org.ponder.xml;
 
 import uk.org.ponder.byteutil.ByteWrap;
+import uk.org.ponder.conversion.GeneralLeafParser;
 import uk.org.ponder.conversion.LeafObjectParser;
-import uk.org.ponder.conversion.StaticLeafParser;
 
 import uk.org.ponder.stringutil.ByteToCharBase64;
 import uk.org.ponder.stringutil.CharToByteBase64;
@@ -17,7 +17,7 @@ import uk.org.ponder.stringutil.CharWrap;
 
 public class RandomAccessPointer implements LeafObjectParser {
   static {
-    StaticLeafParser.instance().registerParser(RandomAccessPointer.class,
+    GeneralLeafParser.instance().registerParser(RandomAccessPointer.class,
         new RandomAccessPointer());
   }
 

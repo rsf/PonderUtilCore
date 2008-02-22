@@ -1,4 +1,5 @@
-package uk.org.ponder.saxalizer;
+package uk.org.ponder.saxalizer.support;
+
 
 /**
  * The <code>LocalEntityResolver</code> maps a DTD reference onto a locally

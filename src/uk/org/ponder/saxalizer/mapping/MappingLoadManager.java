@@ -6,8 +6,8 @@ package uk.org.ponder.saxalizer.mapping;
 import java.io.InputStream;
 import java.util.List;
 
+import uk.org.ponder.conversion.SerializationProvider;
 import uk.org.ponder.saxalizer.SAXalizerMappingContext;
-import uk.org.ponder.saxalizer.XMLProvider;
 import uk.org.ponder.util.UniversalRuntimeException;
 
 /**
@@ -48,7 +48,7 @@ public class MappingLoadManager {
     return mappingcontext.classnamemanager;
   }
   
-  public XMLProvider getXMLProvider() {
+  public SerializationProvider getXMLProvider() {
     return xmlprovider;
   }
   

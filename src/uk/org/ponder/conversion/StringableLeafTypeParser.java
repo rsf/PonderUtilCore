@@ -6,7 +6,7 @@ package uk.org.ponder.conversion;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
-import uk.org.ponder.saxalizer.SAXAccessMethod;
+import uk.org.ponder.saxalizer.support.SAXAccessMethod;
 import uk.org.ponder.util.UniversalRuntimeException;
 
 /**

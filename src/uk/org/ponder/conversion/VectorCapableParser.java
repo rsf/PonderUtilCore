@@ -25,10 +25,10 @@ import uk.org.ponder.util.Logger;
 // alternative implementation - all customizability is at the scalarparser
 // level.
 public class VectorCapableParser {
-  private StaticLeafParser scalarparser;
+  private GeneralLeafParser scalarparser;
   private ContainerTypeRegistry ctr;
 
-  public void setScalarParser(StaticLeafParser scalarparser) {
+  public void setScalarParser(GeneralLeafParser scalarparser) {
     this.scalarparser = scalarparser;
   }
 

@@ -3,8 +3,6 @@
  */
 package uk.org.ponder.streamutil.read;
 
-import java.io.IOException;
-
 import uk.org.ponder.stringutil.CharWrap;
 import uk.org.ponder.util.UniversalRuntimeException;
 
@@ -80,6 +78,10 @@ public class LexUtil {
     return Double.parseDouble(sb.toString());
   }
 
+  public static void unexpectEmpty(PushbackRIS lr, String message) {
+    if (lr.EOF()) throw new UniversalRuntimeException("Unexpected end of data whilst parsing " + message);
+  }
+  
   /**
    * @param lr
    */
