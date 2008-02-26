@@ -93,11 +93,11 @@ public class DARApplier implements BeanModelAlterer {
       if (toconvert instanceof String[]) {
         toconvert = ((String[]) toconvert)[0];
       }
-      String rendered = resolver == null ? mappingcontext.saxleafparser
+      String rendered = resolver == null ? mappingcontext.generalLeafParser
           .render(toconvert)
           : resolver.resolveBean(toconvert);
       return targetclass == String.class ? rendered
-          : mappingcontext.saxleafparser.parse(Boolean.class, rendered);
+          : mappingcontext.generalLeafParser.parse(Boolean.class, rendered);
     }
     else {
       // this is inverse to the "vector" setBeanValue branch below

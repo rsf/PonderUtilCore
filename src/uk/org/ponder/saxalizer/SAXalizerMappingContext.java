@@ -28,7 +28,7 @@ import uk.org.ponder.saxalizer.support.MethodAnalyser;
  */
 public class SAXalizerMappingContext {
   public SAXalizerMapperInferrer inferrer;
-  public GeneralLeafParser saxleafparser;
+  public GeneralLeafParser generalLeafParser;
   public ClassNameManager classnamemanager = ClassNameManager.instance();
   private ReflectiveCache reflectivecache;
   private IndexedPropertyAccessor indexedPropertyAccessor;
@@ -42,8 +42,8 @@ public class SAXalizerMappingContext {
     this.indexedPropertyAccessor = indexedPropertyAccessor;
   }
 
-  public void setGeneralLeafParser(GeneralLeafParser saxleafparser) {
-    this.saxleafparser = saxleafparser;
+  public void setGeneralLeafParser(GeneralLeafParser generalLeafParser) {
+    this.generalLeafParser = generalLeafParser;
   }
   
   public void setDefaultInferrer(SAXalizerMapperInferrer inferrer) {
@@ -78,7 +78,7 @@ public class SAXalizerMappingContext {
   }
   
   private SAXalizerMappingContext(boolean systemwide) {
-    saxleafparser = GeneralLeafParser.instance();
+    generalLeafParser = GeneralLeafParser.instance();
     classnamemanager = ClassNameManager.instance();
     DefaultMapperInferrer definferrer = new DefaultMapperInferrer();
     definferrer.setContainerTypeRegistry(new ContainerTypeRegistry());
@@ -87,7 +87,7 @@ public class SAXalizerMappingContext {
   }
   
   public SAXalizerMappingContext() {
-    saxleafparser = new GeneralLeafParser();
+    generalLeafParser = new GeneralLeafParser();
     classnamemanager = new ClassNameManager();
   }
   private static SAXalizerMappingContext instance = new SAXalizerMappingContext(true);

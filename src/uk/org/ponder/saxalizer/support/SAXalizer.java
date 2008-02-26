@@ -102,7 +102,7 @@ public class SAXalizer extends HandlerBase {
 
   public SAXalizer(SAXalizerMappingContext mappingcontext) {
     this.mappingcontext = mappingcontext;
-    this.leafparser = mappingcontext.saxleafparser;
+    this.leafparser = mappingcontext.generalLeafParser;
   }
 
   /**

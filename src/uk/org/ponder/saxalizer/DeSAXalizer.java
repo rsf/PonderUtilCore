@@ -137,7 +137,7 @@ public class DeSAXalizer {
     xmlw.writeRaw(" ");
     xmlw.writeRaw(attrname); // attribute names may not contain escapes
     xmlw.writeRaw("=\"");
-    xmlw.write(mappingcontext.saxleafparser.render(attrvalue));
+    xmlw.write(mappingcontext.generalLeafParser.render(attrvalue));
     xmlw.writeRaw("\"");
   }
 
@@ -189,7 +189,7 @@ public class DeSAXalizer {
             && (getmethods == null || getmethods.length == 0))
           genericdata = generic.getData();
       }
-      boolean isleaf = mappingcontext.saxleafparser
+      boolean isleaf = mappingcontext.generalLeafParser
           .isLeafType(child.getClass());
       // TODO: It may be a leaf as a result of a parent class (ViewParameters)
       top = isleaf ? null
@@ -206,7 +206,7 @@ public class DeSAXalizer {
         // should it ever need to come back.
         // use leafparser to render it into text
         if (genericdata == null) {
-          xmlw.write(mappingcontext.saxleafparser.render(child));
+          xmlw.write(mappingcontext.generalLeafParser.render(child));
         }
         // use writeRaw so that < is not deentitised
         xmlw.writeRaw("</" + childtagname + ">\n", 0);

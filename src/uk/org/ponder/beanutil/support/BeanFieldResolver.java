@@ -21,7 +21,7 @@ public class BeanFieldResolver implements BeanLocator {
     return new BeanResolver() {
       public String resolveBean(Object bean) {
         // A line of code only Andy could love.
-        return mappingcontext.saxleafparser.render(mappingcontext.getAnalyser(bean.getClass()).getAccessMethod(path).getChildObject(bean));
+        return mappingcontext.generalLeafParser.render(mappingcontext.getAnalyser(bean.getClass()).getAccessMethod(path).getChildObject(bean));
       }
     };
   }

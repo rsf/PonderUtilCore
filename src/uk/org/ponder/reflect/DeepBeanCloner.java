@@ -67,7 +67,7 @@ public class DeepBeanCloner {
     if (left.getClass() != right.getClass())
       return false;
     Class objclass = left.getClass();
-    if (mappingcontext.saxleafparser.isLeafType(objclass)
+    if (mappingcontext.generalLeafParser.isLeafType(objclass)
         || Collection.class.isAssignableFrom(objclass)) {
       return left.equals(right);
     }
@@ -129,8 +129,8 @@ public class DeepBeanCloner {
       return null;
     Class objclass = toclone.getClass();
     Object cloned = null;
-    if (mappingcontext.saxleafparser.isLeafType(objclass)) {
-      cloned = mappingcontext.saxleafparser.copy(toclone);
+    if (mappingcontext.generalLeafParser.isLeafType(objclass)) {
+      cloned = mappingcontext.generalLeafParser.copy(toclone);
     }
     else if (toclone instanceof Collection) {
       Collection coll = (Collection) toclone;
