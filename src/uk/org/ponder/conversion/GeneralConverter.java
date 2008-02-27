@@ -38,23 +38,29 @@ public class GeneralConverter {
   
   
   public String render(Object torender, String encoding) {
+    if (torender == null || leafParser.isLeafType(torender.getClass())) {
+      return leafParser.render(torender);
+    }
     if (encoding.equals(DataAlterationRequest.JSON_ENCODING)) {
       return JSONProvider.toString(torender);
     }
     else if (encoding.equals(DataAlterationRequest.XML_ENCODING)) {
         return XMLProvider.toString(torender);
       }
-      else return leafParser.render(torender);
+    else throw new IllegalArgumentException("Cannot convert non-leaf " + torender.getClass() + " using leaf encoding");
   }
 
   public Object parse(String toparse, Class targetclass, String encoding) {
-    if (DataAlterationRequest.JSON_ENCODING.equals(encoding)) {
+    if (leafParser.isLeafType(targetclass)) {
+      return leafParser.parse(targetclass, toparse);
+    }
+    else if (DataAlterationRequest.JSON_ENCODING.equals(encoding)) {
       return JSONProvider.fromString(toparse);
     }
     else if (DataAlterationRequest.XML_ENCODING.equals(encoding)) {
         return XMLProvider.fromString(toparse);
       }
-    else return leafParser.parse(targetclass, toparse);
+    else throw new IllegalArgumentException("Cannot convert non-leaf " + targetclass + " using leaf encoding");
   }
 
 }
