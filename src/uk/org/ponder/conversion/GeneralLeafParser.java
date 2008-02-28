@@ -39,6 +39,20 @@ class DoubleParser implements LeafObjectParser {
   }
 }
 
+class CharacterParser implements LeafObjectParser {
+  public Object parse(String string) {
+    return new Character(string.charAt(0));
+  }
+
+  public String render(Object torender) {
+    return torender.toString();
+  }
+
+  public Object copy(Object tocopy) {
+    return tocopy;
+  }
+}
+
 class IntegerParser implements LeafObjectParser {
   public Object parse(String string) {
     return Integer.valueOf(string);
@@ -109,6 +123,7 @@ public class GeneralLeafParser {
     registerParser(Boolean.class, new BooleanParser());
     registerParser(String.class, new StringParser());
     registerParser(Integer.class, new IntegerParser());
+    registerParser(Character.class, new CharacterParser());
     registerParser(Double.class, new DoubleParser());
     registerParser(Long.class, new LongParser());
     registerParser(Date.class, new DateParser());
