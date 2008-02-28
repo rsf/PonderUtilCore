@@ -85,7 +85,7 @@ public class DARApplierImpl {
         // TODO: for JDK collections, "leaftype" will be equal to the
         // collection type unless we have got type info from elsewhere.
         // for now, use arrays.
-        vcp.parse(d.convert, lastobj, d.leaftype, reflectivecache);
+        vcp.parse(d.convert, lastobj, d.leaftype);
       }
       else { // must be a single item, or else a collection
         Denumeration den = EnumerationConverter.getDenumeration(lastobj,

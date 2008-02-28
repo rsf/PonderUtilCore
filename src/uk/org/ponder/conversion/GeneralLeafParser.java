@@ -8,6 +8,7 @@ import uk.org.ponder.arrayutil.ArrayUtil;
 import uk.org.ponder.matrix.Matrix;
 import uk.org.ponder.matrix.MatrixParser;
 import uk.org.ponder.util.AssertionException;
+import uk.org.ponder.util.Constants;
 
 class BooleanParser implements LeafObjectParser {
   public Object parse(String string) {
@@ -102,7 +103,7 @@ public class GeneralLeafParser {
   // in UTF-8, would appear as a-hat (unassigned) (unassigned) e29789. 11100010
   // 10010111 10001001
   public static final char solidus = '\u25a9';
-  public static String NULL_STRING = "\u25a9null\u25a9";
+  public static String NULL_STRING = Constants.NULL_STRING; // "\u25a9null\u25a9";
 
   private void registerDefaultParsers(boolean historical) {
     registerParser(Boolean.class, new BooleanParser());
@@ -196,6 +197,9 @@ public class GeneralLeafParser {
    */
 
   public Object parse(Class returntype, String bulk) {
+    if (bulk.equals(NULL_STRING)) {
+      return null;
+    }
     LeafObjectParser parser = fetchParser(returntype);
     return parser.parse(bulk);
   }
@@ -211,6 +215,9 @@ public class GeneralLeafParser {
    * @return a CharWrap object containing the rendered text.
    */
   public String render(Object torender) {
+    if (torender == null) {
+      return NULL_STRING;
+    }
     LeafObjectParser parser = fetchParser(torender.getClass());
     if (parser == null) {
       throw new AssertionException("LeafParser asked to render object of "

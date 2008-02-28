@@ -12,7 +12,7 @@ public interface Constants {
    * value outside the JVM, which cannot otherwise be signalled. 
    */
   // U+25a9 = Unicode Character 'SQUARE WITH DIAGONAL CROSSHATCH FILL'
-  // See StaticLeafParser for more details
+  // See GeneralLeafParser for more details
   public static String NULL_STRING = "\u25a9null\u25a9";
   public static final double root2 = Math.sqrt(2);
   }

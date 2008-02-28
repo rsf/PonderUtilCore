@@ -104,7 +104,7 @@ public class DARApplier implements BeanModelAlterer {
       Object target = ReflectUtils.instantiateContainer(
           ArrayUtil.stringArrayClass, EnumerationConverter
               .getEnumerableSize(toconvert), reflectivecache);
-      vcp.render(toconvert, target, resolver, reflectivecache);
+      vcp.render(toconvert, target, resolver);
       return target;
     }
   }

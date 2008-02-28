@@ -12,7 +12,6 @@ import uk.org.ponder.iterationutil.EnumerationConverter;
 import uk.org.ponder.reflect.ReflectiveCache;
 import uk.org.ponder.saxalizer.mapping.ContainerTypeRegistry;
 import uk.org.ponder.stringutil.StringList;
-import uk.org.ponder.util.Logger;
 
 /**
  * An "aggregating" object parser/renderer that is capable of dealing with
@@ -27,17 +26,21 @@ import uk.org.ponder.util.Logger;
 public class VectorCapableParser {
   private GeneralLeafParser scalarparser;
   private ContainerTypeRegistry ctr;
+  private ReflectiveCache reflectiveCache;
 
   public void setScalarParser(GeneralLeafParser scalarparser) {
     this.scalarparser = scalarparser;
   }
 
+  public void setReflectiveCache(ReflectiveCache reflectiveCache) {
+    this.reflectiveCache = reflectiveCache;
+  }
+  
   /**
    * Determines whether the supplied object is some kind of "List of Strings"
    * type, either String[] or StringList.
    */
   public static boolean isLOSType(Object o) {
-    Logger.log.info("SAC: " + ArrayUtil.stringArrayClass);
     return ArrayUtil.stringArrayClass.isAssignableFrom(o.getClass())
         || o instanceof StringList;
   }
@@ -59,13 +62,11 @@ public class VectorCapableParser {
    * @return Either a List or Array of Object according to whether the second
    *         parameter  represents a Class or is null. 
    */
-  public Object parse(Object stringlist, Object target, Class elemtype,
-      ReflectiveCache reflectivecache) {
+  public Object parse(Object stringlist, Object target, Class elemtype) {
     // int size = EnumerationConverter.getEnumerableSize(stringlist);
     // Object togo = arraytype == null? new ArrayList(size) :
     // Array.newInstance(arraytype, size);
-    Denumeration denum = EnumerationConverter.getDenumeration(target,
-        reflectivecache);
+    Denumeration denum = EnumerationConverter.getDenumeration(target, reflectiveCache);
     Class containeetype = ctr.getContaineeType(target);
     if (containeetype != null) {
       elemtype = containeetype;
@@ -88,10 +89,8 @@ public class VectorCapableParser {
    *          Collection.
    */
   // This code will go into ValueFixer.
-  public void render(Object torenders, Object toreceive, BeanResolver resolver,
-      ReflectiveCache reflectivecache) {
-    Denumeration denum = EnumerationConverter.getDenumeration(toreceive,
-        reflectivecache);
+  public void render(Object torenders, Object toreceive, BeanResolver resolver) {
+    Denumeration denum = EnumerationConverter.getDenumeration(toreceive, reflectiveCache);
     for (Enumeration rendenum = EnumerationConverter.getEnumeration(torenders); rendenum
         .hasMoreElements();) {
       Object torender = rendenum.nextElement();
