@@ -64,19 +64,30 @@ public class DARApplierImpl {
 
       AccessMethod sam = mappingcontext.getAnalyser(d.moveobj.getClass())
           .getAccessMethod(d.tail);
+      Class declared = sam.getDeclaredType();
+      Class container = declared == Object.class && lastobj != null?
+        lastobj.getClass() : declared;
       if (d.convert instanceof String && springmode) {
         // deference to Spring "auto-convert from comma-separated list"
         // NB this is currently disused, RSACBeanLocator does not use
         // DARApplier yet.
         d.convert = StringList.fromString((String) d.convert);
       }
+      
+      if (d.convert instanceof String && d.dar.applyconversions) {
+        String string = (String) d.convert;
+        d.convert = generalConverter.parse(string, container, d.dar.encoding);
+      }
+      
       int incomingsize = EnumerationConverter.getEnumerableSize(d.convert);
+      boolean resetrequired = false;
+      // reinstantiate the existing object if it is not there or an array of the wrong size
       if (lastobj == null
           || lastobj.getClass().isArray()
           && EnumerationConverter.getEnumerableSize(lastobj) != incomingsize) {
-        lastobj = ReflectUtils.instantiateContainer(
-            sam.getDeclaredType(), incomingsize, reflectivecache);
-        d.pa.setProperty(d.moveobj, d.tail, lastobj);
+            
+        lastobj = ReflectUtils.instantiateContainer(container, incomingsize, reflectivecache);
+        resetrequired = true;
       }
       if (VectorCapableParser.isLOSType(d.convert)) {
         if (lastobj instanceof Collection) {
@@ -86,12 +97,12 @@ public class DARApplierImpl {
         // collection type unless we have got type info from elsewhere.
         // for now, use arrays.
         vcp.parse(d.convert, lastobj, d.leaftype);
+
       }
       else { // must be a single item, or else a collection
         Denumeration den = EnumerationConverter.getDenumeration(lastobj,
             reflectivecache);
-        // TODO: use CompletableDenumeration here to support extensible
-        // arrays.
+        // TODO: use CompletableDenumeration here to support extensible arrays.
         if (EnumerationConverter.isEnumerable(d.convert.getClass())) {
           for (Enumeration enumm = EnumerationConverter
               .getEnumeration(d.convert); enumm.hasMoreElements();) {
@@ -102,6 +113,10 @@ public class DARApplierImpl {
           den.add(d.convert);
         }
       }
+      if (resetrequired) {
+        d.pa.setProperty(d.moveobj, d.tail, lastobj);
+      }
+   
     }
     else { // property is a scalar type, possibly composite.
       if (d.convert instanceof String[]) {
