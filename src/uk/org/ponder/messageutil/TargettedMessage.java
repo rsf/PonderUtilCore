@@ -116,4 +116,11 @@ public class TargettedMessage implements Serializable {
     this.args = args;
     this.severity = severity;
   }
+
+  public TargettedMessage(String messagecode, Object[] args,
+      Exception exception) {
+    updateMessageCode(messagecode);
+    this.args = args;
+    this.exception = exception;
+  }
 }

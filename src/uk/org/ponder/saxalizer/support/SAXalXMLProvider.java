@@ -5,6 +5,7 @@ package uk.org.ponder.saxalizer.support;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.io.StringReader;
 
 import uk.org.ponder.saxalizer.DeSAXalizer;
@@ -12,6 +13,8 @@ import uk.org.ponder.saxalizer.SAXalizerHelper;
 import uk.org.ponder.saxalizer.SAXalizerMappingContext;
 import uk.org.ponder.saxalizer.mapping.MappableXMLProvider;
 import uk.org.ponder.saxalizer.mapping.SAXalizerMapperEntry;
+import uk.org.ponder.streamutil.read.RISReader;
+import uk.org.ponder.streamutil.read.ReadInputStream;
 import uk.org.ponder.util.UniversalRuntimeException;
 
 /**
@@ -62,12 +65,22 @@ public class SAXalXMLProvider implements MappableXMLProvider {
     }
   }
 
+  public Object readObject(Object classorobject, ReadInputStream ris) {
+    Reader r = new RISReader(ris);
+    return readObject(classorobject, null, r);
+  }
+  
   public Object readObject(Object classorobject, InputStream is) {
+    return readObject(classorobject, is, null);
+  }
+  
+  public Object readObject(Object classorobject, InputStream is, Reader reader) {
     SAXalizerHelper saxalizer = (SAXalizerHelper) saxalizergetter.get();
     Class objclass = classorobject == null? null : classorobject instanceof Class? (Class)classorobject : classorobject.getClass();
     try {
       Object toread = classorobject == null? null : classorobject == objclass? objclass.newInstance() : classorobject;
-      return saxalizer.produceSubtree(toread, is);
+      return is == null? saxalizer.produceSubtree(toread, reader) :
+          saxalizer.produceSubtree(toread, is);
     }
     catch (Throwable t) {
       // Xerces appears to be crap and will not clear its parsing condition once it has 
@@ -146,4 +159,5 @@ public class SAXalXMLProvider implements MappableXMLProvider {
     }
   }
 
+ 
 }

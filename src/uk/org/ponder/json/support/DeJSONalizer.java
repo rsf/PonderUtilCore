@@ -23,6 +23,7 @@ import uk.org.ponder.streamutil.read.ReadInputStream;
 import uk.org.ponder.streamutil.read.ReaderRIS;
 import uk.org.ponder.stringutil.CharParser;
 import uk.org.ponder.stringutil.CharWrap;
+import uk.org.ponder.util.UniversalRuntimeException;
 
 /** Converts a stream holding JSON data into a recognizable Java object tree * */
 
@@ -43,18 +44,24 @@ public class DeJSONalizer {
   }
 
   public Object readObject(Object base, Class clazz) {
-    LexUtil.skipWhite(lr);
-    char c = lr.get();
-    if (c == '[') {
-      return readArray(base == null ? clazz
-          : base);
+    try {
+      LexUtil.skipWhite(lr);
+      char c = lr.get();
+      if (c == '[') {
+        return readArray(base == null ? clazz
+            : base);
+      }
+      else if (c == '{') {
+        return readHash(base, clazz);
+      }
+      else {
+        lr.unread(c);
+        return readLeaf(clazz);
+      }
     }
-    else if (c == '{') {
-      return readHash(base, clazz);
-    }
-    else {
-      lr.unread(c);
-      return readLeaf(clazz);
+    catch (Exception e) {
+      throw UniversalRuntimeException.accumulate(e,
+          "Error reading JSON-encoded data - still to read: " + LexUtil.getPending(lr));
     }
   }
 
@@ -91,9 +98,10 @@ public class DeJSONalizer {
   private char[] chars = new char[4];
 
   private Object readLeaf(Class clazz) {
-    if (clazz == null) {
+    if (clazz == null || clazz == Object.class || !leafParser.isLeafType(clazz)) {
       clazz = String.class;
     }
+
     char c = lr.get();
     CharWrap cw = new CharWrap();
     boolean quoted = (c == '\"');
@@ -103,10 +111,14 @@ public class DeJSONalizer {
     while (true) {
       char c2 = lr.get();
       if (escape) {
-        if (c2 == 'b') cw.append('\b');
-        else if (c2 == 't') cw.append('t');
-        else if (c2 == 'n') cw.append('n');
-        else if (c2 == 'r') cw.append('r');
+        if (c2 == 'b')
+          cw.append('\b');
+        else if (c2 == 't')
+          cw.append('t');
+        else if (c2 == 'n')
+          cw.append('n');
+        else if (c2 == 'r')
+          cw.append('r');
         else if (c2 == 'u') {
           for (int i = 0; i < 4; ++i) {
             chars[i] = lr.get();
@@ -163,7 +175,8 @@ public class DeJSONalizer {
       char c = lr.get();
       if (c == ReadInputStream.EOF)
         LexUtil.unexpectEmpty(lr, "array");
-      if (c == ']') break;
+      if (c == ']')
+        break;
       lr.unread(c);
       Object element = readObject(null, comptype);
       if (comptype == null && element != null) {

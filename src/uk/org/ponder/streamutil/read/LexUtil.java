@@ -82,21 +82,26 @@ public class LexUtil {
     if (lr.EOF()) throw new UniversalRuntimeException("Unexpected end of data whilst parsing " + message);
   }
   
+  public static String getPending(ReadInputStream ris) {
+    CharWrap unexpected = new CharWrap();
+    // TODO: this is rubbish! We cannot expect EOF until we actually read the
+    // char.
+    while (!ris.EOF()) {
+      char c = ris.get();
+      if (unexpected.size() < 32) {
+        unexpected.append(c);
+      }
+    }
+    return unexpected.toString();
+  }
+  
   /**
    * @param lr
    */
   public static void expectEmpty(PushbackRIS lr) {
     skipWhite(lr);
     if (!lr.EOF()) {
-      CharWrap unexpected = new CharWrap();
-      // TODO: this is rubbish! We cannot expect EOF until we actually read the
-      // char.
-      while (!lr.EOF()) {
-        char c = lr.get();
-        if (unexpected.size() < 32) {
-          unexpected.append(c);
-        }
-      }
+      String unexpected = getPending(lr);
       throw new UniversalRuntimeException("Unexpected trailing data "
           + unexpected);
     }

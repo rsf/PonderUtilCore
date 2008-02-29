@@ -6,6 +6,8 @@ package uk.org.ponder.conversion;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import uk.org.ponder.streamutil.read.ReadInputStream;
+
 /**
  * An interface specifying conversion of Java objects into a flat textual
  * representation (e.g. XML or JSON) and back again.
@@ -15,6 +17,7 @@ import java.io.OutputStream;
 
 public interface SerializationProvider {
   public void writeObject(Object towrite, OutputStream os);
+  public Object readObject(Object classorobject, ReadInputStream ris);
   public Object readObject(Object classorobject, InputStream is);
   
   public String toString(Object towrite);
