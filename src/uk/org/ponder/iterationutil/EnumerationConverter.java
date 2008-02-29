@@ -3,6 +3,7 @@
  */
 package uk.org.ponder.iterationutil;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import uk.org.ponder.arrayutil.ArrayEnumeration;
+import uk.org.ponder.arrayutil.PrimitiveArrayEnumeration;
 import uk.org.ponder.beanutil.BeanLocator;
 import uk.org.ponder.reflect.ReflectUtils;
 import uk.org.ponder.reflect.ReflectiveCache;
@@ -27,17 +29,12 @@ import uk.org.ponder.util.UniversalRuntimeException;
  * 
  */
 public class EnumerationConverter {
-  public static boolean isObjectArray(Class c) {
-    if (!c.isArray())
-      return false;
-    return !c.getComponentType().isPrimitive();
-  }
 
   public static boolean isEnumerable(Class c) {
     return Enumeration.class.isAssignableFrom(c)
         || Collection.class.isAssignableFrom(c)
         || Map.class.isAssignableFrom(c) || Iterator.class.isAssignableFrom(c)
-        || isObjectArray(c);
+        || c.isArray();
   }
 
   // Maps are not currently denumerable! Pending some scheme for
@@ -65,7 +62,7 @@ public class EnumerationConverter {
       return ((Collection) o).size();
     }
     else if (o.getClass().isArray()) {
-      return ((Object[]) o).length;
+      return Array.getLength(o);
     }
     return 1;
   }
@@ -98,7 +95,12 @@ public class EnumerationConverter {
       return Collections.enumeration(((Map) o).values());
     }
     else if (o.getClass().isArray()) {
-      return new ArrayEnumeration((Object[]) o);
+      if (o.getClass().getComponentType().isPrimitive()) {
+        return PrimitiveArrayEnumeration.get(o);
+      }
+      else {
+        return new ArrayEnumeration((Object[]) o);
+      }
     }
     else
       return new SingleEnumeration(o);
@@ -119,13 +121,25 @@ public class EnumerationConverter {
     }
 
     else if (collo.getClass().isArray()) {
-      final Object[] coll = (Object[]) collo;
-      if (coll.length == 0) {
+      final boolean primitive = collo.getClass().getComponentType().isPrimitive();
+      
+      final Object[] coll = primitive? null : (Object[]) collo;
+      int length = primitive? Array.getLength(collo) : coll.length;
+      if (length == 0) {
         final List buildup = new ArrayList();
         return new CompletableDenumeration() {
           public Object complete() {
-            return buildup.toArray((Object[]) ReflectUtils
-                .instantiateContainer(coll.getClass(), buildup.size(), cache));
+            Object newArray = ReflectUtils.instantiateContainer(coll.getClass(), 
+                buildup.size(), cache);
+            if (primitive) {
+              for (int i = 0; i < buildup.size(); ++ i) {
+                Array.set(newArray, i, buildup.get(i));
+              }
+            }
+            else {
+              buildup.toArray((Object[]) newArray);
+            }
+            return newArray;
           }
 
           public void add(Object o) {
@@ -144,7 +158,12 @@ public class EnumerationConverter {
           int index = 0;
 
           public void add(Object o) {
-            coll[index++] = o;
+            if (primitive) {
+              Array.set(collo, index++, o);
+            }
+            else {
+              coll[index++] = o;
+            }
           }
 
           public boolean remove(Object o) {
