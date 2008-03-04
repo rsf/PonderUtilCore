@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Map;
 
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.LeafPropertyLoader;
+
 import uk.org.ponder.beanutil.WriteableBeanLocator;
 import uk.org.ponder.conversion.GeneralConverter;
 import uk.org.ponder.conversion.VectorCapableParser;
@@ -52,13 +54,15 @@ public class DARApplierImpl {
   }
 
   public void processAddition(DARApplyEnvironment d) {
-
+    boolean isleaf = mappingcontext.generalLeafParser.isLeafType(d.leaftype);
     // If we got a list of Strings in from the UI, they may be
     // "cryptic" leaf types without proper packaging.
     // This implies we MUST know the element type of the collection.
     // For now we must assume collection is of leaf types.
-    if (d.pa.isMultiple(d.moveobj, d.tail) || d.convert != null
-        && EnumerationConverter.isEnumerable(d.convert.getClass())) {
+    if (d.pa.isMultiple(d.moveobj, d.tail) || 
+        d.convert != null
+        && EnumerationConverter.isEnumerable(d.convert.getClass())
+        && !isleaf) {
       Object lastobj = d.pa.getProperty(d.moveobj, d.tail);
 
       AccessMethod sam = mappingcontext.getAnalyser(d.moveobj.getClass())
