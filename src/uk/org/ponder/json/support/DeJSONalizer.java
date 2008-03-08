@@ -84,12 +84,13 @@ public class DeJSONalizer {
       }
       Object newobject = readObject(object, type);
       if (newobject != object) {
-        pa.setProperty(base, key, object);
+        pa.setProperty(base, key, newobject);
       }
       LexUtil.skipWhite(lr);
       char c = lr.get();
       if (c == '}')
         break;
+      LexUtil.skipWhite(lr);
       LexUtil.unexpectEmpty(lr, "hash");
     }
     return base;
@@ -138,7 +139,7 @@ public class DeJSONalizer {
           break;
         }
         else if (!quoted
-            && (Character.isWhitespace(c2) || c2 == ',' || c2 == ']' || c2 == '}' || c2 == ReadInputStream.EOF)) {
+            && (Character.isWhitespace(c2) || c2 == ':' || c2 == ',' || c2 == ']' || c2 == '}' || c2 == ReadInputStream.EOF)) {
           lr.unread(c2);
           break;
         }
