@@ -16,23 +16,23 @@ import uk.org.ponder.saxalizer.support.MethodAnalyser;
 import uk.org.ponder.saxalizer.support.SAXAccessMethod;
 import uk.org.ponder.streamutil.write.PrintOutputStream;
 
-/** Convert any recognizable object tree into a textual JSON representation **/
+/** Convert any recognizable object tree into a textual JSON representation * */
 
 public class EnJSONalizer {
   private JSONWriter writer;
   private GeneralLeafParser leafParser = new GeneralLeafParser();
   private SAXalizerMappingContext mappingContext;
-  
+
   public EnJSONalizer(SAXalizerMappingContext smc, OutputStream os) {
     this.mappingContext = smc;
     this.writer = new JSONWriter(os);
   }
-  
+
   public EnJSONalizer(SAXalizerMappingContext smc, PrintOutputStream pos) {
     this.mappingContext = smc;
     this.writer = new JSONWriter(pos);
   }
-  
+
   public void writeObject(Object towrite) {
     if (towrite == null) {
       writer.write(null);
@@ -41,11 +41,14 @@ public class EnJSONalizer {
     Class clazz = towrite.getClass();
     if (leafParser.isLeafType(clazz)) {
       boolean quote = !(towrite instanceof Number);
-      if (quote) writer.writeRaw("\"");
+      if (quote)
+        writer.writeRaw("\"");
       writer.write(leafParser.render(towrite));
-      if (quote) writer.writeRaw("\"");
+      if (quote)
+        writer.writeRaw("\"");
     }
-    else if (EnumerationConverter.isEnumerable(clazz) && !EnumerationConverter.isMappable(clazz)) {
+    else if (EnumerationConverter.isEnumerable(clazz)
+        && !EnumerationConverter.isMappable(clazz)) {
       Enumeration enumm = EnumerationConverter.getEnumeration(towrite);
       writer.writeRaw("[");
       boolean first = true;
@@ -75,16 +78,18 @@ public class EnJSONalizer {
           writeObject(map.get(key));
         }
       }
-      MethodAnalyser ma = mappingContext.getAnalyser(clazz);
-      for (int i = 0; i < ma.allgetters.length; ++ i) {
-        SAXAccessMethod sam = ma.allgetters[i];
-        if (!first) {
-          writer.writeRaw(", ");
+      else {
+        MethodAnalyser ma = mappingContext.getAnalyser(clazz);
+        for (int i = 0; i < ma.allgetters.length; ++i) {
+          SAXAccessMethod sam = ma.allgetters[i];
+          if (!first) {
+            writer.writeRaw(", ");
+          }
+          first = false;
+          writeObject(sam.getPropertyName());
+          writer.writeRaw(": ");
+          writeObject(sam.getChildObject(towrite));
         }
-        first = false;
-        writeObject(sam.getPropertyName());
-        writer.writeRaw(": ");
-        writeObject(sam.getChildObject(towrite));
       }
       writer.writeRaw("}");
     }
