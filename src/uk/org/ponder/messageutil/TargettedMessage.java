@@ -22,8 +22,11 @@ public class TargettedMessage implements Serializable {
    * is the same semantics as Spring's "MessageSourceResolvable" system.
    */
   public String[] messagecodes;
+  /** A list of arguments to the message renderer **/
   public Object[] args = null;
+  /** A target for the message - may have a context-dependent meaning **/
   public String targetid = TARGET_NONE;
+  /** Any exception which originally gave rise to the message **/
   public Exception exception;
 
   public static final int SEVERITY_INFO = 0;
@@ -39,8 +42,7 @@ public class TargettedMessage implements Serializable {
   }
 
   public void updateTarget(String targetid) {
-    this.targetid = targetid == null ? TARGET_NONE
-        : targetid;
+    this.targetid = targetid == null ? TARGET_NONE : targetid;
   }
 
   public String acquireMessageCode() {
@@ -77,8 +79,7 @@ public class TargettedMessage implements Serializable {
     this.exception = exception;
   }
 
-  public TargettedMessage(String messagecode, Exception exception,
-      String targetid) {
+  public TargettedMessage(String messagecode, Exception exception, String targetid) {
     updateMessageCode(messagecode);
     updateTarget(targetid);
     this.exception = exception;
@@ -117,9 +118,15 @@ public class TargettedMessage implements Serializable {
     this.severity = severity;
   }
 
-  public TargettedMessage(String messagecode, Object[] args,
-      Exception exception) {
+  public TargettedMessage(String messagecode, Object[] args, Exception exception) {
     updateMessageCode(messagecode);
+    this.args = args;
+    this.exception = exception;
+  }
+  
+  public TargettedMessage(String messagecode, Object[] args, Exception exception, String targetid) {
+    updateMessageCode(messagecode);
+    updateTarget(targetid);
     this.args = args;
     this.exception = exception;
   }
