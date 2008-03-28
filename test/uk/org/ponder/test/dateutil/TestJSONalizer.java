@@ -18,6 +18,26 @@ public class TestJSONalizer extends TestCase {
     json = conv;
   }
  
+  public void testPrimitives() {
+      String stringThing = "a string of stuff";
+      String stringThingJSON = json.toString(stringThing);
+      assertEquals(stringThingJSON,"\""+stringThing+"\"");
+      String stringThingFromJSON = (String) json.fromString(stringThingJSON);
+      assertEquals(stringThing, stringThingFromJSON);
+      
+      Long longThing = new Long(23);
+      String longThingJSON = json.toString(longThing);
+      assertEquals(longThingJSON,"23");
+      
+      // TODO FIXME SWG Should the json be able to cast to Integer, Long etc?
+      //Long longThingFromJSON = (Long) json.fromString(longThingJSON);
+      //assertEquals(longThingJSON,((Long)json.fromString(longThingJSON)));
+
+      //Integer integerThing = new Integer(56);
+      
+
+      //Double doubleThing = new Double(12.3);
+  }
   
   public void testArrays() {
    
