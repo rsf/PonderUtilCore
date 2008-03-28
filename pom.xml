@@ -44,6 +44,18 @@
       <organizationUrl>http://www.caret.cam.ac.uk/</organizationUrl>
       <timezone>0</timezone>
     </developer>
+    <developer>
+      <id>swg27</id>
+      <name>Steven Githens</name>
+      <email>sgithens@caret.cam.ac.uk</email>
+      <roles>
+        <role>Developer</role>
+      </roles>
+      <url>http://githens.org/</url>
+      <organization>CARET</organization>
+      <organizationUrl>http://www.caret.cam.ac.uk/</organizationUrl>
+      <timezone>-6</timezone>
+    </developer>
   </developers>
 
   <repositories>
@@ -78,6 +90,7 @@
       </plugin>
     </plugins>
     <sourceDirectory>src</sourceDirectory>
+    <testSourceDirectory>test</testSourceDirectory>
     <resources>
       <resource>
         <directory>.</directory>
