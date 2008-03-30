@@ -24,6 +24,7 @@ import uk.org.ponder.mapping.DARReceiver;
 import uk.org.ponder.mapping.DataAlterationRequest;
 import uk.org.ponder.mapping.ShellInfo;
 import uk.org.ponder.messageutil.TargettedMessage;
+import uk.org.ponder.messageutil.TargettedMessageException;
 import uk.org.ponder.messageutil.TargettedMessageList;
 import uk.org.ponder.reflect.ReflectUtils;
 import uk.org.ponder.reflect.ReflectiveCache;
@@ -49,7 +50,7 @@ public class DARApplier implements BeanModelAlterer {
   public void setGeneralConverter(GeneralConverter generalConverter) {
     impl.setGeneralConverter(generalConverter);
   }
-  
+
   public void setMappingContext(SAXalizerMappingContext mappingcontext) {
     this.mappingcontext = mappingcontext;
     impl.setMappingContext(mappingcontext);
@@ -79,45 +80,48 @@ public class DARApplier implements BeanModelAlterer {
     impl.setSpringMode(springmode);
   }
 
-  public Object getFlattenedValue(String fullpath, Object root,
-      Class targetclass, BeanResolver resolver) {
+  public Object getFlattenedValue(String fullpath, Object root, Class targetclass,
+      BeanResolver resolver) {
     Object toconvert = getBeanValue(fullpath, root, null);
     if (toconvert == null)
       return null;
     if (targetclass == null) {
-      targetclass = EnumerationConverter.isEnumerable(toconvert.getClass()) ? ArrayUtil.stringArrayClass
-          : String.class;
+      targetclass = EnumerationConverter.isEnumerable(toconvert.getClass())
+          ? ArrayUtil.stringArrayClass : String.class;
     }
     if (targetclass == String.class || targetclass == Boolean.class) {
       // TODO: We need proper vector support
       if (toconvert instanceof String[]) {
         toconvert = ((String[]) toconvert)[0];
       }
-      String rendered = resolver == null ? mappingcontext.generalLeafParser
-          .render(toconvert)
-          : resolver.resolveBean(toconvert);
-      return targetclass == String.class ? rendered
-          : mappingcontext.generalLeafParser.parse(Boolean.class, rendered);
+      String rendered = resolver == null
+          ? mappingcontext.generalLeafParser.render(toconvert) : resolver
+              .resolveBean(toconvert);
+      return targetclass == String.class
+          ? rendered : mappingcontext.generalLeafParser.parse(Boolean.class, rendered);
     }
     else {
       // this is inverse to the "vector" setBeanValue branch below
-      Object target = ReflectUtils.instantiateContainer(
-          ArrayUtil.stringArrayClass, EnumerationConverter
-              .getEnumerableSize(toconvert), reflectivecache);
+      Object target = ReflectUtils.instantiateContainer(ArrayUtil.stringArrayClass,
+          EnumerationConverter.getEnumerableSize(toconvert), reflectivecache);
       vcp.render(toconvert, target, resolver);
       return target;
     }
   }
 
-  private void checkAccess(String fullpath, BeanPredicateModel addressibleModel, String key) {
+  private void checkAccess(String fullpath, BeanPredicateModel addressibleModel,
+      String key) {
     if (addressibleModel != null && !addressibleModel.isMatch(fullpath)) {
       throw UniversalRuntimeException
           .accumulate(
-              new SecurityException(), key + " path " + fullpath
+              new SecurityException(),
+              key
+                  + " path "
+                  + fullpath
                   + " is not permissible - make sure to mark this path as request addressible - http://www2.caret.cam.ac.uk/rsfwiki/Wiki.jsp?page=RequestWriteableBean");
     }
   }
-  
+
   public Object getBeanValue(String fullpath, Object rbl,
       BeanPredicateModel addressibleModel) {
     try {
@@ -126,8 +130,8 @@ public class DARApplier implements BeanModelAlterer {
       return togo;
     }
     catch (Exception e) {
-      throw UniversalRuntimeException.accumulate(e,
-          "Error getting bean value for path " + fullpath);
+      throw UniversalRuntimeException.accumulate(e, "Error getting bean value for path "
+          + fullpath);
     }
   }
 
@@ -140,8 +144,8 @@ public class DARApplier implements BeanModelAlterer {
     dar.applyconversions = applyconversions;
     // messages.pushNestedPath(headpath);
     // try {
-    DAREnvironment darenv = messages == null ? null
-        : new DAREnvironment(messages);
+    DAREnvironment darenv = messages == null
+        ? null : new DAREnvironment(messages);
     applyAlteration(root, dar, darenv);
     // }
     // finally {
@@ -155,15 +159,14 @@ public class DARApplier implements BeanModelAlterer {
     if (len >= 2 && string.charAt(0) == '\'' && string.charAt(len - 1) == '\'') {
       return string.substring(1, len - 1);
     }
-    return len == 0 ? null
-        : getBeanValue(string, root, addressibleModel);
+    return len == 0
+        ? null : getBeanValue(string, root, addressibleModel);
   }
 
   // 0 1 2
   // segments: bean.method.arg = 3
   // shells: rbl (bean) = 2 = lastshell
-  public Object invokeBeanMethod(ShellInfo shells,
-      BeanPredicateModel addressibleModel) {
+  public Object invokeBeanMethod(ShellInfo shells, BeanPredicateModel addressibleModel) {
     int lastshell = shells.shells.length;
     Object[] args = new Object[shells.segments.length - lastshell];
     for (int i = 0; i < args.length; ++i) {
@@ -176,9 +179,8 @@ public class DARApplier implements BeanModelAlterer {
       return reflectivecache.invokeMethod(bean, methodname, args);
     }
     catch (Throwable t) { // Need to grab "NoSuchMethodError"
-      throw UniversalRuntimeException.accumulate(t, "Error invoking method "
-          + methodname + " in bean at path "
-          + PathUtil.buildPath(shells.segments, 0, lastshell));
+      throw UniversalRuntimeException.accumulate(t, "Error invoking method " + methodname
+          + " in bean at path " + PathUtil.buildPath(shells.segments, 0, lastshell));
     }
   }
 
@@ -186,8 +188,8 @@ public class DARApplier implements BeanModelAlterer {
       final DataAlterationRequest dar, final DAREnvironment darenv) {
     final PropertyAccessor pa = MethodAnalyser.getPropertyAccessor(moveobj,
         mappingcontext);
-    BeanInvalidationBracketer bib = darenv == null || darenv.bib == null ? NullBeanInvalidationBracketer.instance
-        : darenv.bib;
+    BeanInvalidationBracketer bib = darenv == null || darenv.bib == null
+        ? NullBeanInvalidationBracketer.instance : darenv.bib;
 
     bib.invalidate(dar.path, new Runnable() {
       public void run() {
@@ -195,24 +197,23 @@ public class DARApplier implements BeanModelAlterer {
         if (convert == DataAlterationRequest.INAPPLICABLE_VALUE)
           return;
         while (convert instanceof ObjectFactory) {
-          convert = ((ObjectFactory)convert).getObject();
+          convert = ((ObjectFactory) convert).getObject();
         }
         Class leaftype = pa.getPropertyType(moveobj, tail);
-        
-        DARApplyEnvironment daraenv = 
-          new DARApplyEnvironment(dar, darenv, moveobj, convert, tail, pa, leaftype);
+
+        DARApplyEnvironment daraenv = new DARApplyEnvironment(dar, darenv, moveobj,
+            convert, tail, pa, leaftype);
 
         if (dar.type.equals(DataAlterationRequest.ADD)) {
           impl.processAddition(daraenv);
         }
         else if (dar.type.equals(DataAlterationRequest.DELETE)) {
-          impl.processDeletion(daraenv); 
+          impl.processDeletion(daraenv);
         }
       }
     });
   }
-  
-  
+
   public ShellInfo fetchShells(String fullpath, Object rootobj, boolean expectMethod) {
     Object moveobj = rootobj;
     List shells = new ArrayList();
@@ -220,7 +221,8 @@ public class DARApplier implements BeanModelAlterer {
     String[] segments = PathUtil.splitPath(fullpath);
     for (int i = 0; i < segments.length; ++i) {
       if (expectMethod) {
-        if (ReflectUtils.hasMethod(moveobj, segments[i])) break;
+        if (ReflectUtils.hasMethod(moveobj, segments[i]))
+          break;
       }
       moveobj = BeanUtil.navigateOne(moveobj, segments[i], mappingcontext);
       if (moveobj == null) {
@@ -241,13 +243,15 @@ public class DARApplier implements BeanModelAlterer {
       final DAREnvironment darenv) {
     Logger.log.debug("Applying DAR " + dar.type + " to path " + dar.path + ": "
         + dar.data);
-    checkAccess(dar.path, darenv == null? null : darenv.addressibleModel, "Writing to");
+    checkAccess(dar.path, darenv == null
+        ? null : darenv.addressibleModel, "Writing to");
     if (dar.data instanceof CoreELReference) {
       final CoreELReference elref = (CoreELReference) dar.data;
       dar.data = new ObjectFactory() {
         public Object getObject() {
-            return getBeanValue(elref.value, rootobj, darenv.addressibleModel);
-        }};
+          return getBeanValue(elref.value, rootobj, darenv.addressibleModel);
+        }
+      };
     }
     String oldpath = dar.path;
     try {
@@ -258,13 +262,12 @@ public class DARApplier implements BeanModelAlterer {
         for (int i = 0; i < segments.length - 1; ++i) {
           moveobj = BeanUtil.navigateOne(moveobj, segments[i], mappingcontext);
           if (moveobj == null) {
-            throw new NullPointerException("Null value in EL path at path '" + 
-                PathUtil.buildPath(segments, 0, i + 1) + "'");
+            throw new NullPointerException("Null value in EL path at path '"
+                + PathUtil.buildPath(segments, 0, i + 1) + "'");
           }
           if (moveobj instanceof DARReceiver) {
             dar.path = PathUtil.buildPath(segments, i + 1, segments.length);
-            boolean accepted = ((DARReceiver) moveobj)
-                .addDataAlterationRequest(dar);
+            boolean accepted = ((DARReceiver) moveobj).addDataAlterationRequest(dar);
             if (accepted)
               return;
             else
@@ -279,19 +282,33 @@ public class DARApplier implements BeanModelAlterer {
 
     }
     catch (Exception e) {
-      String emessage = "Error applying value " + dar.data + " to path "
-          + dar.path;
-      if (dar != null) {
+      String emessage = "Error applying value " + dar.data + " to path " + dar.path;
+      if (darenv != null) {
+        List depends = (List) darenv.writeDepends.get(dar.path);
+        if (depends != null) {
+          for (int i = 0; i < depends.size(); ++ i) {
+            darenv.cancelSet.add(depends.get(i));
+          }
+        }
         Throwable wrapped = e;
         if (e instanceof UniversalRuntimeException) {
-          Throwable target = ((UniversalRuntimeException) e)
-              .getTargetException();
+          Throwable target = ((UniversalRuntimeException) e).getTargetException();
           if (target != null)
             wrapped = target;
         }
         if (darenv != null && darenv.messages != null) {
-          TargettedMessage message = new TargettedMessage(wrapped.getMessage(),
-            new Object[] {dar.data}, e, oldpath);
+          TargettedMessage message;
+          if (wrapped instanceof TargettedMessageException) {
+            message = ((TargettedMessageException) wrapped).getTargettedMessage();
+            if (message.targetid == null
+                || message.targetid == TargettedMessage.TARGET_NONE) {
+              message.targetid = oldpath;
+            }
+          }
+          else {
+            message = new TargettedMessage(wrapped.getMessage(),
+                new Object[] { dar.data }, e, oldpath);
+          }
           darenv.messages.addMessage(message);
         }
         Logger.log.info(emessage, e);
@@ -314,11 +331,12 @@ public class DARApplier implements BeanModelAlterer {
    *            that in the ThreadErrorState, but is supplied as an argument to
    *            reduce costs of ThreadLocal gets.
    */
-  public void applyAlterations(Object rootobj, DARList toapply,
-      DAREnvironment darenv) {
+  public void applyAlterations(Object rootobj, DARList toapply, DAREnvironment darenv) {
     for (int i = 0; i < toapply.size(); ++i) {
       DataAlterationRequest dar = toapply.DARAt(i);
-      applyAlteration(rootobj, dar, darenv);
+      if (darenv == null || !darenv.cancelSet.contains(dar.path)) {
+        applyAlteration(rootobj, dar, darenv);
+      }
     }
 
   }

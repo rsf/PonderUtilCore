@@ -13,6 +13,7 @@ import uk.org.ponder.localeutil.LocaleSetter;
  * forms. */ 
 
 public interface FieldDateTransit extends LocaleSetter {
+  public String INVALID_DATE_KEY = "rsf.invalid.date";
   public void setTimeZone(TimeZone timezone);
   public String getShort();
   public String getMedium();

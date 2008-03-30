@@ -3,6 +3,10 @@
  */
 package uk.org.ponder.mapping;
 
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import uk.org.ponder.beanutil.BeanModelAlterer;
 import uk.org.ponder.beanutil.BeanPredicateModel;
 import uk.org.ponder.mapping.support.DARApplier;
@@ -20,14 +24,17 @@ public class DAREnvironment {
   public BeanInvalidationBracketer bib;
   public BeanPredicateModel addressibleModel;
   public DataConverterRegistry registry;
+  public Map writeDepends;
+  public Set cancelSet = new HashSet();
   
   public DAREnvironment(TargettedMessageList messages,
       BeanInvalidationBracketer bib, BeanPredicateModel addressibleModel, 
-      DataConverterRegistry registry) {
+      DataConverterRegistry registry, Map writeDepends) {
     this.messages = messages;
     this.bib = bib;
     this.addressibleModel = addressibleModel;
     this.registry = registry;
+    this.writeDepends = writeDepends;
   }
   
   public DAREnvironment(TargettedMessageList messages) {

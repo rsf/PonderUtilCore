@@ -11,6 +11,8 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import uk.org.ponder.localeutil.LocaleHolder;
+import uk.org.ponder.messageutil.TargettedMessage;
+import uk.org.ponder.messageutil.TargettedMessageException;
 
 /**
  * A transit bean parsing Date objects into their Locale-specific forms.
@@ -22,14 +24,19 @@ public class StandardFieldDateTransit extends LocaleHolder implements FieldDateT
   private Date date;
 
   private SimpleDateFormat shortformat;
-  private DateFormat medformat;
-  private DateFormat longformat;
+  private SimpleDateFormat medformat;
+  private SimpleDateFormat longformat;
   private SimpleDateFormat timeformat;
   private DateFormat longtimeformat;
   private DateFormat iso8601tz;
   private DateFormat iso8601notz;
   //private DateFormat breakformat;
   private TimeZone timezone = TimeZone.getDefault();
+  
+  private boolean isvalid = true;
+  
+  private String invalidDateKey = FieldDateTransit.INVALID_DATE_KEY;
+  private String invalidTimeKey;
 
   public void setTimeZone(TimeZone timezone) {
     this.timezone = timezone;
@@ -39,6 +46,14 @@ public class StandardFieldDateTransit extends LocaleHolder implements FieldDateT
     return timezone.getOffset(date.getTime());
   }
   
+  public void setInvalidDateKey(String invalidDateKey) {
+    this.invalidDateKey = invalidDateKey;
+  }
+  
+  public void setInvalidTimeKey(String invalidTimeKey) {
+    this.invalidTimeKey = invalidTimeKey;
+  }
+  
   public void init() {
    
     Locale locale = getLocale();
@@ -46,8 +61,8 @@ public class StandardFieldDateTransit extends LocaleHolder implements FieldDateT
     shortformat = (SimpleDateFormat) DateFormat.getDateInstance(
         DateFormat.SHORT, locale);
     shortformat.setLenient(false);
-    medformat = DateFormat.getDateInstance(DateFormat.MEDIUM, locale);
-    longformat = DateFormat.getDateInstance(DateFormat.LONG, locale);
+    medformat = (SimpleDateFormat) DateFormat.getDateInstance(DateFormat.MEDIUM, locale);
+    longformat = (SimpleDateFormat) DateFormat.getDateInstance(DateFormat.LONG, locale);
     timeformat = (SimpleDateFormat) DateFormat.getTimeInstance(
         DateFormat.SHORT, locale);
     timeformat.setTimeZone(timezone);
@@ -63,47 +78,57 @@ public class StandardFieldDateTransit extends LocaleHolder implements FieldDateT
   }
 
   public String getShort() {
-    return shortformat.format(date);
+    return isvalid? shortformat.format(date) : null;
   }
 
   public String getMedium() {
-    return medformat.format(date);
+    return isvalid? medformat.format(date) : null;
   }
 
   public String getLong() {
-    return longformat.format(date);
+    return isvalid? longformat.format(date) : null;
   }
 
   public String getTime() {
-    return timeformat.format(date);
+    return isvalid? timeformat.format(date) : null;
   }
   
   public String getLongTime() {
-    return longtimeformat.format(date);
+    return isvalid? longtimeformat.format(date) : null;
   }
 
-  public void setShort(String shortform) throws ParseException {
-    Date ydate = shortformat.parse(shortform);
-    DateUtil.applyFields(date, ydate, DateUtil.DATE_FIELDS);
+  private void parse(SimpleDateFormat format, String datestring, int fieldsCode) {
+    try {
+      Date ydate = format.parse(datestring);
+      DateUtil.applyFields(date, ydate, fieldsCode);
+    }
+    catch (Exception e) {
+      isvalid = false;
+      String key = fieldsCode == DateUtil.DATE_FIELDS? invalidDateKey :
+        (invalidTimeKey == null? invalidDateKey : invalidTimeKey);
+      throw new TargettedMessageException(
+          new TargettedMessage(key, new Object[] {date, format.toPattern()}));
+    }
+  }
+  
+  public void setShort(String shortform) {
+    parse(shortformat, shortform, DateUtil.DATE_FIELDS);
   }
 
-  public void setMedium(String medform) throws ParseException {
-    Date ydate = medformat.parse(medform);
-    DateUtil.applyFields(date, ydate, DateUtil.DATE_FIELDS);
+  public void setMedium(String medform) {
+    parse(medformat, medform, DateUtil.DATE_FIELDS);
   }
 
-  public void setLong(String longform) throws ParseException {
-    Date ydate = longformat.parse(longform);
-    DateUtil.applyFields(date, ydate, DateUtil.DATE_FIELDS);
+  public void setLong(String longform) {
+    parse(longformat, longform, DateUtil.DATE_FIELDS);
   }
 
-  public void setTime(String time) throws ParseException {
-    Date mdate = timeformat.parse(time);
-    DateUtil.applyFields(date, mdate, DateUtil.TIME_FIELDS);
+  public void setTime(String time) {
+    parse(timeformat, time, DateUtil.TIME_FIELDS);
   }
 
   public Date getDate() {
-    return date;
+    return isvalid? date : null;
   }
 
   public void setDate(Date date) {
@@ -111,7 +136,7 @@ public class StandardFieldDateTransit extends LocaleHolder implements FieldDateT
   }
   /** Render an ISO8601-formatted value, including timezone information **/
   public String getISO8601TZ() {
-    return iso8601tz.format(date);
+    return isvalid? iso8601tz.format(date) : null;
   }
   /** Set an ISO 8601-formatted value for which the timezone is to be firmly
    * IGNORED.
