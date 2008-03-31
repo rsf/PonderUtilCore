@@ -15,4 +15,6 @@ public class CoreMessages {
   
   public static final String MISSING_DATA_ERROR = "MissingDataError";
   public static final String INVALID_DATA_ERROR = "InvalidDataError";
+  
+  public static final String RAW_EXCEPTION_PLACEHOLDER = "RawExceptionPlaceholder";
 }

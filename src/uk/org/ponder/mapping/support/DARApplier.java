@@ -16,6 +16,7 @@ import uk.org.ponder.beanutil.PathUtil;
 import uk.org.ponder.beanutil.PropertyAccessor;
 import uk.org.ponder.conversion.GeneralConverter;
 import uk.org.ponder.conversion.VectorCapableParser;
+import uk.org.ponder.errorutil.CoreMessages;
 import uk.org.ponder.iterationutil.EnumerationConverter;
 import uk.org.ponder.mapping.BeanInvalidationBracketer;
 import uk.org.ponder.mapping.DAREnvironment;
@@ -306,7 +307,7 @@ public class DARApplier implements BeanModelAlterer {
             }
           }
           else {
-            message = new TargettedMessage(wrapped.getMessage(),
+            message = new TargettedMessage(CoreMessages.RAW_EXCEPTION_PLACEHOLDER,
                 new Object[] { dar.data }, e, oldpath);
           }
           darenv.messages.addMessage(message);

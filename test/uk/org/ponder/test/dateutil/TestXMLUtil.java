@@ -14,7 +14,7 @@ public class TestXMLUtil extends TestCase {
     for (int i = 0; i < 100; ++ i) {
       String original = idGenerator.generateID();
       String flat = XMLUtil.produceXMLID(original);
-      System.out.println(original + " " + flat);
+//      System.out.println(original + " " + flat);
       assertTrue(Character.isLetter(flat.charAt(0)));
       for (int j = 1; j < flat.length(); ++ j) {
        assertTrue(XMLUtil.isXMLNameChar(flat.charAt(j)));

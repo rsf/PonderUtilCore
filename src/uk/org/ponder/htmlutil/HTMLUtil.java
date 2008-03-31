@@ -53,6 +53,7 @@ public class HTMLUtil {
    * 
    * @param name The Javascript name of the required array
    * @param elements The values of the elements to be rendered.
+   * @deprecated Use the JSON encoder directly
    */
   public static String emitJavascriptArray(String name, String[] elements) {
     CharWrap togo = new CharWrap();
@@ -72,25 +73,44 @@ public class HTMLUtil {
   /** Emits the text for a single Javascript call taking a single argument 
    * @see #emitJavascriptCall(String, String[])
    * **/
-  public static String emitJavascriptCall(String name, String argument) {
+  public static String emitJavascriptCall(String name, String argument, boolean quote) {
     return emitJavascriptCall(name, new String[] {argument});
   }
 
+  /** Emits the text for a single Javascript call taking a single argument 
+   * @see #emitJavascriptCall(String, String[])
+   * **/
+  public static String emitJavascriptCall(String name, String argument) {
+    return emitJavascriptCall(name, new String[] {argument}, true);
+  }
+  
   /** Emits the text for a single Javascript call, that is 
    * <code>name(arguments[0], arguments[1]) ...)</code> 
    * @param name The name of the JS function to be invoked
    * @param arguments The function arguments to be applied.
    */
   public static String emitJavascriptCall(String name, String[] arguments) {
+    return emitJavascriptCall(name, arguments, true);
+  }
+  
+  /** Emits the text for a single Javascript call, that is 
+   * <code>name(arguments[0], arguments[1]) ...)</code> 
+   * @param name The name of the JS function to be invoked
+   * @param arguments The function arguments to be applied.
+   * @param quote <code>true</code> if the arguments are to be quoted as Javascript strings
+   */
+  public static String emitJavascriptCall(String name, String[] arguments, boolean quote) {
     CharWrap togo = new CharWrap();
-    togo.append("  ").append(name).append("(\"");
+    togo.append("  ").append(name).append('(');
     for (int i = 0; i < arguments.length; ++i) {
+      if (quote) togo.append('"');
       togo.append(arguments[i]);
-      if (i != arguments.length - 1) {
-        togo.append("\", \"");
+      if (i != arguments.length - 1) { 
+        togo.append(", ");
       }
+      if (quote) togo.append('"');
     }
-    togo.append("\");\n");
+    togo.append(");\n");
 
     return togo.toString();
   }

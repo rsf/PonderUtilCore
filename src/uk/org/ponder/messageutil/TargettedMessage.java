@@ -31,6 +31,7 @@ public class TargettedMessage implements Serializable {
 
   public static final int SEVERITY_INFO = 0;
   public static final int SEVERITY_ERROR = 1;
+  public static final int SEVERITY_CONFIRM = 2;
   public int severity = SEVERITY_ERROR;
 
   public boolean isError() {
