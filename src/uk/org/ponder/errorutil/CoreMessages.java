@@ -4,6 +4,8 @@
 package uk.org.ponder.errorutil;
 
 /**
+ * Message codes for generic error situations.
+ * 
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
  * 
  */

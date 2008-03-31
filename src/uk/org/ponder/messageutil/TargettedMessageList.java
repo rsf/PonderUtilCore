@@ -6,6 +6,7 @@ package uk.org.ponder.messageutil;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import uk.org.ponder.errorutil.CoreMessages;
 import uk.org.ponder.stringutil.CharWrap;
 import uk.org.ponder.stringutil.StringList;
 
@@ -157,6 +158,17 @@ public class TargettedMessageList implements Serializable {
         locator.getMessage(message.messagecodes, message.args));
     }
     return togo;
+  }
+
+  /** Determines whether this message list contains a general action error entry, and
+   * returns it.
+   */
+  public TargettedMessage findGeneralError() {
+    for (int i = 0; i < size(); ++ i) {
+      TargettedMessage message = messageAt(i); 
+      if (CoreMessages.GENERAL_ACTION_ERROR.equals(message.message)) return message;
+    }
+    return null;
   }
 
 }

@@ -130,4 +130,9 @@ public class TargettedMessage implements Serializable {
     this.args = args;
     this.exception = exception;
   }
+  
+  public String resolve(MessageLocator locator) {
+    return message == null? locator.getMessage(messagecodes, args) : message;       
+  }
+  
 }
