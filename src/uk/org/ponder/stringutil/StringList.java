@@ -77,8 +77,7 @@ public class StringList extends ArrayList {
 
   public void append(Collection toappend) {
     for (Iterator it = toappend.iterator(); it.hasNext();) {
-      String next = (String) it.next(); // ensure ClassCastException if wrong
-      // type
+      String next = (String) it.next(); // ensure ClassCastException if wrong type
       add(next);
     }
   }

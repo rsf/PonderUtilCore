@@ -166,7 +166,7 @@ public class TargettedMessageList implements Serializable {
   public TargettedMessage findGeneralError() {
     for (int i = 0; i < size(); ++ i) {
       TargettedMessage message = messageAt(i); 
-      if (CoreMessages.GENERAL_ACTION_ERROR.equals(message.message)) return message;
+      if (CoreMessages.GENERAL_ACTION_ERROR.equals(message.acquireMessageCode())) return message;
     }
     return null;
   }

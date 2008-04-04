@@ -47,8 +47,7 @@ public class TargettedMessage implements Serializable {
   }
 
   public String acquireMessageCode() {
-    return messagecodes == null ? null
-        : messagecodes[messagecodes.length - 1];
+    return messagecodes == null ? null : messagecodes[messagecodes.length - 1];
   }
 
   public TargettedMessage() {
