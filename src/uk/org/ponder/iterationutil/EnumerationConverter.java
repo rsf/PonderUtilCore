@@ -129,7 +129,7 @@ public class EnumerationConverter {
         final List buildup = new ArrayList();
         return new CompletableDenumeration() {
           public Object complete() {
-            Object newArray = ReflectUtils.instantiateContainer(coll.getClass(), 
+            Object newArray = ReflectUtils.instantiateContainer(collo.getClass(), 
                 buildup.size(), cache);
             if (primitive) {
               for (int i = 0; i < buildup.size(); ++ i) {

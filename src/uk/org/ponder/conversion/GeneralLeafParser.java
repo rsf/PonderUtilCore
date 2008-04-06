@@ -134,7 +134,7 @@ public class GeneralLeafParser {
     if (historical) {
       registerParser(ArrayUtil.intArrayClass, new intArrayParser());
       registerParser(ArrayUtil.doubleArrayClass, new doubleArrayParser());
-      registerParser(ArrayUtil.stringArrayClass, StringArrayParser.instance);
+      //registerParser(ArrayUtil.stringArrayClass, StringArrayParser.instance);
       registerParser(Matrix.class, new MatrixParser());
     }
   }

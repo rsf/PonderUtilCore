@@ -210,13 +210,19 @@ public class SAXalizer extends HandlerBase {
     boolean isgeneric = GenericSAX.class.isAssignableFrom(topush);
     boolean isleaf = leafparser.isLeafType(topush);
     // parentsetter is null for the root object only.
-    boolean isdenumerable = parentsetter == null ? false
-        : parentsetter.isDenumerable();
+    boolean isdenumerable = false;
+    if (parentsetter != null && parentsetter.isDenumerable() && parentsetter.accessclazz != parentsetter.clazz) {
+      isdenumerable = true;
+      // if there is agreement between accessclazz and clazz, it is obviously
+      // a denumerable which is *also* a self-parsing leaf and so we will handle
+      // it directly.
+    }
     ParseContext beingparsed = getSaxingObject();
     // The creation of leaf objects is deferred until all their data has
     // arrived.
     Object newinstance = null;
     ReflectiveCache reflectivecache = mappingcontext.getReflectiveCache();
+    boolean isarray = parentsetter == null? false : parentsetter.accessclazz.isArray();
     if (oldinstance == null || isdenumerable) {
       if (isdenumerable && oldinstance == null && 
           !beingparsed.hasDenumeration(parentsetter.tagname)) {
@@ -227,15 +233,20 @@ public class SAXalizer extends HandlerBase {
             reflectivecache);
         // Do NOT deliver the object to parent now for arrays, but wait until
         // enclosing tag is complete in endElement.
-        if (!parentsetter.accessclazz.isArray()) {
+        if (!isarray) {
           parentsetter.setChildObject(beingparsed.object, oldinstance);
         }
       }
-      newinstance = isleaf ? topush : reflectivecache.construct(topush);
+      if (isleaf) {
+        newinstance = topush;
+      }
+      else if (newinstance == null && !isarray) {
+        newinstance = reflectivecache.construct(topush);
+      }
     }
     else
       newinstance = oldinstance;
-    MethodAnalyser ma = isleaf ? null
+    MethodAnalyser ma = (isleaf || newinstance == null)? null
         : mappingcontext.getAnalyser(newinstance.getClass());
     // "reach into the past" and note that we are now within a denumeration.
     // For denumerable types, oldinstance will be the previously obtained
@@ -483,7 +494,7 @@ public class SAXalizer extends HandlerBase {
         newcontext.mapkey = attrlist.getValue(Constants.KEY_ATTRIBUTE_NAME);
         newcontext.objectpeer = am.getChildObject(beingparsed.object);
       }
-      if (!newcontext.isleaf) {
+      if (!newcontext.isleaf && newcontext.ma != null) {
         tryBlastAttrs(attrlist, newcontext.ma.attrmethods, newcontext.object,
             leafparser, am == null? false : am.ispolymorphic, 
                 am == null? false : am.ismappable);
