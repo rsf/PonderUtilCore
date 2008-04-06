@@ -105,10 +105,10 @@ public class HTMLUtil {
     for (int i = 0; i < arguments.length; ++i) {
       if (quote) togo.append('"');
       togo.append(arguments[i]);
+      if (quote) togo.append('"');
       if (i != arguments.length - 1) { 
         togo.append(", ");
       }
-      if (quote) togo.append('"');
     }
     togo.append(");\n");
 
