@@ -284,7 +284,7 @@ public class DARApplier implements BeanModelAlterer {
     }
     catch (Exception e) {
       String emessage = "Error applying value " + dar.data + " to path " + dar.path;
-      if (darenv != null) {
+      if (darenv != null && darenv.writeDepends != null) {
         List depends = (List) darenv.writeDepends.get(dar.path);
         if (depends != null) {
           for (int i = 0; i < depends.size(); ++ i) {
