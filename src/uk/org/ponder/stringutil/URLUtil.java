@@ -8,6 +8,7 @@ import java.net.URLDecoder;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import uk.org.ponder.arrayutil.ArrayUtil;
 import uk.org.ponder.util.Logger;
 import uk.org.ponder.util.UniversalRuntimeException;
 
@@ -68,9 +69,22 @@ public class URLUtil {
     }
 
   public static String[] splitPathInfo(String pathinfo) {
-    return pathinfo.split("/");
+    String[] togo = pathinfo.split("/");
+    if (togo.length > 0 && togo[0].equals("")) {
+      togo = (String[]) ArrayUtil.subArray(togo, 1, togo.length);
+    }
+    return togo;
   }
-
+  
+  /** Convert a pathinfo array into an array of segments **/
+  public static String toPathInfo(String[] paths) {
+    CharWrap togo = new CharWrap("/");
+    for (int i = 0; i < paths.length; ++ i) {
+      togo.append(URLEncoder.encode(paths[i])).append("/");
+    }
+    return togo.toString();
+  }
+  
   /** Decodes a URL assuming UTF-8, and wrapping any tedious exceptions */
   public static String decodeURL(String url) {
     try {
