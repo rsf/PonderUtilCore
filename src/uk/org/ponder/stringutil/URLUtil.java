@@ -73,6 +73,9 @@ public class URLUtil {
     if (togo.length > 0 && togo[0].equals("")) {
       togo = (String[]) ArrayUtil.subArray(togo, 1, togo.length);
     }
+    for (int i = 0; i < togo.length; ++ i) {
+      togo[i] = decodeURL(togo[i]);
+    }
     return togo;
   }
   
