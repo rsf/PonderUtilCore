@@ -325,7 +325,8 @@ public class DeSAXalizer {
               + topgetmethod.tagname, Logger.DEBUG_EXTRA_INFO);
 
           // if we discover it is an enum, begin chewing on it.
-          if (child != null && topgetmethod.ismultiple) {
+          if (child != null && topgetmethod.ismultiple && 
+              !mappingcontext.generalLeafParser.isLeafType(child.getClass())) {
             top.enumm = EnumerationConverter.getEnumeration(child);
           }
           else {
