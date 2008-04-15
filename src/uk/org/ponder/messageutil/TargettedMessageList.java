@@ -127,6 +127,16 @@ public class TargettedMessageList implements Serializable {
     errors.set(i, message);
   }
 
+  /**
+   * Removes a message held at a particular index.
+   * 
+   * @param i The index of the message to remove.
+   */
+  
+  public void removeMessageAt(int i) {
+    errors.remove(i);
+  }
+  
   /** Clears all messages from this list * */
 
   public void clear() {
