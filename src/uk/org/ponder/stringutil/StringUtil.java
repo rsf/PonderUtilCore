@@ -31,7 +31,15 @@ public class StringUtil {
       }
       else buffer.append(c);
     }
-    togo.add(trim? buffer.toString().trim() : buffer.toString());
+    if (trim) {
+      String trimmed = buffer.toString().trim();
+      if (trimmed.length() > 0) {
+        togo.add(trimmed);
+      }
+    }
+    else {
+      togo.add(buffer.toString());
+    }
     return togo.toStringArray();
   }
   
