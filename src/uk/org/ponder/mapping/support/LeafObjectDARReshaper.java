@@ -16,8 +16,18 @@ public class LeafObjectDARReshaper implements DARReshaper {
   }
   
   public DataAlterationRequest reshapeDAR(DataAlterationRequest toshape) {
-    String leafdata = toshape.data instanceof String[] ? 
-        ((String[])toshape.data)[0] : (String)toshape.data;
+    Object data = toshape.data;
+    String leafdata = null;
+    if (data instanceof Boolean) {
+      leafdata = data == Boolean.TRUE ? "true" : "false";
+    }
+    else if (data instanceof String[]) {
+      leafdata = ((String[])toshape.data)[0];
+    }
+    else {
+      leafdata = (String)toshape.data;      
+    }
+
     DataAlterationRequest togo = new DataAlterationRequest(toshape.path, 
         parser.parse(leafdata), toshape.type);
     return togo;

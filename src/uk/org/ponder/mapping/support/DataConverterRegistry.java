@@ -10,7 +10,7 @@ import java.util.Map;
 
 import uk.org.ponder.arrayutil.ListUtil;
 import uk.org.ponder.arrayutil.MapUtil;
-import uk.org.ponder.beanutil.BeanLocator;
+import uk.org.ponder.beanutil.BeanGetter;
 import uk.org.ponder.beanutil.BeanResolver;
 import uk.org.ponder.beanutil.PathUtil;
 import uk.org.ponder.mapping.DARReshaper;
@@ -36,15 +36,15 @@ public class DataConverterRegistry {
   private static final Class ROOT_CLASS = Math.class;
   private List converters;
 
-  public void setBeanLocator(BeanLocator beanLocator) {
-    this.beanLocator = beanLocator;
+  public void setELEvaluator(BeanGetter beanGetter) {
+    this.beanGetter = beanGetter;
   }
 
   public void setConverters(List converters) {
     this.converters = converters;
   }
 
-  private BeanLocator beanLocator;
+  private BeanGetter beanGetter;
 
   private Map byClass = new HashMap();
 
@@ -52,9 +52,9 @@ public class DataConverterRegistry {
     if (converters == null) return;
     for (int i = 0; i < converters.size(); ++i) {
       DataConverter converter = (DataConverter) converters.get(i);
-      if (converter.getConverterEL() != null) {
-        Object conv = beanLocator.locateBean(converter.getConverterEL());
-        converter.setConverter(conv);
+      if (converter.getConverter() == null && converter.getConverterEL() == null) {
+        throw new IllegalArgumentException("Converter matching path " + 
+            converter.getTargetPath() + " has neither converter nor converterEL set"); 
       }
       Class key = converter.getTargetClass();
       if (key == null)
@@ -97,7 +97,15 @@ public class DataConverterRegistry {
           + PathUtil.buildPath(shellinfo.segments) + " only the last (probably the most specific) entry will be applied.");
     }
     ConverterCandidate candidate = (ConverterCandidate) candidates.get(candidates.size() - 1);
-    return candidate.converter.getConverter();
+    Object converter = candidate.converter.getConverter();
+    if (converter != null) {
+      return converter;
+    }
+    String el = candidate.converter.getConverterEL();
+    if (el != null) {
+      return beanGetter.getBean(el);
+    }
+    else return null;
   }
 
   private void filterCandidates(List candidates, String segment) {
