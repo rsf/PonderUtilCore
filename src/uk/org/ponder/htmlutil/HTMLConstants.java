@@ -14,6 +14,12 @@ public class HTMLConstants {
     {"action", "<form "},
     {"codebase", "<applet ", "<object "}
   };
+  
+  public static final String[][] idRelation = {
+    {"for", "<label "},
+    {"headers", "<th ", "<td "}
+  };
+
 // Every tag may have a "background" attribute holding a URL
   public static String[] ubiquitousURL = {"background"};
 }
