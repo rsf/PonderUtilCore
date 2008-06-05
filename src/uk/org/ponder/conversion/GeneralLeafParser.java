@@ -128,6 +128,7 @@ public class GeneralLeafParser {
     registerParser(Long.class, new LongParser());
     registerParser(Date.class, new DateParser());
     registerParser(java.sql.Date.class, new DateParser());
+    registerParser(java.sql.Timestamp.class, new DateParser());
     registerParser(DateParser.class, new DateParserParser());
     registerParser(Class.class, new ClassParser());
     
