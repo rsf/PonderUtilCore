@@ -15,25 +15,46 @@ import uk.org.ponder.saxalizer.SAXAccessMethodSpec;
 import uk.org.ponder.stringutil.Pluralizer;
 import uk.org.ponder.stringutil.StringList;
 import uk.org.ponder.stringutil.StringSet;
-import uk.org.ponder.util.Logger;
 
 /**
+ * The default concrete framework implementation which applies standard Java bean
+ * semantics (as well as some optional extension) to infer serialization/bean property
+ * mappings for a Java Class.
+ * 
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
  *  
  */
 public class DefaultMapperInferrer implements SAXalizerMapperInferrer {
+
   public void setChainedInferrer(SAXalizerMapperInferrer target) {
     throw new UnsupportedOperationException("Cannot chain from default inferrer");
     // We expect to be the head of the chain
   }
   private boolean depluralize = true;
   private ContainerTypeRegistry containertyperegistry;
+  private boolean inferAddMethods = true;
+  
+  /** Should this inferrer depluralize Java member/accessor names when inferring 
+   * property names? (Suitable for serialization applications if true, suitable for
+   * bean property applications if false). Uses a set of standard English stem 
+   * rules held in the {@link Pluralizer}.
+   * @param depluralize <code>true</code> if Java names should be depluralized.
+   */
   public void setDepluralize(boolean depluralize) {
     this.depluralize = depluralize;
   }
  
   public void setContainerTypeRegistry(ContainerTypeRegistry containertyperegistry) {
     this.containertyperegistry = containertyperegistry;
+  }
+  /** Should method names beginning with <code>add</code> be interpreted as
+   * "reSAXalization" method - that is, to be paired up with a <code>get</code> method
+   * with the same suffix to form part of a vector-valued property?
+   * @param inferAddMethods <code>true</code> if <code>addXxxx</code> methods should 
+   * be paired with <code>GetXxxx</code> methods of the same suffix.
+   */
+  public void setInferAddMethods(boolean inferAddMethods) {
+    this.inferAddMethods = inferAddMethods;
   }
     
   private HashSet defaultiblemap = new HashSet();
@@ -53,7 +74,7 @@ public class DefaultMapperInferrer implements SAXalizerMapperInferrer {
     || defaultiblemap.contains(clazz);
   }
   
-  public static int accessorType(Method method) {
+  public int accessorType(Method method) {
     String methodname = method.getName();
     if (methodname.length() <= 3) return -1;
     Class returntype = method.getReturnType();
@@ -69,7 +90,8 @@ public class DefaultMapperInferrer implements SAXalizerMapperInferrer {
         return SAXAccessMethodSpec.GET_METHOD;
       }
     }
-    if (methodname.startsWith("set") || methodname.startsWith("add")) {
+    if (methodname.startsWith("set") || 
+        (inferAddMethods && methodname.startsWith("add"))) {
       if (paramlen == 1 && returntype.equals(Void.TYPE))
       return SAXAccessMethodSpec.SET_METHOD;
     }

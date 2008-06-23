@@ -4,6 +4,9 @@
 package uk.org.ponder.saxalizer.mapping;
 
 /**
+ * Interface to a family of strategies which automatically (generally via reflection)
+ * serialization mappings given a Java Class.
+ * 
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
  * 
  */

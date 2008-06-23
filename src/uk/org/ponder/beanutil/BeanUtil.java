@@ -55,7 +55,8 @@ public class BeanUtil {
       if (pa.canGet(path)) {
         return pa.getProperty(moveobj, path);
       }
-      else return null;
+      else throw new IllegalArgumentException("Property with name " + path 
+          + " is not readable for object of " + moveobj.getClass());
     }
   }
   
