@@ -226,7 +226,7 @@ public class DARApplier implements BeanModelAlterer {
           break;
       }
       moveobj = BeanUtil.navigateOne(moveobj, segments[i], mappingcontext);
-      if (moveobj == null) {
+      if (moveobj == null || moveobj == BeanUtil.UNREADABLE_PROPERTY) {
         break;
       }
       shells.add(moveobj);

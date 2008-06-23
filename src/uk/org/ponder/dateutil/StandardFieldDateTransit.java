@@ -6,7 +6,9 @@ package uk.org.ponder.dateutil;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -78,38 +80,68 @@ public class StandardFieldDateTransit extends LocaleHolder implements FieldDateT
   }
 
   public String getShort() {
+    triggerParse();
     return isvalid? shortformat.format(date) : null;
   }
 
   public String getMedium() {
+    triggerParse();
     return isvalid? medformat.format(date) : null;
   }
 
   public String getLong() {
+    triggerParse();
     return isvalid? longformat.format(date) : null;
   }
 
   public String getTime() {
+    triggerParse();
     return isvalid? timeformat.format(date) : null;
   }
   
   public String getLongTime() {
+    triggerParse();
     return isvalid? longtimeformat.format(date) : null;
   }
 
+  private List operations = new ArrayList();
+  
   private void parse(SimpleDateFormat format, String datestring, int fieldsCode) {
+    operations.add(new Operation(datestring, format, fieldsCode));
+  }
+  
+  private void triggerParse() {
+    for (int i = 0; i < operations.size(); ++ i) {
+      parseImpl((Operation) operations.get(i));
+    }
+    operations.clear();
+  }
+  
+  private void parseImpl(Operation op) {
     try {
-      Date ydate = format.parse(datestring);
-      DateUtil.applyFields(date, ydate, fieldsCode);
+      Date ydate = op.format.parse(op.text);
+      DateUtil.applyFields(date, ydate, op.fields);
     }
     catch (Exception e) {
       isvalid = false;
-      String key = fieldsCode == DateUtil.DATE_FIELDS? invalidDateKey :
+      String key = op.fields == DateUtil.DATE_FIELDS? invalidDateKey :
         (invalidTimeKey == null? invalidDateKey : invalidTimeKey);
       throw new TargettedMessageException(
-          new TargettedMessage(key, new Object[] {date, format.toPattern()}));
+          new TargettedMessage(key, new Object[] {date, op.format.toPattern()}));
     }
   }
+  
+  private static class Operation {
+    public String text;
+    public SimpleDateFormat format;
+    public int fields;
+    public Operation(String text, SimpleDateFormat format, int fields) {
+      this.text = text;
+      this.format = format;
+      this.fields = fields;
+    }
+  }
+  
   
   public void setShort(String shortform) {
     parse(shortformat, shortform, DateUtil.DATE_FIELDS);
@@ -128,6 +160,7 @@ public class StandardFieldDateTransit extends LocaleHolder implements FieldDateT
   }
 
   public Date getDate() {
+    triggerParse();
     return isvalid? date : null;
   }
 
@@ -136,6 +169,7 @@ public class StandardFieldDateTransit extends LocaleHolder implements FieldDateT
   }
   /** Render an ISO8601-formatted value, including timezone information **/
   public String getISO8601TZ() {
+    triggerParse();
     return isvalid? iso8601tz.format(date) : null;
   }
   /** Set an ISO 8601-formatted value for which the timezone is to be firmly

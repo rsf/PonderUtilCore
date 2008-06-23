@@ -22,6 +22,8 @@ public class BeanUtil {
    * prefix.
    */
   public static String NEW_ENTITY_PREFIX = "new ";
+  
+  public static Object UNREADABLE_PROPERTY = new Object();
 
   public static void copyBeans(Map source, WriteableBeanLocator target) {
     for (Iterator sit = source.keySet().iterator(); sit.hasNext();) {
@@ -55,8 +57,7 @@ public class BeanUtil {
       if (pa.canGet(path)) {
         return pa.getProperty(moveobj, path);
       }
-      else throw new IllegalArgumentException("Property with name " + path 
-          + " is not readable for object of " + moveobj.getClass());
+      else return UNREADABLE_PROPERTY; 
     }
   }
   
@@ -79,8 +80,13 @@ public class BeanUtil {
       }
       else {
         moveobj = navigateOne(moveobj, components[comp], mappingcontext);
+        if (moveobj == UNREADABLE_PROPERTY) {
+          throw new IllegalArgumentException("Property " + components[comp] 
+              + " is not readable for object of " + moveobj.getClass());
+        }
       }
     }
+   
     return moveobj;
   }
 
