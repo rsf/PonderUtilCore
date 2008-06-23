@@ -36,8 +36,7 @@ import uk.org.ponder.util.ObjectFactory;
 import uk.org.ponder.util.UniversalRuntimeException;
 
 /**
- * The core "EL engine". Will apply a "DataAlterationRequest" to an arbitrary
- * bean target.
+ * The core "EL engine". Will apply a "DataAlterationRequest" to an arbitrary bean target.
  * 
  * @author Antranig Basman (antranig@caret.cam.ac.uk)
  * 
@@ -73,9 +72,9 @@ public class DARApplier implements BeanModelAlterer {
 
   /**
    * Will enable more aggressive type conversions as appropriate for operating a
-   * Spring-style container specified in XML. In particular will convert String
-   * values into lists of Strings by splitting at commas, if they are applied to
-   * vector-valued beans.
+   * Spring-style container specified in XML. In particular will convert String values
+   * into lists of Strings by splitting at commas, if they are applied to vector-valued
+   * beans.
    */
   public void setSpringMode(boolean springmode) {
     impl.setSpringMode(springmode);
@@ -87,19 +86,19 @@ public class DARApplier implements BeanModelAlterer {
     if (toconvert == null)
       return null;
     if (targetclass == null) {
-      targetclass = EnumerationConverter.isEnumerable(toconvert.getClass())
-          ? ArrayUtil.stringArrayClass : String.class;
+      targetclass = EnumerationConverter.isEnumerable(toconvert.getClass()) ? ArrayUtil.stringArrayClass
+          : String.class;
     }
     if (targetclass == String.class || targetclass == Boolean.class) {
       // TODO: We need proper vector support
       if (toconvert instanceof String[]) {
         toconvert = ((String[]) toconvert)[0];
       }
-      String rendered = resolver == null
-          ? mappingcontext.generalLeafParser.render(toconvert) : resolver
-              .resolveBean(toconvert);
-      return targetclass == String.class
-          ? rendered : mappingcontext.generalLeafParser.parse(Boolean.class, rendered);
+      String rendered = resolver == null ? mappingcontext.generalLeafParser
+          .render(toconvert)
+          : resolver.resolveBean(toconvert);
+      return targetclass == String.class ? rendered
+          : mappingcontext.generalLeafParser.parse(Boolean.class, rendered);
     }
     else {
       // this is inverse to the "vector" setBeanValue branch below
@@ -145,8 +144,8 @@ public class DARApplier implements BeanModelAlterer {
     dar.applyconversions = applyconversions;
     // messages.pushNestedPath(headpath);
     // try {
-    DAREnvironment darenv = messages == null
-        ? null : new DAREnvironment(messages);
+    DAREnvironment darenv = messages == null ? null
+        : new DAREnvironment(messages);
     applyAlteration(root, dar, darenv);
     // }
     // finally {
@@ -160,8 +159,8 @@ public class DARApplier implements BeanModelAlterer {
     if (len >= 2 && string.charAt(0) == '\'' && string.charAt(len - 1) == '\'') {
       return string.substring(1, len - 1);
     }
-    return len == 0
-        ? null : getBeanValue(string, root, addressibleModel);
+    return len == 0 ? null
+        : getBeanValue(string, root, addressibleModel);
   }
 
   // 0 1 2
@@ -189,8 +188,8 @@ public class DARApplier implements BeanModelAlterer {
       final DataAlterationRequest dar, final DAREnvironment darenv) {
     final PropertyAccessor pa = MethodAnalyser.getPropertyAccessor(moveobj,
         mappingcontext);
-    BeanInvalidationBracketer bib = darenv == null || darenv.bib == null
-        ? NullBeanInvalidationBracketer.instance : darenv.bib;
+    BeanInvalidationBracketer bib = darenv == null || darenv.bib == null ? NullBeanInvalidationBracketer.instance
+        : darenv.bib;
 
     bib.invalidate(dar.path, new Runnable() {
       public void run() {
@@ -244,8 +243,8 @@ public class DARApplier implements BeanModelAlterer {
       final DAREnvironment darenv) {
     Logger.log.debug("Applying DAR " + dar.type + " to path " + dar.path + ": "
         + dar.data);
-    checkAccess(dar.path, darenv == null
-        ? null : darenv.addressibleModel, "Writing to");
+    checkAccess(dar.path, darenv == null ? null
+        : darenv.addressibleModel, "Writing to");
     if (dar.data instanceof CoreELReference) {
       final CoreELReference elref = (CoreELReference) dar.data;
       dar.data = new ObjectFactory() {
@@ -284,11 +283,13 @@ public class DARApplier implements BeanModelAlterer {
     }
     catch (Exception e) {
       String emessage = "Error applying value " + dar.data + " to path " + dar.path;
-      if (darenv != null && darenv.writeDepends != null) {
-        List depends = (List) darenv.writeDepends.get(dar.path);
-        if (depends != null) {
-          for (int i = 0; i < depends.size(); ++ i) {
-            darenv.cancelSet.add(depends.get(i));
+      if (darenv != null) {
+        if (darenv.writeDepends != null) {
+          List depends = (List) darenv.writeDepends.get(dar.path);
+          if (depends != null) {
+            for (int i = 0; i < depends.size(); ++i) {
+              darenv.cancelSet.add(depends.get(i));
+            }
           }
         }
         Throwable wrapped = e;
@@ -320,17 +321,16 @@ public class DARApplier implements BeanModelAlterer {
   }
 
   /**
-   * Apply the alterations mentioned in the enclosed DARList to the supplied
-   * bean. Note that this method assumes that the TargettedMessageList is
-   * already navigated to the root path referred to by the bean, and that the
-   * DARList mentions paths relative to that bean.
+   * Apply the alterations mentioned in the enclosed DARList to the supplied bean. Note
+   * that this method assumes that the TargettedMessageList is already navigated to the
+   * root path referred to by the bean, and that the DARList mentions paths relative to
+   * that bean.
    * 
    * @param rootobj The object to which alterations are to be applied
    * @param toapply The list of alterations
-   * @param messages The list to which error messages accreted during
-   *            application are to be appended. This is probably the same as
-   *            that in the ThreadErrorState, but is supplied as an argument to
-   *            reduce costs of ThreadLocal gets.
+   * @param messages The list to which error messages accreted during application are to
+   *            be appended. This is probably the same as that in the ThreadErrorState,
+   *            but is supplied as an argument to reduce costs of ThreadLocal gets.
    */
   public void applyAlterations(Object rootobj, DARList toapply, DAREnvironment darenv) {
     for (int i = 0; i < toapply.size(); ++i) {

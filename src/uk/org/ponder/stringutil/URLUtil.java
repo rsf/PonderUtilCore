@@ -74,7 +74,10 @@ public class URLUtil {
       togo = (String[]) ArrayUtil.subArray(togo, 1, togo.length);
     }
     for (int i = 0; i < togo.length; ++ i) {
-      togo[i] = decodeURL(togo[i]);
+      togo[i] = //decodeURL(
+          togo[i]
+               //)
+               ;
     }
     return togo;
   }
@@ -83,7 +86,11 @@ public class URLUtil {
   public static String toPathInfo(String[] paths) {
     CharWrap togo = new CharWrap("/");
     for (int i = 0; i < paths.length; ++ i) {
-      togo.append(URLEncoder.encode(paths[i])).append("/");
+      togo.append(
+          URLEncoder.encode(
+              paths[i]
+                    )
+                    ).append("/");
     }
     return togo.toString();
   }
