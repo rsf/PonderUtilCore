@@ -19,7 +19,17 @@ public abstract class URLEncoder {
 
   public static String encode(String s) {
     try {
-      return java.net.URLEncoder.encode(s, "UTF-8");
+      String togo = java.net.URLEncoder.encode(s, "UTF-8");
+      // Comment and strategy from Pluto portal 
+      // http://mail-archives.apache.org/mod_mbox/portals-pluto-scm/200509.mbox/%3C20050903002847.30838.qmail@minotaur.apache.org%3E
+      // java.net.URLEncoder encodes space (' ') as a plus sign ('+'),
+      // instead of %20 thus it will not be decoded properly by tomcat when the
+      // request is parsed. Therefore replace all '+' by '%20'.
+      // If there would have been any plus signs in the original string, they would
+      // have been encoded by URLEncoder.encode()
+      // control = control.replace("+", "%20");//only works with JDK 1.5
+      togo = togo.replaceAll("\\+", "%20");
+      return togo;
     }
     catch (Exception e) { // should never happen
       throw UniversalRuntimeException.accumulate(e, "Error encoding URL " + s);
@@ -29,10 +39,8 @@ public abstract class URLEncoder {
   /**
    * URL-encodes a string using any available encoding.
    * 
-   * @param s
-   *          what to encode
-   * @param encoding
-   *          name of the encoding to use;
+   * @param s what to encode
+   * @param encoding name of the encoding to use;
    * @return URL-encoded version of <CODE>s</CODE>
    * @throws java.io.UnsupportedEncodingException
    *           if <CODE>encoding</CODE> isn't supported by the Java VM and/or

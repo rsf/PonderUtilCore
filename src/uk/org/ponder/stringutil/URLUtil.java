@@ -74,9 +74,9 @@ public class URLUtil {
       togo = (String[]) ArrayUtil.subArray(togo, 1, togo.length);
     }
     for (int i = 0; i < togo.length; ++ i) {
-      togo[i] = decodeURL(
+      togo[i] = //decodeURL(
           togo[i]
-               )
+              // )
                ;
     }
     return togo;
