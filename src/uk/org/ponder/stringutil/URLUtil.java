@@ -86,11 +86,7 @@ public class URLUtil {
   public static String toPathInfo(String[] paths) {
     CharWrap togo = new CharWrap("/");
     for (int i = 0; i < paths.length; ++ i) {
-      togo.append(
-          URLEncoder.encode(
-              paths[i]
-                    )
-                    ).append("/");
+      togo.append(URLEncoder.encode(paths[i]));
     }
     return togo.toString();
   }
