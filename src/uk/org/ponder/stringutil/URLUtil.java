@@ -84,9 +84,9 @@ public class URLUtil {
   
   /** Convert a pathinfo array into an array of segments **/
   public static String toPathInfo(String[] paths) {
-    CharWrap togo = new CharWrap("/");
+    CharWrap togo = new CharWrap();
     for (int i = 0; i < paths.length; ++ i) {
-      togo.append(URLEncoder.encode(paths[i]));
+      togo.append('/').append(URLEncoder.encode(paths[i]));
     }
     return togo.toString();
   }
