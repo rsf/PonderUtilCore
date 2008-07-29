@@ -69,13 +69,13 @@
   <!-- define source code repository -->
   <scm>
     <connection>
-      scm:svn:https://saffron.caret.cam.ac.uk/svn/projects/PonderUtilCore/trunk
+      scm:svn:https://source.caret.cam.ac.uk/rsf/projects/PonderUtilCore/trunk
     </connection>
     <developerConnection>
-      scm:svn:https://saffron.caret.cam.ac.uk/svn/projects/PonderUtilCore/trunk
+      scm:svn:https://source.caret.cam.ac.uk/rsf/projects/PonderUtilCore/trunk
     </developerConnection>
     <url>
-      https://saffron.caret.cam.ac.uk/svn/projects/PonderUtilCore/trunk/
+      https://source.caret.cam.ac.uk/rsf/projects/PonderUtilCore/trunk/
     </url>
   </scm>
 
