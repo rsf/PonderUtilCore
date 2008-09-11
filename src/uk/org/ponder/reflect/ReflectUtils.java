@@ -156,7 +156,7 @@ public class ReflectUtils {
 
   public static List getSuperclasses(Class clazz) {
     List togo = new ArrayList();
-    while (clazz != Object.class) {
+    while (clazz != null && clazz != Object.class) {
       togo.add(clazz);
       clazz = clazz.getSuperclass();
     }

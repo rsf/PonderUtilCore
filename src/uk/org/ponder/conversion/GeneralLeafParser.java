@@ -88,7 +88,7 @@ class LongParser implements LeafObjectParser {
  * Java objects for the purposes of representing leaf nodes of the XML tag tree.
  */
 
-public class GeneralLeafParser {
+public class GeneralLeafParser implements PolymorphicLeafObjectParser {
 
   private static final Map primitiveWrapperTypeMap = new HashMap(16);
 
@@ -227,7 +227,10 @@ public class GeneralLeafParser {
       return null;
     }
     LeafObjectParser parser = fetchParser(returntype);
-    return parser.parse(bulk);
+    if (parser instanceof PolymorphicLeafObjectParser) {
+      return ((PolymorphicLeafObjectParser)parser).parse(returntype, bulk);
+    }
+    else return parser.parse(bulk);
   }
 
   /**
@@ -260,6 +263,10 @@ public class GeneralLeafParser {
           + objtype.getName() + " which has no registered parser");
     }
     return parser.copy(tocopy);
+  }
+
+  public Object parse(String toparse) {
+    return parse(String.class, toparse);
   }
 }
 
