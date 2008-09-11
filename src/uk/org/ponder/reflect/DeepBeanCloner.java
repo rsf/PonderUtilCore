@@ -55,10 +55,6 @@ public class DeepBeanCloner {
     return reflectivecache.construct(toclone.getClass());
   }
 
-  public Object cloneBean(Object toclone) {
-    return cloneBean(toclone, null);
-  }
-
   public boolean areEqual(Object left, Object right) {
     if (left == null)
       return right == null;
@@ -104,32 +100,36 @@ public class DeepBeanCloner {
             .getChildObject(source));
         while (childenum.hasMoreElements()) {
           Object child = childenum.nextElement();
-          Object clonechild = cloneBean(child, null);
+          Object clonechild = cloneBean(child, null, false);
           sam.setChildObject(target, clonechild);
         }
       }
       else {
         Object child = sam.getChildObject(source);
         if (child != null) {
-          Object clonechild = cloneBean(child, null);
+          Object clonechild = cloneBean(child, null, false);
           sam.setChildObject(target, clonechild);
         }
       }
     }
   }
 
+  public Object cloneBean(Object toclone) {
+    return cloneBean(toclone, null, false);
+  }
+  
   /**
    * Produce a deep clone of the supplied object
    * 
    * @param toclone The object to be cloned
    * @param A list of property names to be excluded from the top-level bean.
    */
-  public Object cloneBean(Object toclone, String[] exceptions) {
+  public Object cloneBean(Object toclone, String[] exceptions, boolean defeatLeaf) {
     if (toclone == null)
       return null;
     Class objclass = toclone.getClass();
     Object cloned = null;
-    if (mappingcontext.generalLeafParser.isLeafType(objclass)) {
+    if (!defeatLeaf && mappingcontext.generalLeafParser.isLeafType(objclass)) {
       cloned = mappingcontext.generalLeafParser.copy(toclone);
     }
     else if (toclone instanceof Collection) {
@@ -137,7 +137,7 @@ public class DeepBeanCloner {
       Collection togo = (Collection) reflectivecache.construct(objclass);
       for (Iterator colit = coll.iterator(); colit.hasNext();) {
         Object next = colit.next();
-        cloned = cloneBean(next, null);
+        cloned = cloneBean(next, null, false);
         togo.add(cloned);
       }
       cloned = togo;
@@ -148,8 +148,8 @@ public class DeepBeanCloner {
       for (Iterator keyit = map.values().iterator(); keyit.hasNext();) {
         Object key = keyit.next();
         Object value = map.get(key);
-        Object clonekey = cloneBean(key, null);
-        Object clonevalue = cloneBean(value, null);
+        Object clonekey = cloneBean(key, null, false);
+        Object clonevalue = cloneBean(value, null, false);
         togo.put(clonekey, clonevalue);
       }
       cloned = togo;
@@ -159,7 +159,7 @@ public class DeepBeanCloner {
       Object[] clonedarr = (Object[]) ReflectUtils.instantiateContainer(
           objclass, array.length, reflectivecache);
       for (int i = 0; i < array.length; ++i) {
-        clonedarr[i] = cloneBean(array[i], null);
+        clonedarr[i] = cloneBean(array[i], null, false);
       }
       cloned = clonedarr;
     }

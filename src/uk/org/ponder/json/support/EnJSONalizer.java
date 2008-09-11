@@ -20,16 +20,18 @@ import uk.org.ponder.streamutil.write.PrintOutputStream;
 
 public class EnJSONalizer {
   private JSONWriter writer;
-  private GeneralLeafParser leafParser = new GeneralLeafParser();
+  private GeneralLeafParser leafParser;
   private SAXalizerMappingContext mappingContext;
 
   public EnJSONalizer(SAXalizerMappingContext smc, OutputStream os) {
     this.mappingContext = smc;
+    this.leafParser = smc.generalLeafParser;
     this.writer = new JSONWriter(os);
   }
 
   public EnJSONalizer(SAXalizerMappingContext smc, PrintOutputStream pos) {
     this.mappingContext = smc;
+    this.leafParser = smc.generalLeafParser;
     this.writer = new JSONWriter(pos);
   }
 

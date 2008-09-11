@@ -2,11 +2,13 @@ package uk.org.ponder.conversion;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import uk.org.ponder.arrayutil.ArrayUtil;
 import uk.org.ponder.matrix.Matrix;
 import uk.org.ponder.matrix.MatrixParser;
+import uk.org.ponder.reflect.ReflectUtils;
 import uk.org.ponder.util.AssertionException;
 import uk.org.ponder.util.Constants;
 
@@ -186,6 +188,14 @@ public class GeneralLeafParser {
       totest = wrapClass(totest);
     }
     LeafObjectParser stored = (LeafObjectParser) parseabletypes.get(totest);
+    if (stored == null) {
+      List parents = ReflectUtils.getSuperclasses(totest);
+        for (int i = 0; i < parents.size(); ++ i) {
+          Class parent = (Class) parents.get(i);
+          stored = (LeafObjectParser) parseabletypes.get(parent);
+          if (stored != null) break;
+        }
+    }
     if (stored == null) {
       stored = loadDefaultParser(totest);
     }
