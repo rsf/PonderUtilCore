@@ -72,12 +72,16 @@ public class DeJSONalizer {
       }
       base = mappingContext.getReflectiveCache().construct(clazz);
     }
+    LexUtil.skipWhite(lr);
     PropertyAccessor pa = MethodAnalyser.getPropertyAccessor(base, mappingContext);
     while (true) {
       String key = (String) readLeaf(String.class);
       LexUtil.skipWhite(lr);
       LexUtil.expect(lr, ":");
       Class type = pa.getPropertyType(base, key);
+      if (type == Object.class) {
+        type = HashMap.class;
+      }
       Object object = pa.getProperty(base, key);
       if (object != null) {
         type = object.getClass();
@@ -151,10 +155,25 @@ public class DeJSONalizer {
       }
     }
     String leaf = cw.toString();
-    Object togo = (leaf.equals("null") && !quoted) ? null
-        : leafParser.parse(clazz, leaf);
+    Object togo = UNSET;
+    if (!quoted) {
+      if (leaf.equals("null")) {
+        togo = null;
+      }
+      else if (leaf.equals("true")) {
+        togo = Boolean.TRUE;
+      }
+      else if (leaf.equals("false")) {
+        togo = Boolean.FALSE;
+      }
+    }
+    if (togo == UNSET) {
+      togo = leafParser.parse(clazz, leaf);
+    }
     return togo;
   }
+  
+  private static Object UNSET = new Object();
 
   private Object readArray(Object objorclass) {
     Class clazz = objorclass instanceof Class ? (Class) objorclass

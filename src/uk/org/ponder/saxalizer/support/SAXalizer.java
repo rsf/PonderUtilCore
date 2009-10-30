@@ -236,6 +236,9 @@ public class SAXalizer extends HandlerBase {
         if (!isarray) {
           parentsetter.setChildObject(beingparsed.object, oldinstance);
         }
+        else {
+          newinstance = oldinstance;
+        }
       }
       if (isleaf) {
         newinstance = topush;
@@ -251,7 +254,7 @@ public class SAXalizer extends HandlerBase {
     // "reach into the past" and note that we are now within a denumeration.
     // For denumerable types, oldinstance will be the previously obtained
     // container class, and newinstance will be of the containee type.
-    if (isdenumerable) {
+    if (isdenumerable && !isleaf) {
       if (!beingparsed.hasDenumeration(parentsetter.tagname)) {
         Denumeration den = EnumerationConverter.getDenumeration(oldinstance, reflectivecache);
         if (den == null) {
