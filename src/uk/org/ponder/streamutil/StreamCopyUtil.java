@@ -77,7 +77,7 @@ public class StreamCopyUtil {
           break;
         totalbytes += bytesread;
       }
-      System.out.println("inputToOutput copied " + totalbytes + " bytes");
+      //System.out.println("inputToOutput copied " + totalbytes + " bytes");
     }
     catch (Throwable t) {
       throw UniversalRuntimeException.accumulate(t,

@@ -89,8 +89,10 @@ public class DARApplierImpl {
         int incomingsize = EnumerationConverter.getEnumerableSize(d.convert);
 
         // reinstantiate the existing object if it is not there or an array of the wrong size
+        // Fix for swgithen for PUC 1.2.4B: In-place adjustment of array element is problematic for him.
         if (lastobj == null || lastobj.getClass().isArray()
-            && EnumerationConverter.getEnumerableSize(lastobj) != incomingsize) {
+            //&& EnumerationConverter.getEnumerableSize(lastobj) != incomingsize
+            ) {
 
           lastobj = ReflectUtils.instantiateContainer(container, incomingsize,
               reflectivecache);
