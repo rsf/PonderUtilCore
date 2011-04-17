@@ -127,7 +127,7 @@ public class StandardFieldDateTransit extends LocaleHolder implements FieldDateT
       String key = op.fields == DateUtil.DATE_FIELDS? invalidDateKey :
         (invalidTimeKey == null? invalidDateKey : invalidTimeKey);
       throw new TargettedMessageException(
-          new TargettedMessage(key, new Object[] {date, op.format.toPattern()}));
+          new TargettedMessage(key, new Object[] {op.text, op.format.toPattern()}));
     }
   }
   
