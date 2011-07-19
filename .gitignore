@@ -13,3 +13,4 @@ maven-eclipse.xml
 .checkstyle
 generated-src
 *~
+*.versionbackup
