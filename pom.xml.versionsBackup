@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+                      http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>uk.org.ponder.pure-poms</groupId>
+    <artifactId>standard-jar</artifactId>
+    <version>POM-3</version>
+  </parent>
+  <artifactId>ponderutilcore</artifactId>
+  <packaging>jar</packaging>
+  <name>PonderUtilCore</name>
+  <groupId>uk.org.ponder</groupId>
+  <properties>
+    <ponderutilcore.version>1.2.4B</ponderutilcore.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  <organization>
+    <name>CARET, University of Cambridge</name>
+    <url>http://www.caret.cam.ac.uk/</url>
+  </organization>
+  <inceptionYear>2005</inceptionYear>
+  <url>http://ponder.org.uk/</url>
+  <description>
+    PonderUtilCore is a low-level Java library for Serialization and
+    Primitive type manipulation
+  </description>
+  <version>${ponderutilcore.version}</version>
+
+  <!-- development team -->
+  <developers>
+    <developer>
+      <id>amb26</id>
+      <name>Antranig Basman</name>
+      <email>antranig@caret.cam.ac.uk</email>
+      <roles>
+        <role>Project Manager</role>
+        <role>Architect</role>
+        <role>Developer</role>
+      </roles>
+      <url>http://ponder.org.uk/</url>
+      <organization>CARET</organization>
+      <organizationUrl>http://www.caret.cam.ac.uk/</organizationUrl>
+      <timezone>0</timezone>
+    </developer>
+    <developer>
+      <id>swg27</id>
+      <name>Steven Githens</name>
+      <email>sgithens@caret.cam.ac.uk</email>
+      <roles>
+        <role>Developer</role>
+      </roles>
+      <url>http://githens.org/</url>
+      <organization>CARET</organization>
+      <organizationUrl>http://www.caret.cam.ac.uk/</organizationUrl>
+      <timezone>-6</timezone>
+    </developer>
+  </developers>
+
+  <repositories>
+    <repository>
+      <id>CARET-Maven2</id>
+      <name>CARET Maven 2 Repository</name>
+      <url>http://www2.caret.cam.ac.uk/maven2</url>
+    </repository>
+  </repositories>
+
+  <!-- define source code repository -->
+  <scm>
+    <connection>
+      scm:svn:https://source.caret.cam.ac.uk/rsf/projects/PonderUtilCore/trunk
+    </connection>
+    <developerConnection>
+      scm:svn:https://source.caret.cam.ac.uk/rsf/projects/PonderUtilCore/trunk
+    </developerConnection>
+    <url>
+      https://source.caret.cam.ac.uk/rsf/projects/PonderUtilCore/trunk/
+    </url>
+  </scm>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.4</source>
+          <target>1.4</target>
+        </configuration>
+      </plugin>
+    </plugins>
+    <sourceDirectory>src</sourceDirectory>
+    <testSourceDirectory>test</testSourceDirectory>
+    <resources>
+      <resource>
+        <directory>.</directory>
+        <includes>
+          <include>*.TXT</include>
+          <include>src/**/*.java</include>
+        </includes>
+        <filtering>false</filtering>
+      </resource>
+      <resource>
+        <directory>src</directory>
+        <includes>
+          <include>*.xml</include>
+        </includes>
+        <filtering>false</filtering>
+      </resource>
+    </resources>
+  </build>
+
+</project>
+
