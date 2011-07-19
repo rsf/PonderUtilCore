@@ -60,15 +60,15 @@ public class DirectInputStreamReader extends Reader {
     }
 
   public void setInputStream(InputStream inputstream, String encoding, int buffersize) {
-    if (converter == null || converter.getCharacterEncoding() != encoding) {
-      if (encoding == "UTF-8") {
-	converter = new ByteToCharUTF8();
-	}
-      }
-    converter.blastState();
-    converter.ensureInputBuffer(buffersize);
-    this.inputstream = inputstream;
-    }
+	  if (converter == null || converter.getCharacterEncoding() != encoding) {
+		  if ("UTF-8".equals(encoding)) {
+			  converter = new ByteToCharUTF8();
+		  }
+	  }
+	  converter.blastState();
+	  converter.ensureInputBuffer(buffersize);
+	  this.inputstream = inputstream;
+  }
 
   public void setEncodingErrorHandler(EncodingErrorHandler handler) {
     if (converter != null) {
