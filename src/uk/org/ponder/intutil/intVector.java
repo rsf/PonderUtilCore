@@ -257,12 +257,17 @@ public class intVector implements Comparable {
   }
   
   public boolean equals(Object othero) {
-    intVector other = (intVector) othero;
-    if (size != other.size) return false;
-    for (int i = 0; i < size; ++ i) {
-      if (ints[i] != other.ints[i]) return false;
-    }
-    return true;
+
+	  if (othero == null) return false; 
+	  if (othero instanceof intVector) {
+		  intVector other = (intVector) othero;
+		  if (size != other.size) return false;
+		  for (int i = 0; i < size; ++ i) {
+			  if (ints[i] != other.ints[i]) return false;
+		  }
+		  return true;
+	  }
+	  return false;
   }
 
 }
