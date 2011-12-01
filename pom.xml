@@ -60,23 +60,17 @@
 
   <repositories>
     <repository>
-      <id>CARET-Maven2</id>
-      <name>CARET Maven 2 Repository</name>
-      <url>http://www2.caret.cam.ac.uk/maven2</url>
+      <id>sakai-maven</id>
+      <name>Sakai Maven Repo</name>
+      <url>https://source.sakaiproject.org/maven2</url>
     </repository>
   </repositories>
 
   <!-- define source code repository -->
   <scm>
-    <connection>
-      scm:svn:https://source.caret.cam.ac.uk/rsf/projects/PonderUtilCore/trunk
-    </connection>
-    <developerConnection>
-      scm:svn:https://source.caret.cam.ac.uk/rsf/projects/PonderUtilCore/trunk
-    </developerConnection>
-    <url>
-      https://source.caret.cam.ac.uk/rsf/projects/PonderUtilCore/trunk/
-    </url>
+    <connection>scm:git:git@github.com:rsf/PonderUtilCore.git</connection>
+    <developerConnection>scm:git:git@github.com:rsf/PonderUtilCore.git</developerConnection>
+    <url>https://axxter99@github.com/rsf/PonderUtilCore.git</url>
   </scm>
 
   <build>
