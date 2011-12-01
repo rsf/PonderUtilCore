@@ -68,8 +68,8 @@
 
   <!-- define source code repository -->
   <scm>
-    <connection>scm:git:git@github.com:rsf/PonderUtilCore.git</connection>
-    <developerConnection>scm:git:git@github.com:rsf/PonderUtilCore.git</developerConnection>
+    <connection>scm:git:git://github.com:rsf/PonderUtilCore.git</connection>
+    <developerConnection>scm:git:git://github.com:rsf/PonderUtilCore.git</developerConnection>
     <url>https://axxter99@github.com/rsf/PonderUtilCore.git</url>
   </scm>
 
