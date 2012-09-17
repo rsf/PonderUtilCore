@@ -60,14 +60,14 @@ public class DirectInputStreamReader extends Reader {
     }
 
   public void setInputStream(InputStream inputstream, String encoding, int buffersize) {
-	  if (converter == null || converter.getCharacterEncoding() != encoding) {
-		  if ("UTF-8".equals(encoding)) {
-			  converter = new ByteToCharUTF8();
-		  }
-	  }
-	  converter.blastState();
-	  converter.ensureInputBuffer(buffersize);
-	  this.inputstream = inputstream;
+    if (converter == null || converter.getCharacterEncoding() != encoding) {
+      if ("UTF-8".equals(encoding)) {
+        converter = new ByteToCharUTF8();
+      }
+    }
+    converter.blastState();
+    converter.ensureInputBuffer(buffersize);
+    this.inputstream = inputstream;
   }
 
   public void setEncodingErrorHandler(EncodingErrorHandler handler) {
@@ -108,37 +108,37 @@ public class DirectInputStreamReader extends Reader {
       // when we get to here, break was either because sequence was incomplete,
       // we have completely come to the end of input or else we are out of output buffer space.
       if (stop_reason == ByteToCharConverter.STOP_OUTPUT_EXHAUSTED) {
-	break;
-	}
+        break;
+      }
       else { // otherwise we must be short of input
-	// attempt to get more input. NB 1.2.2 InputStream contract says that this will
-	// return at least 1 byte if not at EOF, and a sequence may be longer than this.
-	bytesread = acceptInput(); // nb all inbuffer parameters blasted by this
-	//	System.out.println("missing_bytes:" +converter.missing_bytes());
-	if (bytesread == -1) { // only break if at EOF 
-	  if (converter.missing_bytes() > 0) { 
-	    // if there is STILL not enough data, signal error
-	    converter.handleEncodingError("Premature end of input stream during "+
-					  converter.getCharacterEncoding()+" sequence");
-	    }
-	  break;
-	  } 
-	// otherwise, there (may be) now sufficient data, if not now then after a few times
-	// round this loop if inputstream perversely returns the minimum 1 byte each time
-	// restart sequence and continue reading where we left off.
-	} // end if no useable bytes WERE in buffer
-      } // end loop over output buffer
+        // attempt to get more input. NB 1.2.2 InputStream contract says that this will
+        // return at least 1 byte if not at EOF, and a sequence may be longer than this.
+        bytesread = acceptInput(); // nb all inbuffer parameters blasted by this
+        // System.out.println("missing_bytes:" +converter.missing_bytes());
+        if (bytesread == -1) { // only break if at EOF
+          if (converter.missing_bytes() > 0) {
+            // if there is STILL not enough data, signal error
+            converter.handleEncodingError("Premature end of input stream during "
+                + converter.getCharacterEncoding() + " sequence");
+          }
+          break;
+        }
+        // otherwise, there (may be) now sufficient data, if not now then after a few times
+        // round this loop if inputstream perversely returns the minimum 1 byte each time
+        // restart sequence and continue reading where we left off.
+      } // end if no useable bytes WERE in buffer
+    } // end loop over output buffer
     // output buffer is full, or no more input remaining. Return number of useful
     // bytes in output buffer.
     int outputchars = converter.getOutputBufferPos() - outbufferstart;
     /*
     System.out.println("convertInternal converted "+outputchars+" output characters, "
-		       + bytesread +" of input read ");
+           + bytesread +" of input read ");
     */
     // nb - why may we have output 0 chars and not be at EOF? Perhaps only because perverse
     // bugger supplied < 2-element output array?
     return (outputchars == 0 && bytesread == -1)? bytesread : outputchars;
-    }
+  }
 
   public int read(char[] outbuffer, int outbufferpos, int length) throws IOException {
     converter.setOutputBuffer(outbuffer, outbufferpos, outbufferpos + length);

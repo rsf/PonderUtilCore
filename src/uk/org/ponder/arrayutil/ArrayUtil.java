@@ -251,7 +251,7 @@ public class ArrayUtil {
       Comparable a1 = array1[i];
       Comparable a2 = array2[i];
       if (a1 == null && a2 != null) return -1;
-      if (a2 != null && a2 == null) return 1;
+      if (a1 != null && a2 == null) return 1;
       if (a1 != null && a2 != null) {
         if (a1.compareTo(a2) < 0)
           return -1;
