@@ -67,7 +67,7 @@
   <scm>
     <connection>scm:git:git://github.com/rsf/PonderUtilCore.git</connection>
     <developerConnection>scm:git:git://github.com/rsf/PonderUtilCore.git</developerConnection>
-    <url>https://github.com/rsf/PonderUtilCore.git</url>
+    <url>scm:git:https://github.com/rsf/PonderUtilCore.git</url>
   </scm>
 
   <build>
