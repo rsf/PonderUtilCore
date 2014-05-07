@@ -68,7 +68,7 @@
   <!-- define source code repository -->
   <scm>
     <connection>scm:git:git://github.com/rsf/PonderUtilCore.git</connection>
-    <developerConnection>scm:git:git://github.com/rsf/PonderUtilCore.git</developerConnection>
+    <developerConnection>scm:git:https://github.com/rsf/PonderUtilCore.git</developerConnection>
     <url>scm:git:https://github.com/rsf/PonderUtilCore.git</url>
   </scm>
 
