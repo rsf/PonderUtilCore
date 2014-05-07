@@ -12,6 +12,8 @@
   <groupId>uk.org.ponder</groupId>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.scm.id>rsf-github</project.scm.id>
+
   </properties>
   <organization>
     <name>CARET, University of Cambridge</name>
