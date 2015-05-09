@@ -48,8 +48,7 @@ public class DeJSONalizer {
       LexUtil.skipWhite(lr);
       char c = lr.get();
       if (c == '[') {
-        return readArray(base == null ? clazz
-            : base);
+        return readArray(base == null ? clazz : base);
       }
       else if (c == '{') {
         return readHash(base, clazz);
@@ -183,6 +182,9 @@ public class DeJSONalizer {
     if (clazz != null && clazz.isArray()) {
       comptype = clazz.getComponentType();
     }
+    if (comptype == null && clazz != null && !EnumerationConverter.isDenumerable(clazz)) {
+      comptype = clazz;
+    }
     Class infertype = null;
     List accrete;
     if (objorclass instanceof List) {
@@ -210,8 +212,7 @@ public class DeJSONalizer {
       }
     }
     if (accrete != objorclass) {
-      Class eltype = comptype == null ? infertype
-          : comptype;
+      Class eltype = comptype == null ? infertype : comptype;
       if (eltype == null)
         eltype = String.class; // empty array default
       Object togo = Array.newInstance(eltype, accrete.size());

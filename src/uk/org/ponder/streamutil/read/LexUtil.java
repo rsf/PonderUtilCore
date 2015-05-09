@@ -19,7 +19,7 @@ public class LexUtil {
         throw new UniversalRuntimeException("Expected text " + toexpect
             + " not found");
     }
-  }
+  }  
 
   public static void skipWhite(PushbackRIS lr) {
     while (!lr.EOF()) {

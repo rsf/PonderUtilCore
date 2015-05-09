@@ -3,6 +3,10 @@
  */
 package uk.org.ponder.statutil;
 
+import java.text.DecimalFormat;
+
+import uk.org.ponder.doubleutil.DoubleFormat;
+
 /**
  * The class 
  * 
@@ -16,16 +20,17 @@ public class GaussCollector {
   public int n;
   public GaussCollector init() {
     sx = sx2 = n = 0;
-    min = Double.POSITIVE_INFINITY;
-    max = Double.NEGATIVE_INFINITY;
+    min = Double.MAX_VALUE;
+    max = -Double.MAX_VALUE;
     return this;
   }
-  public void collect(double x) {
+  public GaussCollector collect(double x) {
     sx += x;
     sx2 += x*x;
     if (x < min) min = x;
     if (x > max) max = x;
     ++n;
+    return this;
   }
   public GaussCollector collect(GaussCollector other) {
     sx += other.sx;
@@ -38,12 +43,15 @@ public class GaussCollector {
   public double mean() {
     return n == 0? 0 : sx / n;
   }
+  public double sd() {
+    return Math.sqrt(variance());
+  }
   public double variance() {
-    return (sx2 - sx*sx/n)/n;
+    return n == 0? 0 : Math.max((sx2 - sx*sx/n)/n, 0);
   }
   public String toString() {
-    return n + " data: mean " + mean() + " SD " + Math.sqrt(variance()) 
-    + " min " + min + " max " + max;
+    DecimalFormat df = DoubleFormat.getFormat4();
+    return n + " data: mean " + df.format(mean()) + " SD " + df.format(Math.sqrt(variance())) + " min " + df.format(min) + " max " + df.format(max);
   }
   public int count() {
     return n;
