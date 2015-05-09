@@ -2,9 +2,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>uk.org.ponder.pure-poms</groupId>
-    <artifactId>standard-jar</artifactId>
-    <version>POM-3</version>
+	  <groupId>org.sonatype.oss</groupId>
+	  <artifactId>oss-parent</artifactId>
+	  <version>7</version>
   </parent>
   <artifactId>ponderutilcore</artifactId>
   <packaging>jar</packaging>
@@ -12,6 +12,8 @@
   <groupId>uk.org.ponder</groupId>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.scm.id>rsf-github</project.scm.id>
+
   </properties>
   <organization>
     <name>CARET, University of Cambridge</name>
@@ -23,7 +25,7 @@
     PonderUtilCore is a low-level Java library for Serialization and
     Primitive type manipulation
   </description>
-  <version>1.2.6-SNAPSHOT</version>
+  <version>1.3.1-SNAPSHOT</version>
 
   <!-- development team -->
   <developers>
@@ -66,12 +68,18 @@
   <!-- define source code repository -->
   <scm>
     <connection>scm:git:git://github.com/rsf/PonderUtilCore.git</connection>
-    <developerConnection>scm:git:git://github.com/rsf/PonderUtilCore.git</developerConnection>
-    <url>https://github.com/rsf/PonderUtilCore.git</url>
+    <developerConnection>scm:git:https://github.com/rsf/PonderUtilCore.git</developerConnection>
+    <url>scm:git:https://github.com/rsf/PonderUtilCore.git</url>
+    <tag>HEAD</tag>
   </scm>
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.5</version>
+      </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
@@ -108,22 +116,17 @@
            </extension>
     </extensions>
   </build>
-    <distributionManagement>
-        <downloadUrl>http://source.sakaiproject.org/maven2/</downloadUrl>
-        <snapshotRepository>
-            <uniqueVersion>false</uniqueVersion>
-            <id>sakai-maven-snapshots-scp</id>
-            <name>Sakai snapshot Repo</name>
-            <url>scpexe://source.sakaiproject.org/var/www/html/maven2-snapshots</url>
-            <layout>default</layout>
-        </snapshotRepository>
-        <repository>
-            <uniqueVersion>false</uniqueVersion>
-            <id>sakai-maven2-scp</id>
-            <name>Sakai maven2 repository</name>
-            <url>scpexe://source.sakaiproject.org/var/www/html/maven2</url>
-            <layout>default</layout>
-        </repository>
-    </distributionManagement>
+  <dependencies>
+	  <dependency>
+		  <groupId>log4j</groupId>
+		  <artifactId>log4j</artifactId>
+		  <version>1.2.14</version>
+	  </dependency>
+	  <dependency>
+		  <groupId>junit</groupId>
+		  <artifactId>junit</artifactId>
+		  <version>3.8.2</version>
+	  </dependency>
+  </dependencies>
 </project>
 
